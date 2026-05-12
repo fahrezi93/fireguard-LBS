@@ -245,10 +245,10 @@ export default function RegisterPage() {
 
                 <div className="mb-10">
                   <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tighter mb-4 text-gray-900">
-                    Cek Email.
+                    Cek WhatsApp.
                   </h1>
                   <p className="text-gray-500 text-lg leading-relaxed font-light">
-                    Kami mengirim 6 digit kode OTP ke <b className="text-gray-900 font-semibold">{email}</b>
+                    Kami mengirim 6 digit kode OTP ke WhatsApp <b className="text-gray-900 font-semibold">{phoneNumber}</b>
                   </p>
                 </div>
 
