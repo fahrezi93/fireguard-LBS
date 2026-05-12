@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { execute, queryRow } from "@/lib/db";
 import { hashPassword } from "@/lib/auth";
-import { sendEmailOTP } from "@/lib/email";
+import { sendWhatsAppOTP } from "@/lib/whatsapp";
 import crypto from "crypto";
 import { corsHeaders, handleCorsOptions, jsonWithCors } from "@/lib/cors";
 
@@ -33,15 +33,15 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const user = await queryRow<{ id: number; name: string }>(
-            "SELECT id, name FROM users WHERE email = ? LIMIT 1",
+        const user = await queryRow<{ id: number; name: string; phone_number: string }>(
+            "SELECT id, name, phone_number FROM users WHERE email = ? LIMIT 1",
             [email]
         );
 
-        if (!user) {
+        if (!user || !user.phone_number) {
             // We return success anyway to prevent email enumeration
             return jsonWithCors({
-                message: `Kode reset telah dikirim ke ${email} jika email tersebut terdaftar.`,
+                message: `Kode reset telah dikirim ke WhatsApp Anda jika akun tersebut terdaftar.`,
             });
         }
 
@@ -55,23 +55,23 @@ export async function POST(request: NextRequest) {
             [email, hashedOtp, "login", formatDateForMySQL(expiresAt)]
         );
 
-        const emailResult = await sendEmailOTP(email, otp, "login");
-        if (!emailResult.success) {
+        const waResult = await sendWhatsAppOTP(user.phone_number, otp, "reset");
+        if (!waResult.success) {
             if (process.env.NODE_ENV !== "production") {
                 return jsonWithCors({
                     message:
-                        "Kode reset sudah dibuat. Email belum aktif di server dev, cek OTP di log server.",
+                        "Kode reset sudah dibuat. WhatsApp belum aktif di server dev, cek OTP di log server.",
                 });
             }
 
             return jsonWithCors(
-                { message: "Gagal mengirim email reset. Silakan coba lagi." },
+                { message: "Gagal mengirim OTP reset ke WhatsApp. Silakan coba lagi." },
                 { status: 500 }
             );
         }
 
         return jsonWithCors({
-            message: `Kode reset telah dikirim ke ${email}`,
+            message: `Kode reset telah dikirim ke WhatsApp Anda`,
         });
     } catch (error: any) {
         console.error("Error asking for reset OTP:", error);

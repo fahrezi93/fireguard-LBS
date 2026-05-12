@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { execute, queryRow, formatDateForMySQL } from "@/lib/db";
 import { hashOtp } from "@/lib/auth";
-import { sendEmailOTP } from "@/lib/email";
+import { sendWhatsAppOTP } from "@/lib/whatsapp";
 import { handleCorsOptions, jsonWithCors } from "@/lib/cors";
 import { enforceRateLimit } from "@/lib/rate-limit";
 import { ensureNotificationTables } from "@/lib/db-init";
@@ -30,8 +30,8 @@ export async function POST(request: NextRequest) {
         const { name, email, phoneNumber } = await request.json();
 
         // Validasi input
-        if (!name || !email) {
-            return jsonWithCors({ message: "Nama dan email wajib diisi." }, { status: 400 });
+        if (!name || !email || !phoneNumber) {
+            return jsonWithCors({ message: "Nama, email, dan nomor WhatsApp wajib diisi." }, { status: 400 });
         }
 
         // Validasi format email
@@ -64,16 +64,16 @@ export async function POST(request: NextRequest) {
             [email, hashedOtp, "register", formatDateForMySQL(expiresAt)]
         );
 
-        // Kirim OTP via email
-        const emailResult = await sendEmailOTP(email, otp, "register");
+        // Kirim OTP via WhatsApp
+        const waResult = await sendWhatsAppOTP(phoneNumber, otp, "register");
 
-        if (!emailResult.success) {
-            return jsonWithCors({ message: "Gagal mengirim OTP. Silakan coba lagi." }, { status: 500 });
+        if (!waResult.success) {
+            return jsonWithCors({ message: "Gagal mengirim OTP ke WhatsApp. Silakan periksa nomor Anda dan coba lagi." }, { status: 500 });
         }
 
         return jsonWithCors({
-            message: `Kode OTP telah dikirim ke ${email}`,
-            tempData: { name, email, phoneNumber: phoneNumber || null },
+            message: `Kode OTP telah dikirim ke WhatsApp ${phoneNumber}`,
+            tempData: { name, email, phoneNumber },
         });
     } catch (error: any) {
         console.error("Error in register:", error);

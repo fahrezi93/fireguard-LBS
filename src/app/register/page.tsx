@@ -167,8 +167,8 @@ export default function RegisterPage() {
                   </div>
 
                   <div className="space-y-1 group">
-                    <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest pl-1 group-focus-within:text-red-500 transition-colors">No WhatsApp (Opsional)</label>
-                    <input type="tel" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="0812..." className="w-full bg-gray-50/50 border border-gray-200 text-gray-900 px-5 py-3.5 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all font-medium placeholder:text-gray-300 placeholder:font-normal" />
+                    <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest pl-1 group-focus-within:text-red-500 transition-colors">No WhatsApp *</label>
+                    <input type="tel" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} required placeholder="0812..." className="w-full bg-gray-50/50 border border-gray-200 text-gray-900 px-5 py-3.5 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all font-medium placeholder:text-gray-300 placeholder:font-normal" />
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

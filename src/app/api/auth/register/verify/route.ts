@@ -27,8 +27,8 @@ export async function POST(request: NextRequest) {
 
         const { email, otp, name, phoneNumber, password } = await request.json();
 
-        if (!email || !otp) {
-            return jsonWithCors({ message: "Email dan OTP diperlukan." }, { status: 400 });
+        if (!email || !otp || !phoneNumber) {
+            return jsonWithCors({ message: "Email, OTP, dan nomor WhatsApp diperlukan." }, { status: 400 });
         }
 
         if (password && password.length < 6) {
@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
         // Buat user baru
         const userId = await executeAndGetLastInsertId(
             "INSERT INTO users (name, email, phone_number, password_hash, is_verified) VALUES (?, ?, ?, ?, 1)",
-            [name || email.split("@")[0], email, phoneNumber || null, passwordHash]
+            [name || email.split("@")[0], email, phoneNumber, passwordHash]
         );
 
         // Generate JWT token
@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
             id: userId,
             email,
             name: name || email.split("@")[0],
-            phone: phoneNumber || null,
+            phone: phoneNumber,
             isOperator: false,
         })
             .setProtectedHeader({ alg: "HS256" })
