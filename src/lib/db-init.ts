@@ -92,10 +92,23 @@ export async function ensureNotificationTables(): Promise<void> {
       )
     `);
 
+    // ── 5. otp_attempts ──────────────────────────────────────────────────────
+    await execute(`
+      CREATE TABLE IF NOT EXISTS otp_attempts (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        email VARCHAR(100) NOT NULL,
+        otp_hash VARCHAR(255) NOT NULL,
+        type ENUM('register', 'login') NOT NULL DEFAULT 'login',
+        expires_at TIMESTAMP NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_email (email)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    `);
+
     tablesInitialized = true;
-    console.log('[DB-Init] Notification tables verified/created ✓');
+    console.log('[DB-Init] Notification and OTP tables verified/created ✓');
   } catch (error: any) {
     // Jangan throw — tabel mungkin sudah ada dengan struktur berbeda
-    console.error('[DB-Init] Failed to ensure notification tables:', error?.message);
+    console.error('[DB-Init] Failed to ensure tables:', error?.message);
   }
 }

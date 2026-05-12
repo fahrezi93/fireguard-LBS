@@ -20,12 +20,15 @@ const transporter = isDevelopment && (!process.env.GMAIL_USER || !process.env.GM
       user: process.env.GMAIL_USER,
       pass: process.env.GMAIL_APP_PASSWORD,
     },
-    // Optimasi untuk pengiriman lebih cepat
-    pool: true, // Gunakan connection pooling
-    maxConnections: 5, // Maksimal 5 koneksi paralel
-    maxMessages: 100, // Maksimal 100 pesan per koneksi
-    rateDelta: 1000, // 1 detik antara batch
-    rateLimit: 10, // Maksimal 10 email per detik
+    // Optimasi untuk VPS (DigitalOcean)
+    connectionTimeout: 10000, // 10 detik timeout koneksi
+    greetingTimeout: 10000,   // 10 detik timeout greeting
+    socketTimeout: 20000,     // 20 detik timeout socket
+    pool: true, 
+    maxConnections: 3, 
+    maxMessages: 100, 
+    rateDelta: 1000, 
+    rateLimit: 5, 
   });
 
 // Verify transporter connection on startup

@@ -211,6 +211,19 @@ function playWarningSound() {
   oscillator.stop(audioContext.currentTime + 0.5);
 }
 
+const BROADCAST_TEMPLATES = [
+  { title: "⚠️ Peringatan Kebakaran Hutan", message: "Titik api terdeteksi di area sekitar Anda. Harap waspada dan hindari aktivitas di luar ruangan." },
+  { title: "📢 Info Pemeliharaan Sistem", message: "Sistem FireGuard akan mengalami pemeliharaan rutin pada pukul 00:00 - 02:00 WIB. Layanan mungkin akan terganggu sementara." },
+  { title: "🚨 Status Siaga Darurat", message: "Status Siaga Darurat diberlakukan untuk wilayah Anda. Segera amankan barang berharga dan bersiap untuk evakuasi jika diinstruksikan." },
+  { title: "✅ Penanganan Selesai", message: "Insiden di wilayah Anda telah berhasil ditangani oleh tim pemadam. Kondisi saat ini sudah aman terkendali." },
+  { title: "🌤️ Info Cuaca Ekstrem", message: "Peringatan cuaca ekstrem: Suhu sangat tinggi berpotensi memicu kebakaran. Hindari membakar sampah atau lahan." },
+  { title: "🚒 Bantuan Sedang Meluncur", message: "Tim pemadam kebakaran sedang meluncur ke lokasi laporan di area Anda. Harap beri jalan untuk armada darurat." },
+  { title: "🌫️ Peringatan Asap Tebal", message: "Terpantau asap tebal di wilayah Anda. Gunakan masker saat beraktivitas di luar ruangan untuk kesehatan pernapasan." },
+  { title: "📢 Sosialisasi Pencegahan", message: "Mari cegah kebakaran dengan tidak membuang puntung rokok sembarangan dan mematikan peralatan listrik yang tidak digunakan." },
+  { title: "🚧 Penutupan Jalan Akses", message: "Beberapa jalan di sekitar lokasi insiden ditutup sementara untuk proses pemadaman. Harap gunakan jalur alternatif." },
+  { title: "ℹ️ Update Nomor Darurat", message: "Simpan nomor darurat Posko Utama FireGuard: 113. Segera laporkan jika melihat potensi bahaya." },
+];
+
 export default function OperatorDashboard() {
   const router = useRouter();
   const [reports, setReports] = useState<Report[]>([]);
@@ -243,6 +256,14 @@ export default function OperatorDashboard() {
   const [broadcastTitle, setBroadcastTitle] = useState("");
   const [broadcastMessage, setBroadcastMessage] = useState("");
   const [isSendingBroadcast, setIsSendingBroadcast] = useState(false);
+
+  const handleTemplateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const idx = parseInt(e.target.value);
+    if (!isNaN(idx) && BROADCAST_TEMPLATES[idx]) {
+      setBroadcastTitle(BROADCAST_TEMPLATES[idx].title);
+      setBroadcastMessage(BROADCAST_TEMPLATES[idx].message);
+    }
+  };
 
   const handleSelectReport = (report: Report) => {
     setSelectedReport(report);
@@ -359,8 +380,8 @@ export default function OperatorDashboard() {
     let reconnectionTimer: ReturnType<typeof setTimeout>;
 
     const connect = () => {
-      const isProd = window.location.hostname === "fireguard-palembang.my.id";
-      const wsProtocol = (window.location.protocol === "https:" || isProd) ? "wss" : "ws";
+      const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+      const wsProtocol = (window.location.protocol === "https:" || !isLocal) ? "wss" : "ws";
       const wsUrl = `${wsProtocol}://${window.location.host}/ws`;
       const socket = new WebSocket(wsUrl);
       ws.current = socket;
@@ -465,7 +486,7 @@ export default function OperatorDashboard() {
           {/* Modal */}
           <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-modal-in">
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-gradient-to-r from-red-50 to-orange-50">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-white">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-red-500 rounded-xl flex items-center justify-center shadow-md">
                   <FaBullhorn className="text-white text-base" />
@@ -488,6 +509,23 @@ export default function OperatorDashboard() {
             <div className="px-6 py-5 space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                  Template Broadcast
+                </label>
+                <select
+                  onChange={handleTemplateChange}
+                  defaultValue=""
+                  disabled={isSendingBroadcast}
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all disabled:opacity-60 disabled:bg-gray-50"
+                >
+                  <option value="" disabled>Pilih Template...</option>
+                  {BROADCAST_TEMPLATES.map((template, idx) => (
+                    <option key={idx} value={idx}>{template.title}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">
                   Judul Notifikasi <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -497,7 +535,7 @@ export default function OperatorDashboard() {
                   placeholder="contoh: ⚠️ Info Penting dari FireGuard"
                   maxLength={200}
                   disabled={isSendingBroadcast}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all disabled:opacity-60 disabled:bg-gray-50"
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-900 bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all disabled:opacity-60 disabled:bg-gray-50"
                 />
                 <p className="text-xs text-gray-400 mt-1 text-right">{broadcastTitle.length}/200</p>
               </div>
@@ -513,14 +551,14 @@ export default function OperatorDashboard() {
                   maxLength={1000}
                   rows={4}
                   disabled={isSendingBroadcast}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all resize-none disabled:opacity-60 disabled:bg-gray-50"
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-900 bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all resize-none disabled:opacity-60 disabled:bg-gray-50"
                 />
                 <p className="text-xs text-gray-400 mt-1 text-right">{broadcastMessage.length}/1000</p>
               </div>
 
-              <div className="flex items-start gap-2.5 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
-                <span className="text-amber-500 mt-0.5">⚠️</span>
-                <p className="text-xs text-amber-700">
+              <div className="flex items-start gap-2.5 bg-blue-50 border border-blue-200 rounded-xl px-4 py-3">
+                <FaBullhorn className="text-blue-500 mt-0.5 shrink-0" />
+                <p className="text-xs text-blue-800 leading-relaxed">
                   Broadcast ini akan dikirim ke <strong>semua pengguna terdaftar</strong> melalui push notification. Pastikan pesan sudah benar sebelum mengirim.
                 </p>
               </div>

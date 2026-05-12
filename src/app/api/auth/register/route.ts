@@ -4,6 +4,7 @@ import { hashOtp } from "@/lib/auth";
 import { sendEmailOTP } from "@/lib/email";
 import { handleCorsOptions, jsonWithCors } from "@/lib/cors";
 import { enforceRateLimit } from "@/lib/rate-limit";
+import { ensureNotificationTables } from "@/lib/db-init";
 
 function generateOtp(): string {
     return Math.floor(100000 + Math.random() * 900000).toString();
@@ -16,6 +17,8 @@ export async function OPTIONS() {
 // POST: Kirim OTP untuk registrasi
 export async function POST(request: NextRequest) {
     try {
+        await ensureNotificationTables();
+
         const limit = enforceRateLimit(request, "auth-register-send", 10, 60_000);
         if (!limit.allowed) {
             return jsonWithCors(

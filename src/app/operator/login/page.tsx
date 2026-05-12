@@ -128,7 +128,7 @@ export default function OperatorLoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className={`w-full bg-gray-50/50 border border-gray-200 text-gray-900 pl-5 pr-12 py-4 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all font-medium placeholder:text-gray-300 placeholder:font-normal ${!showPassword ? 'tracking-[0.2em]' : ''}`}
-                placeholder={showPassword ? "Masukkan sandi" : "â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"}
+                placeholder={showPassword ? "Masukkan sandi" : "••••••••••"}
                 required
                 disabled={isLoading}
               />
