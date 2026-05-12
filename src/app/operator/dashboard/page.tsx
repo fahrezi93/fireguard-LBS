@@ -359,7 +359,8 @@ export default function OperatorDashboard() {
     let reconnectionTimer: ReturnType<typeof setTimeout>;
 
     const connect = () => {
-      const wsProtocol = window.location.protocol === "https" ? "wss" : "ws";
+      const isProd = window.location.hostname === "fireguard-palembang.my.id";
+      const wsProtocol = (window.location.protocol === "https:" || isProd) ? "wss" : "ws";
       const wsUrl = `${wsProtocol}://${window.location.host}/ws`;
       const socket = new WebSocket(wsUrl);
       ws.current = socket;
