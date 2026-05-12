@@ -76,6 +76,22 @@ export async function ensureNotificationTables(): Promise<void> {
       )
     `);
 
+    // ── 4. broadcast_logs ────────────────────────────────────────────────────
+    await execute(`
+      CREATE TABLE IF NOT EXISTS broadcast_logs (
+        id            INT AUTO_INCREMENT PRIMARY KEY,
+        operator_id   INT NOT NULL,
+        title         VARCHAR(255) NOT NULL,
+        message       TEXT NOT NULL,
+        total_tokens  INT NOT NULL DEFAULT 0,
+        success_count INT NOT NULL DEFAULT 0,
+        failure_count INT NOT NULL DEFAULT 0,
+        sent_at       DATETIME NOT NULL,
+        INDEX idx_bl_operator_id (operator_id),
+        INDEX idx_bl_sent_at (sent_at)
+      )
+    `);
+
     tablesInitialized = true;
     console.log('[DB-Init] Notification tables verified/created ✓');
   } catch (error: any) {

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
@@ -20,6 +20,9 @@ import {
   FaPhone,
   FaTags,
   FaChartBar,
+  FaBullhorn,
+  FaTimes,
+  FaPaperPlane,
 } from "react-icons/fa";
 import ReportDetailModal from "@/components/ReportDetailModal";
 import { useToast } from "@/hooks/useToast";
@@ -235,6 +238,12 @@ export default function OperatorDashboard() {
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
   const { toast, success, error, hideToast } = useToast();
 
+  // ── Broadcast state ──────────────────────────────────────────────────────
+  const [showBroadcastModal, setShowBroadcastModal] = useState(false);
+  const [broadcastTitle, setBroadcastTitle] = useState("");
+  const [broadcastMessage, setBroadcastMessage] = useState("");
+  const [isSendingBroadcast, setIsSendingBroadcast] = useState(false);
+
   const handleSelectReport = (report: Report) => {
     setSelectedReport(report);
   };
@@ -266,6 +275,41 @@ export default function OperatorDashboard() {
       success("Status laporan berhasil diperbarui!");
     } catch (err) {
       error("Gagal memperbarui status laporan.");
+    }
+  };
+
+  const handleSendBroadcast = async () => {
+    if (!broadcastTitle.trim() || !broadcastMessage.trim()) {
+      error("Judul dan pesan wajib diisi.");
+      return;
+    }
+    if (
+      !window.confirm(
+        `Kirim broadcast ke SEMUA pengguna?\n\nJudul: ${broadcastTitle}\nPesan: ${broadcastMessage}`
+      )
+    )
+      return;
+
+    setIsSendingBroadcast(true);
+    try {
+      const response = await fetch("/api/operator/broadcast", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: broadcastTitle, message: broadcastMessage }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message ?? "Gagal mengirim broadcast");
+
+      success(
+        `✅ Broadcast terkirim! ${data.summary.success}/${data.summary.total_tokens} device berhasil.`
+      );
+      setBroadcastTitle("");
+      setBroadcastMessage("");
+      setShowBroadcastModal(false);
+    } catch (err: any) {
+      error(err?.message ?? "Gagal mengirim broadcast.");
+    } finally {
+      setIsSendingBroadcast(false);
     }
   };
 
@@ -409,6 +453,109 @@ export default function OperatorDashboard() {
     <>
       {toast.show && <Toast {...toast} onClose={hideToast} />}
 
+      {/* ── Broadcast Modal ─────────────────────────────────────────────── */}
+      {showBroadcastModal && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+          {/* Overlay */}
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => !isSendingBroadcast && setShowBroadcastModal(false)}
+          />
+          {/* Modal */}
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-modal-in">
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-gradient-to-r from-red-50 to-orange-50">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-red-500 rounded-xl flex items-center justify-center shadow-md">
+                  <FaBullhorn className="text-white text-base" />
+                </div>
+                <div>
+                  <h2 className="text-base font-bold text-gray-900">Kirim Broadcast</h2>
+                  <p className="text-xs text-gray-500 mt-0.5">Notifikasi akan dikirim ke semua pengguna</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowBroadcastModal(false)}
+                disabled={isSendingBroadcast}
+                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-40"
+              >
+                <FaTimes />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="px-6 py-5 space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                  Judul Notifikasi <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={broadcastTitle}
+                  onChange={(e) => setBroadcastTitle(e.target.value)}
+                  placeholder="contoh: ⚠️ Info Penting dari FireGuard"
+                  maxLength={200}
+                  disabled={isSendingBroadcast}
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all disabled:opacity-60 disabled:bg-gray-50"
+                />
+                <p className="text-xs text-gray-400 mt-1 text-right">{broadcastTitle.length}/200</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                  Isi Pesan <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  value={broadcastMessage}
+                  onChange={(e) => setBroadcastMessage(e.target.value)}
+                  placeholder="Tulis pesan yang akan diterima semua pengguna..."
+                  maxLength={1000}
+                  rows={4}
+                  disabled={isSendingBroadcast}
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all resize-none disabled:opacity-60 disabled:bg-gray-50"
+                />
+                <p className="text-xs text-gray-400 mt-1 text-right">{broadcastMessage.length}/1000</p>
+              </div>
+
+              <div className="flex items-start gap-2.5 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+                <span className="text-amber-500 mt-0.5">⚠️</span>
+                <p className="text-xs text-amber-700">
+                  Broadcast ini akan dikirim ke <strong>semua pengguna terdaftar</strong> melalui push notification. Pastikan pesan sudah benar sebelum mengirim.
+                </p>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/50 flex justify-end gap-3">
+              <button
+                onClick={() => setShowBroadcastModal(false)}
+                disabled={isSendingBroadcast}
+                className="px-5 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-xl transition-colors disabled:opacity-40"
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleSendBroadcast}
+                disabled={isSendingBroadcast || !broadcastTitle.trim() || !broadcastMessage.trim()}
+                className="px-5 py-2 bg-red-500 hover:bg-red-600 disabled:bg-red-300 text-white text-sm font-semibold rounded-xl transition-all flex items-center gap-2 shadow-sm disabled:cursor-not-allowed"
+              >
+                {isSendingBroadcast ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Mengirim...
+                  </>
+                ) : (
+                  <>
+                    <FaPaperPlane className="text-sm" />
+                    Kirim Broadcast
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {selectedReport && (
         <ReportDetailModal
           report={selectedReport}
@@ -459,6 +606,15 @@ export default function OperatorDashboard() {
               >
                 <FaTags className="text-gray-500" />
                 <span className="hidden lg:inline text-sm font-semibold text-gray-700">Manajemen</span>
+              </button>
+
+              <button
+                onClick={() => setShowBroadcastModal(true)}
+                className="px-4 py-2 bg-red-50 hover:bg-red-100 border border-red-200 hover:border-red-300 rounded-lg transition-all flex items-center gap-2 group"
+                title="Kirim Notifikasi Broadcast"
+              >
+                <FaBullhorn className="text-red-500 group-hover:scale-110 transition-transform" />
+                <span className="hidden lg:inline text-sm font-semibold text-red-600">Broadcast</span>
               </button>
 
               <div className="h-8 w-px bg-gray-200 mx-2 hidden sm:block"></div>
