@@ -3,6 +3,8 @@ import { queryRow, execute, formatDateForMySQL } from "@/lib/db";
 import { getAuthPayloadFromRequest, handleCorsOptions, jsonWithCors } from "@/lib/cors";
 import { sendReportStatusNotification } from "@/services/notification-service";
 import { NextRequest } from "next/server";
+import { sendWhatsAppReportUpdate } from "@/lib/whatsapp";
+import { getAddressFromCoordinates } from "@/lib/geo";
 
 export const dynamic = 'force-dynamic';
 
@@ -166,6 +168,30 @@ export async function PATCH(
           payload: { reportId, status: newStatus, updatedAt: currentTimestamp },
         })
       );
+    }
+
+    // KIRIM NOTIFIKASI WHATSAPP
+    try {
+      const userFull = await queryRow<{ name: string; phone_number: string }>(
+        "SELECT name, phone_number FROM users WHERE id = ?",
+        [report.user_id]
+      );
+      
+      if (userFull && userFull.phone_number) {
+        const address = await getAddressFromCoordinates(report.fire_latitude, report.fire_longitude);
+        const statusLabel = _getNotificationTitle(newStatus); // Gunakan helper title sebagai label
+
+        sendWhatsAppReportUpdate(
+          userFull.phone_number,
+          userFull.name,
+          reportId,
+          statusLabel,
+          address,
+          admin_notes
+        );
+      }
+    } catch (waError) {
+      console.error("[WhatsApp] Failed to send status update:", waError);
     }
 
     return jsonWithCors(

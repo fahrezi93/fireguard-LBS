@@ -47,6 +47,7 @@ const HowItWorks = () => {
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
+                        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                         className="flex flex-col items-center"
                     >
                         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-gray-200 shadow-sm mb-8">
@@ -72,10 +73,10 @@ const HowItWorks = () => {
                     {steps.map((step, idx) => (
                         <motion.div
                             key={idx}
-                            initial={{ opacity: 0, y: 30 }}
+                            initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true, margin: "-100px" }}
-                            transition={{ duration: 0.5, delay: idx * 0.15 }}
+                            transition={{ duration: 0.6, delay: idx * 0.08, ease: [0.16, 1, 0.3, 1] }}
                             className="relative group h-full"
                         >
                             {/* Card Body */}

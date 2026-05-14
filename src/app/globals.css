@@ -21,6 +21,11 @@ body {
   z-index: 1000;
 }
 
+@theme {
+  --font-poppins: var(--font-poppins);
+  --font-roboto: var(--font-roboto);
+}
+
 @layer base {
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-poppins), sans-serif;

@@ -3,6 +3,7 @@ import { queryRow, execute } from "@/lib/db";
 import { calculateETA, getAddressFromCoordinates } from "@/lib/geo";
 import { sendStatusUpdateEmail } from "@/lib/email";
 import { requireOperator } from "@/lib/api-security";
+import { sendWhatsAppReportUpdate } from "@/lib/whatsapp";
 
 // --- Konfigurasi Fonnte (Opsional) ---
 const FONNTE_TOKEN = process.env.FONNTE_TOKEN || "";
@@ -45,27 +46,6 @@ function normalizeNotificationStatus(status: string): string {
   return NOTIFICATION_STATUS_MAP[normalized] || normalized;
 }
 
-/**
- * Fungsi untuk mengirim pesan WhatsApp melalui Fonnte (Opsional)
- */
-async function sendWhatsAppMessage(target: string, message: string) {
-  if (!ENABLE_WHATSAPP || !FONNTE_TOKEN) return;
-
-  const data = new FormData();
-  data.append("target", target);
-  data.append("message", message);
-  data.append("countryCode", "62");
-
-  try {
-    await fetch("https://api.fonnte.com/send", {
-      method: "POST",
-      headers: { Authorization: FONNTE_TOKEN },
-      body: data,
-    });
-  } catch (error) {
-    // Ignore WhatsApp errors
-  }
-}
 
 export async function GET(
   request: NextRequest,
@@ -269,15 +249,15 @@ export async function PATCH(
         if (ENABLE_WHATSAPP && user.phone_number) {
           const address = await getAddressFromCoordinates(report.fire_latitude, report.fire_longitude);
 
-          let message = `*[FireGuard]*\n\nHalo ${user.name},\n\nLaporan Anda *#${reportId}* telah diperbarui:\n\n*Status:* ${statusLabel}\n*Alamat:* ${address}`;
-
-          if (adminNotes) {
-            message += `\n\n*Catatan Petugas:*\n${adminNotes}`;
-          }
-
-          message += `\n\n> _Sent via FireGuard_`;
-
-          sendWhatsAppMessage(user.phone_number, message);
+          // Gunakan fungsi terpusat dari @/lib/whatsapp
+          sendWhatsAppReportUpdate(
+            user.phone_number,
+            user.name,
+            parsedReportId,
+            statusLabel,
+            address,
+            adminNotes
+          );
         }
       }
     }

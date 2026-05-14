@@ -1,8 +1,8 @@
 import mysql from 'mysql2/promise';
 
-// ── Pool MySQL — dioptimasi untuk Vercel Serverless + Remote VPS ──
-// Setiap Vercel function invocation bisa bikin koneksi baru,
-// jadi limit kecil agar tidak exhausting VPS MySQL.
+// ── Pool MySQL — dioptimasi untuk VPS DigitalOcean (persistent server) ──
+// Node.js timezone diset via TZ=Asia/Jakarta di .env, sehingga 'local'
+// secara otomatis merujuk ke WIB tanpa perlu manual offset.
 const pool = mysql.createPool({
   host: process.env.MYSQL_HOST || 'localhost',
   port: parseInt(process.env.MYSQL_PORT || '3306'),
@@ -10,17 +10,16 @@ const pool = mysql.createPool({
   password: process.env.MYSQL_PASSWORD || '',
   database: process.env.MYSQL_DATABASE || 'fireguard',
   waitForConnections: true,
-  connectionLimit: 3,   // Kecil — serverless tidak butuh banyak concurrent conn
-  queueLimit: 10,
-  timezone: '+07:00',
+  connectionLimit: 10,  // Lebih tinggi untuk VPS persistent (bukan serverless)
+  queueLimit: 30,
+  timezone: 'local',    // Mengikuti TZ=Asia/Jakarta dari .env → otomatis WIB
   dateStrings: false,
-
   // ── Mencegah ECONNRESET / ETIMEDOUT ──
   enableKeepAlive: true,
   keepAliveInitialDelay: 10000,
-  connectTimeout: 8000,   // Gagal cepat jika VPS tidak respond (ms)
-  idleTimeout: 30000,     // Tutup koneksi idle setelah 30 detik
-  maxIdle: 2,
+  connectTimeout: 8000,
+  idleTimeout: 60000,   // VPS bisa keep idle lebih lama dari serverless
+  maxIdle: 5,
 });
 
 // ── Error codes yang menandakan koneksi lama sudah mati ──
@@ -78,7 +77,9 @@ export async function executeAndGetLastInsertId(sql: string, args?: any[]): Prom
 // Export pool untuk akses langsung jika diperlukan
 export { pool };
 
-// Helper function untuk format Date ke format MySQL datetime (Lokal WIB)
+// Helper function untuk format Date ke format MySQL datetime (WIB)
+// Menggunakan getHours/getMinutes/etc. (local time) yang secara otomatis
+// mengacu ke WIB karena TZ=Asia/Jakarta sudah diset di environment VPS.
 export function formatDateForMySQL(date: Date): string {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');

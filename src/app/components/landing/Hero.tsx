@@ -47,9 +47,9 @@ const Hero = () => {
 
         {/* Hero Typography */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
         >
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-extrabold tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-gray-200 to-gray-500 mb-6 drop-shadow-sm leading-[1.1] md:leading-[1.1]">
             Respons Cepat.<br />
@@ -60,7 +60,7 @@ const Hero = () => {
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
+          transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
           className="text-sm sm:text-base md:text-lg text-gray-400 font-light max-w-2xl mx-auto px-4 mb-8 leading-relaxed"
         >
           Sistem pelaporan darurat terpadu untuk wilayah <strong className="text-white font-medium">Plaju, Palembang</strong>. Mendeteksi, merespons, dan mengamankan dengan presisi.
@@ -70,7 +70,7 @@ const Hero = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
+          transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto px-6 sm:px-0"
         >
           <button

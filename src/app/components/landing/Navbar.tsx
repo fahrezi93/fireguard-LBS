@@ -3,12 +3,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { FaFire, FaUser, FaChevronDown, FaSignOutAlt, FaBars, FaTimes } from 'react-icons/fa';
+import { FaFire, FaUser, FaUserShield, FaChevronDown, FaSignOutAlt, FaBars, FaTimes } from 'react-icons/fa';
 
 const Navbar = ({ isLight = false }: { isLight?: boolean }) => {
   const { push } = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState<{ name?: string; email?: string; phone?: string; id?: number } | null>(null);
+  const [user, setUser] = useState<{ name?: string; email?: string; phone?: string; id?: number; isOperator?: boolean } | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -101,7 +101,7 @@ const Navbar = ({ isLight = false }: { isLight?: boolean }) => {
               <div className="relative" ref={dropdownRef}>
                 <button onClick={() => setDropdownOpen(!dropdownOpen)} className="flex items-center gap-2.5 transition-all hover:opacity-80">
                   <div className="size-10 bg-gradient-to-br from-red-500 to-orange-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-red-500/20">
-                    <FaUser size={14} />
+                    {user?.isOperator ? <FaUserShield size={14} /> : <FaUser size={14} />}
                   </div>
                   <FaChevronDown size={10} className={`transition-transform duration-300 ${isLight ? 'text-neutral-900' : 'text-white'} ${dropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
@@ -109,11 +109,14 @@ const Navbar = ({ isLight = false }: { isLight?: boolean }) => {
                 {/* Dropdown Menu Desktop */}
                 <div className={`absolute right-0 mt-4 w-56 ${isLight ? 'bg-white border-black/5 shadow-[0_10px_40px_rgba(0,0,0,0.1)]' : 'bg-[#111] border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.8)]'} backdrop-blur-xl border rounded-2xl py-2 transition-all duration-300 origin-top-right ${dropdownOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
                   <div className={`px-5 py-3 border-b ${isLight ? 'border-black/5' : 'border-white/5'}`}>
-                    <p className={`text-sm font-medium line-clamp-1 ${isLight ? 'text-neutral-900' : 'text-white'}`}>{user?.name || user?.email || 'User'}</p>
+                    <p className={`text-xs font-semibold uppercase tracking-widest mb-0.5 ${user?.isOperator ? 'text-red-500' : isLight ? 'text-neutral-400' : 'text-neutral-500'}`}>
+                      {user?.isOperator ? 'Operator' : 'User'}
+                    </p>
+                    <p className={`text-sm font-medium line-clamp-1 ${isLight ? 'text-neutral-900' : 'text-white'}`}>{user?.name || user?.email || (user?.isOperator ? 'Operator' : 'User')}</p>
                   </div>
                   <div className="p-2 space-y-1">
-                    <button onClick={() => { setDropdownOpen(false); push('/dashboard'); }} className={`w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3 transition-colors ${isLight ? 'text-neutral-600 hover:bg-black/5 hover:text-black' : 'text-neutral-300 hover:bg-white/5 hover:text-white'}`}>
-                      <FaUser size={14} className="text-neutral-400" /> Dashboard
+                    <button onClick={() => { setDropdownOpen(false); push(user?.isOperator ? '/operator/dashboard' : '/dashboard'); }} className={`w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3 transition-colors ${isLight ? 'text-neutral-600 hover:bg-black/5 hover:text-black' : 'text-neutral-300 hover:bg-white/5 hover:text-white'}`}>
+                      {user?.isOperator ? <FaUserShield size={14} className="text-neutral-400" /> : <FaUser size={14} className="text-neutral-400" />} Dashboard
                     </button>
                     <button onClick={handleLogout} className="w-full text-left px-3 py-2.5 rounded-xl text-sm text-red-500 hover:bg-red-500/10 flex items-center gap-3 transition-colors">
                       <FaSignOutAlt size={14} /> Logout
@@ -157,8 +160,8 @@ const Navbar = ({ isLight = false }: { isLight?: boolean }) => {
           <div className={`pt-8 border-t flex flex-col gap-4 ${isLight ? 'border-black/5' : 'border-white/10'}`}>
             {isLoggedIn ? (
               <>
-                <button onClick={() => { setMobileMenuOpen(false); push('/dashboard'); }} className={`w-full py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 ${isLight ? 'bg-black/5 text-black' : 'bg-white/5 text-white'}`}>
-                  <FaUser className="text-neutral-400" /> Dashboard
+                <button onClick={() => { setMobileMenuOpen(false); push(user?.isOperator ? '/operator/dashboard' : '/dashboard'); }} className={`w-full py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 ${isLight ? 'bg-black/5 text-black' : 'bg-white/5 text-white'}`}>
+                  {user?.isOperator ? <FaUserShield className="text-neutral-400" /> : <FaUser className="text-neutral-400" />} Dashboard
                 </button>
                 <button onClick={() => { setMobileMenuOpen(false); handleLogout(); }} className="w-full bg-red-500/10 text-red-500 py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-3">
                   <FaSignOutAlt /> Keluar Akun

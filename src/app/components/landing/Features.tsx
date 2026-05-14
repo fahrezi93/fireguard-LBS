@@ -55,12 +55,10 @@ const FeatureCard = ({ feature, idx }: { feature: typeof features[0], idx: numbe
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "0px" }}
-      transition={{
-        duration: 0.5
-      }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 0.6, delay: idx * 0.08, ease: [0.16, 1, 0.3, 1] }}
       onMouseMove={handleMouseMove}
       className={`${feature.colSpan} group relative rounded-[2.5rem] bg-white/80 border border-neutral-200/60 p-6 lg:p-8 overflow-hidden shadow-[0_8px_40px_rgb(0,0,0,0.04)] transition-all duration-500`}
     >
@@ -115,6 +113,7 @@ const Features = () => {
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-red-50 border border-red-100 mb-6 shadow-sm"
             >
               <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.3)]" />
@@ -125,7 +124,7 @@ const Features = () => {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
+              transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
               className="text-3xl md:text-5xl font-extrabold text-neutral-900 leading-[1.15] tracking-tight"
             >
               Teknologi Canggih <br className="hidden md:block" />
@@ -136,10 +135,10 @@ const Features = () => {
           </div>
 
           <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
+            transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
             className="text-sm md:text-base text-neutral-500 max-w-md leading-relaxed font-light"
           >
             Sistem terintegrasi kami dirancang untuk memotong birokrasi, memberikan respons ultra-cepat langsung dari sentuhan jari Anda.

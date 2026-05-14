@@ -4,7 +4,7 @@ import * as admin from "firebase-admin";
  * Initialize Firebase Admin SDK for server-side operations.
  *
  * Membaca FIREBASE_SERVICE_ACCOUNT_KEY dari environment variable.
- * Mendukung beberapa format input yang umum salah dipaste ke Vercel:
+ * Mendukung beberapa format input yang umum salah di-set:
  *   ✅ {"type":"service_account",...}          ← format benar
  *   🔧 FIREBASE_SERVICE_ACCOUNT_KEY={...}      ← strip key= prefix otomatis
  *   🔧 "{\"type\":\"service_account\",...}"    ← strip extra quotes otomatis
@@ -12,7 +12,7 @@ import * as admin from "firebase-admin";
 
 /**
  * Sanitasi raw string env var → JSON string yang siap di-parse.
- * Menangani kesalahan format yang sering terjadi saat paste ke Vercel.
+ * Menangani kesalahan format yang sering terjadi saat set env var di VPS/.env.
  */
 function sanitizeServiceAccountKey(raw: string): string {
   let value = raw.trim();
@@ -49,7 +49,7 @@ if (!admin.apps.length) {
     console.warn(
       "[Firebase] ⚠️  FIREBASE_SERVICE_ACCOUNT_KEY belum di-set. " +
         "Push notification tidak akan berfungsi. " +
-        "Set di Vercel: Settings → Environment Variables, isi VALUE dengan JSON saja (tanpa nama key).",
+        "Set di .env (VPS) dengan VALUE berupa JSON murni service account (tanpa nama key).",
     );
   } else {
     try {
@@ -57,7 +57,7 @@ if (!admin.apps.length) {
 
       if (!sanitized.startsWith("{")) {
         throw new Error(
-          `Value tidak dimulai dengan '{'. Pastikan VALUE di Vercel adalah JSON murni, bukan "NAMA_KEY=JSON". ` +
+          `Value tidak dimulai dengan '{'. Pastikan VALUE di .env adalah JSON murni, bukan "NAMA_KEY=JSON". ` +
             `Karakter pertama yang diterima: '${sanitized.charAt(0)}'`,
         );
       }
@@ -76,7 +76,7 @@ if (!admin.apps.length) {
       console.error(
         "[Firebase] ❌ Gagal inisialisasi Firebase Admin SDK.",
         "\nPenyebab umum:",
-        "\n  1. VALUE di Vercel salah format (harus JSON murni, bukan NAMA_KEY=JSON)",
+        "\n  1. VALUE di .env salah format (harus JSON murni, bukan NAMA_KEY=JSON)",
         "\n  2. JSON tidak valid (ada karakter tambahan)",
         "\nDetail error:",
         error?.message ?? error,

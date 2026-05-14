@@ -161,7 +161,7 @@ export async function POST(request: NextRequest) {
       }
 
       const filename = `${Date.now()}-report.${extension}`;
-      // Upload ke Cloudinary (berfungsi di Vercel serverless maupun VPS)
+      // Upload ke Cloudinary (external storage — berfungsi di VPS maupun environment lain)
       mediaUrl = await uploadToCloudinary(finalBuffer, filename);
       console.log(`[Media] Uploaded to Cloudinary: ${mediaUrl}`);
     }

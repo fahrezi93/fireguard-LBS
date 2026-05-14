@@ -19,7 +19,7 @@ let tablesInitialized = false;
  * Aman dipanggil berkali-kali — MySQL IF NOT EXISTS mencegah duplikasi.
  */
 export async function ensureNotificationTables(): Promise<void> {
-  // Hanya init sekali per process (Vercel warm instance)
+  // Hanya init sekali per process (singleton — aman untuk VPS persistent maupun serverless)
   if (tablesInitialized) return;
 
   try {

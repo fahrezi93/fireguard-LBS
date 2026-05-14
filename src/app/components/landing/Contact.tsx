@@ -16,10 +16,10 @@ const Contact = () => {
           {/* Left Text Content */}
           <div className="lg:col-span-5 lg:pr-8 text-center lg:text-left">
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.3 }}
             >
               <div className="inline-flex items-center justify-center lg:justify-start gap-3 mb-6">
                 <span className="w-8 h-px bg-red-500"></span>
@@ -43,10 +43,10 @@ const Contact = () => {
 
               {/* Main Emergency CTA - Spans Full Width */}
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
+                transition={{ duration: 0.3 }}
                 className="md:col-span-2 group relative bg-red-600 rounded-3xl p-6 lg:p-10 overflow-hidden hover:shadow-[0_20px_40px_rgba(220,38,38,0.2)] transition-shadow duration-500"
               >
                 {/* Cinematic Red Glow Inside */}
@@ -77,10 +77,10 @@ const Contact = () => {
 
               {/* Email Card */}
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.1 }}
+                transition={{ duration: 0.3 }}
                 className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group"
               >
                 <div className="w-12 h-12 bg-gray-50 text-gray-900 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-red-50 group-hover:text-red-600 transition-colors duration-300">
@@ -92,10 +92,10 @@ const Contact = () => {
 
               {/* Location Card */}
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.2 }}
+                transition={{ duration: 0.3 }}
                 className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group"
               >
                 <div className="w-12 h-12 bg-gray-50 text-gray-900 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-red-50 group-hover:text-red-600 transition-colors duration-300">

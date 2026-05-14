@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
       return jsonWithCors({
         success: false,
         message: "Firebase Admin SDK BELUM diinisialisasi!",
-        hint: "Pastikan FIREBASE_SERVICE_ACCOUNT_KEY sudah di-set di Vercel Environment Variables (Settings → Environment Variables) lalu Redeploy.",
+        hint: "Pastikan FIREBASE_SERVICE_ACCOUNT_KEY sudah di-set di .env VPS lalu restart PM2 (pm2 reload fireguard-web).",
         firebase_ready: false,
         tokens_registered: tokens.length,
         tokens,

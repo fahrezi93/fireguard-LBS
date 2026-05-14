@@ -32,7 +32,8 @@ const Stations = () => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             >
               <div className="inline-flex items-center gap-3 mb-4">
                 <span className="w-6 h-px bg-red-500"></span>
@@ -47,10 +48,10 @@ const Stations = () => {
 
           <div className="lg:col-span-5 lg:pb-3">
             <motion.p
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
               className="text-gray-500 leading-relaxed text-sm md:text-base max-w-lg"
             >
               Kami mengintegrasikan <strong className="text-gray-900 font-semibold">{fireStations.length} titik pos strategis</strong> ke dalam satu sistem pemantauan real-time untuk memastikan respons cepat 24/7 di seluruh area operasi.
@@ -84,8 +85,8 @@ const Stations = () => {
                       key={station.name}
                       initial={{ opacity: 0, x: -20 }}
                       whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: index * 0.05 }}
+                      viewport={{ once: true, margin: "-20px" }}
+                      transition={{ duration: 0.6, delay: index * 0.05, ease: [0.16, 1, 0.3, 1] }}
                       onClick={() => setSelectedStation(station)}
                       className={`w-full text-left p-4 rounded-2xl transition-all duration-300 border focus:outline-none ${isSelected ? 'bg-red-50/50 border-red-100 shadow-sm ring-1 ring-red-500/10' : 'bg-transparent border-transparent hover:bg-gray-50'}`}
                     >

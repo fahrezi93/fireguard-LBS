@@ -41,10 +41,10 @@ const FAQ = () => {
                     {/* Typography & Header - Sticky on Desktop */}
                     <div className="lg:col-span-5 lg:sticky lg:top-32">
                         <motion.div
-                            initial={{ opacity: 0, x: -20 }}
-                            whileInView={{ opacity: 1, x: 0 }}
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
                             viewport={{ once: true }}
-                            transition={{ duration: 0.5 }}
+                            transition={{ duration: 0.3 }}
                         >
                             <div className="inline-flex items-center gap-3 mb-6">
                                 <span className="w-8 h-px bg-red-500"></span>
@@ -77,10 +77,10 @@ const FAQ = () => {
                                 return (
                                     <motion.div
                                         key={idx}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        whileInView={{ opacity: 1, y: 0 }}
+                                        initial={{ opacity: 0 }}
+                                        whileInView={{ opacity: 1 }}
                                         viewport={{ once: true }}
-                                        transition={{ duration: 0.5, delay: idx * 0.1 }}
+                                        transition={{ duration: 0.3 }}
                                         className="border-b border-gray-200 group"
                                     >
                                         <button
