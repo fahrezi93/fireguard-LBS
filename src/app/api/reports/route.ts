@@ -215,27 +215,53 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    if (global.wss) {
-      const newReport = {
-        id: reportId,
-        fire_latitude: fireLatNumber,
-        fire_longitude: fireLngNumber,
-        reporter_latitude: reporterLatNumber,
-        reporter_longitude: reporterLngNumber,
-        media_url: mediaUrl,
-        status: "pending",
-        created_at: currentTimestamp,
-        phone_number: user.phone,
-      };
-      global.wss.broadcast(
-        JSON.stringify({ type: "NEW_REPORT", payload: newReport })
-      );
-    }
-
-    return jsonWithCors(
+    // Kirim response segera setelah insert berhasil
+    const responsePayload = jsonWithCors(
       { message: "Laporan berhasil dikirim!", reportId },
       { status: 201 }
     );
+
+    // WebSocket broadcast ke operator — jalankan async tanpa blokir response
+    if (global.wss) {
+      void (async () => {
+        try {
+          const { queryRow: qr } = await import('@/lib/db');
+          const fullReport = await qr(
+            `SELECT r.id, r.fire_latitude, r.fire_longitude, r.reporter_latitude, r.reporter_longitude,
+                    r.status, r.created_at, r.media_url, r.description, r.address, r.notes, r.contact,
+                    u.phone_number,
+                    c.id as category_id, c.name as category_name, c.icon as category_icon, c.color as category_color,
+                    k.id as kelurahan_id, k.name as kelurahan_name, k.kecamatan, k.kota
+             FROM reports r
+             JOIN users u ON r.user_id = u.id
+             LEFT JOIN disaster_categories c ON r.category_id = c.id
+             LEFT JOIN kelurahan k ON r.kelurahan_id = k.id
+             WHERE r.id = ?`,
+            [reportId]
+          );
+          global.wss.broadcast(
+            JSON.stringify({
+              type: "NEW_REPORT",
+              payload: fullReport ?? {
+                id: reportId,
+                fire_latitude: fireLatNumber,
+                fire_longitude: fireLngNumber,
+                reporter_latitude: reporterLatNumber,
+                reporter_longitude: reporterLngNumber,
+                media_url: mediaUrl,
+                status: "pending",
+                created_at: currentTimestamp,
+                phone_number: user.phone,
+              },
+            })
+          );
+        } catch (wsErr) {
+          console.error('[WebSocket] Gagal broadcast laporan baru:', wsErr);
+        }
+      })();
+    }
+
+    return responsePayload;
   } catch (error: any) {
     console.error('[POST /api/reports] Error:', error?.message ?? error);
 
@@ -253,8 +279,7 @@ export async function POST(request: NextRequest) {
     return jsonWithCors(
       {
         message: "Terjadi kesalahan pada server.",
-        // Tampilkan detail error di semua environment untuk memudahkan debugging
-        error: error.message
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
       },
       { status: 500 }
     );

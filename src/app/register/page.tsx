@@ -121,20 +121,20 @@ export default function RegisterPage() {
   }
 
   return (
-    <main className="min-h-screen flex bg-white text-gray-900 font-sans selection:bg-red-500/30">
+    <main className="h-screen flex bg-white text-gray-900 font-sans selection:bg-red-500/30 overflow-hidden">
 
       {/* Left: Form Area */}
-      <div className="w-full md:w-[45%] lg:w-[40%] flex flex-col px-8 sm:px-16 md:px-20 py-12 relative z-10 overflow-y-auto">
-        <Link href="/" className="absolute top-8 left-8 sm:left-16 md:left-20 flex items-center gap-3 text-gray-400 hover:text-gray-900 transition-colors">
+      <div className="w-full md:w-[55%] lg:w-[48%] h-full flex flex-col px-8 sm:px-16 lg:px-24 py-8 sm:py-12 relative z-10 justify-center bg-white">
+        <Link href="/" className="absolute top-6 left-8 sm:left-16 md:left-20 flex items-center gap-3 text-gray-400 hover:text-gray-900 transition-colors">
           <FaArrowLeft className="text-sm" />
         </Link>
 
-        <div className="mt-14 md:mt-8 pb-8">
-          <Link href="/" className="inline-flex items-center gap-3 mb-10 group w-fit">
-            <div className="p-2.5 bg-red-500 rounded-xl shadow-[0_0_15px_rgba(239,68,68,0.4)] group-hover:scale-105 transition-transform">
-              <FaFire className="text-xl text-white" />
+        <div className="mt-8 md:mt-0">
+          <Link href="/" className="inline-flex items-center gap-3 mb-4 group w-fit">
+            <div className="p-2 bg-red-500 rounded-xl shadow-[0_0_15px_rgba(239,68,68,0.4)] group-hover:scale-105 transition-transform">
+              <FaFire className="text-lg text-white" />
             </div>
-            <span className="text-2xl font-bold tracking-tight">FireGuard</span>
+            <span className="text-xl font-bold tracking-tight">FireGuard</span>
           </Link>
 
           <AnimatePresence mode="wait">
@@ -146,34 +146,34 @@ export default function RegisterPage() {
                 exit={{ opacity: 0, x: 20 }}
                 transition={{ duration: 0.3 }}
               >
-                <div className="mb-10">
-                  <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tighter mb-4 text-gray-900">
+                <div className="mb-4">
+                  <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tighter mb-3 text-gray-900">
                     Buat Akun.
                   </h1>
-                  <p className="text-gray-500 text-lg leading-relaxed font-light">
+                  <p className="text-gray-600 text-base leading-relaxed font-medium">
                     Bergabung dengan jaringan tanggap darurat Palembang.
                   </p>
                 </div>
 
-                <form onSubmit={handleSendOTP} className="space-y-4">
+                <form onSubmit={handleSendOTP} className="space-y-3">
                   <div className="space-y-1 group">
-                    <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest pl-1 group-focus-within:text-red-500 transition-colors">Nama Lengkap *</label>
-                    <input type="text" value={name} onChange={(e) => setName(e.target.value)} required placeholder="Ali Siregar" className="w-full bg-gray-50/50 border border-gray-200 text-gray-900 px-5 py-3.5 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all font-medium placeholder:text-gray-300 placeholder:font-normal" />
+                    <label className="text-[9px] font-semibold text-gray-400 uppercase tracking-widest pl-1 group-focus-within:text-red-500 transition-colors">Nama Lengkap *</label>
+                    <input type="text" value={name} onChange={(e) => setName(e.target.value)} required placeholder="Ali Siregar" className="w-full bg-gray-50/50 border border-gray-200 text-gray-900 px-4 py-3.5 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all font-medium placeholder:text-gray-300 placeholder:font-normal text-base" />
                   </div>
 
                   <div className="space-y-1 group">
-                    <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest pl-1 group-focus-within:text-red-500 transition-colors">Email *</label>
-                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="nama@email.com" className="w-full bg-gray-50/50 border border-gray-200 text-gray-900 px-5 py-3.5 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all font-medium placeholder:text-gray-300 placeholder:font-normal" />
+                    <label className="text-[9px] font-semibold text-gray-400 uppercase tracking-widest pl-1 group-focus-within:text-red-500 transition-colors">Email *</label>
+                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="nama@email.com" className="w-full bg-gray-50/50 border border-gray-200 text-gray-900 px-4 py-3.5 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all font-medium placeholder:text-gray-300 placeholder:font-normal text-base" />
                   </div>
 
                   <div className="space-y-1 group">
-                    <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest pl-1 group-focus-within:text-red-500 transition-colors">No WhatsApp *</label>
-                    <input type="tel" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} required placeholder="0812..." className="w-full bg-gray-50/50 border border-gray-200 text-gray-900 px-5 py-3.5 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all font-medium placeholder:text-gray-300 placeholder:font-normal" />
+                    <label className="text-[9px] font-semibold text-gray-400 uppercase tracking-widest pl-1 group-focus-within:text-red-500 transition-colors">No WhatsApp *</label>
+                    <input type="tel" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} required placeholder="0812..." className="w-full bg-gray-50/50 border border-gray-200 text-gray-900 px-4 py-3.5 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all font-medium placeholder:text-gray-300 placeholder:font-normal text-base" />
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="space-y-1 group">
-                      <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest pl-1 mb-2 block group-focus-within:text-red-500 transition-colors">Password *</label>
+                      <label className="text-[9px] font-semibold text-gray-400 uppercase tracking-widest pl-1 mb-1 block group-focus-within:text-red-500 transition-colors">Password *</label>
                       <div className="relative">
                         <input
                           type={showPassword ? "text" : "password"}
@@ -181,20 +181,20 @@ export default function RegisterPage() {
                           onChange={(e) => setPassword(e.target.value)}
                           required
                           minLength={6}
-                          placeholder={showPassword ? "Minimal 6 char" : "••••••••"}
-                          className={`w-full bg-gray-50/50 border border-gray-200 text-gray-900 pl-5 pr-10 py-3.5 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all font-medium placeholder:text-gray-300 placeholder:font-normal ${!showPassword ? 'tracking-wider' : ''}`}
+                          placeholder={showPassword ? "Min 6 char" : "••••••••"}
+                          className={`w-full bg-gray-50/50 border border-gray-200 text-gray-900 pl-4 pr-10 py-3.5 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all font-medium placeholder:text-gray-300 placeholder:font-normal text-base ${!showPassword ? 'tracking-wider' : ''}`}
                         />
                         <button
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
                           className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-900 transition-colors"
                         >
-                          {showPassword ? <FaEyeSlash /> : <FaEye />}
+                          {showPassword ? <FaEyeSlash className="text-xs" /> : <FaEye className="text-xs" />}
                         </button>
                       </div>
                     </div>
                     <div className="space-y-1 group">
-                      <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest pl-1 mb-2 block group-focus-within:text-red-500 transition-colors">Konfirmasi *</label>
+                      <label className="text-[9px] font-semibold text-gray-400 uppercase tracking-widest pl-1 mb-1 block group-focus-within:text-red-500 transition-colors">Konfirmasi *</label>
                       <div className="relative">
                         <input
                           type={showConfirmPassword ? "text" : "password"}
@@ -202,31 +202,31 @@ export default function RegisterPage() {
                           onChange={(e) => setConfirmPassword(e.target.value)}
                           required
                           minLength={6}
-                          placeholder={showConfirmPassword ? "Ulangi kata sandi" : "••••••••"}
-                          className={`w-full bg-gray-50/50 border border-gray-200 text-gray-900 pl-5 pr-10 py-3.5 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all font-medium placeholder:text-gray-300 placeholder:font-normal ${!showConfirmPassword ? 'tracking-wider' : ''}`}
+                          placeholder={showConfirmPassword ? "Ulangi sandi" : "••••••••"}
+                          className={`w-full bg-gray-50/50 border border-gray-200 text-gray-900 pl-4 pr-10 py-3.5 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all font-medium placeholder:text-gray-300 placeholder:font-normal text-base ${!showConfirmPassword ? 'tracking-wider' : ''}`}
                         />
                         <button
                           type="button"
                           onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                           className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-900 transition-colors"
                         >
-                          {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                          {showConfirmPassword ? <FaEyeSlash className="text-xs" /> : <FaEye className="text-xs" />}
                         </button>
                       </div>
                     </div>
                   </div>
 
                   {error && (
-                    <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="bg-red-50 text-red-600 px-5 py-4 rounded-2xl text-sm font-medium border border-red-100">
+                    <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="bg-red-50 text-red-600 px-4 py-3 rounded-xl text-xs font-medium border border-red-100">
                       {error}
                     </motion.div>
                   )}
 
-                  <button type="submit" disabled={isLoading} className="w-full bg-[#111] hover:bg-[#e63946] text-white py-4 rounded-2xl font-bold text-lg transition-all flex items-center justify-center shadow-lg shadow-black/5 hover:shadow-red-500/25 active:scale-[0.98] disabled:opacity-50 mt-6">
-                    {isLoading ? <span className="flex items-center gap-2"><FaSpinner className="animate-spin" /> Sedang Mengirim...</span> : "Lanjut Verifikasi OTP"}
+                  <button type="submit" disabled={isLoading} className="w-full bg-[#111] hover:bg-[#e63946] text-white py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center shadow-lg shadow-black/5 hover:shadow-red-500/25 active:scale-[0.98] disabled:opacity-50 mt-4">
+                    {isLoading ? <span className="flex items-center gap-2"><FaSpinner className="animate-spin text-sm" /> Sedang Mengirim...</span> : "Lanjut Verifikasi OTP"}
                   </button>
 
-                  <p className="mt-8 text-center text-gray-500 font-medium">
+                  <p className="mt-4 text-center text-gray-500 font-medium text-sm">
                     Punya akun? <Link href="/login" className="text-[#e63946] hover:underline decoration-2 underline-offset-4">Masuk di sini</Link>
                   </p>
                 </form>
@@ -247,8 +247,8 @@ export default function RegisterPage() {
                   <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tighter mb-4 text-gray-900">
                     Cek WhatsApp.
                   </h1>
-                  <p className="text-gray-500 text-lg leading-relaxed font-light">
-                    Kami mengirim 6 digit kode OTP ke WhatsApp <b className="text-gray-900 font-semibold">{phoneNumber}</b>
+                  <p className="text-gray-600 text-lg leading-relaxed font-medium">
+                    Kami mengirim 6 digit kode OTP ke WhatsApp <b className="text-gray-900 font-bold">{phoneNumber}</b>
                   </p>
                 </div>
 
@@ -296,23 +296,23 @@ export default function RegisterPage() {
       </div>
 
       {/* Right: Premium Minimalist Light Area */}
-      <div className="hidden md:flex flex-1 bg-[#fafafa] relative overflow-hidden flex-col items-center justify-center p-20">
+      <div className="hidden md:flex md:w-[45%] lg:w-[52%] bg-[#fafafa] relative overflow-hidden flex-col items-center justify-center p-8 lg:p-12">
         <div className="absolute top-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-orange-100/40 rounded-full blur-[100px] pointer-events-none" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[30rem] h-[30rem] bg-red-50/50 rounded-full blur-[80px] pointer-events-none" />
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none"></div>
 
-        <div className="relative z-10 w-full max-w-lg border border-neutral-200/60 bg-white/80 backdrop-blur-3xl p-12 rounded-[2.5rem] shadow-[0_8px_40px_rgb(0,0,0,0.04)]">
-          <h2 className="text-4xl font-semibold text-neutral-900 mb-8 leading-[1.15] tracking-tight">
+        <div className="relative z-10 w-full max-w-xl border border-neutral-200/60 bg-white/80 backdrop-blur-3xl p-12 rounded-[2.5rem] shadow-[0_8px_40px_rgb(0,0,0,0.04)]">
+          <h2 className="text-4xl lg:text-5xl font-semibold text-neutral-900 mb-8 leading-[1.15] tracking-tight">
             Kesiapsiagaan <br /><span className="text-red-500 font-bold">Mulai dari Anda.</span>
           </h2>
           <div className="space-y-8">
             <div className="flex gap-5">
               <div className="w-12 h-12 rounded-2xl bg-red-50 border border-red-100 flex items-center justify-center text-red-500 font-bold shrink-0 shadow-sm text-lg">1</div>
-              <p className="text-neutral-500 text-base leading-relaxed pt-3">Buat akun untuk terdaftar sebagai pelapor tervalidasi dalam radius Palembang.</p>
+              <p className="text-neutral-600 text-base leading-relaxed pt-3 font-medium">Buat akun untuk terdaftar sebagai pelapor tervalidasi dalam radius Palembang.</p>
             </div>
             <div className="flex gap-5">
               <div className="w-12 h-12 rounded-2xl bg-red-50 border border-red-100 flex items-center justify-center text-red-500 font-bold shrink-0 shadow-sm text-lg">2</div>
-              <p className="text-neutral-500 text-base leading-relaxed pt-3">Laporkan insiden dengan satu ketukan dan lacak armada darurat secara real-time.</p>
+              <p className="text-neutral-600 text-base leading-relaxed pt-3 font-medium">Laporkan insiden dengan satu ketukan dan lacak armada darurat secara real-time.</p>
             </div>
           </div>
         </div>

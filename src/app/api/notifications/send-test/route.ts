@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
         await messaging!.send({
           token: device_token,
           notification: {
-            title: "🔥 Test Notifikasi FireGuard",
+            title: "Test Notifikasi FireGuard",
             body: "Notifikasi berhasil! FCM berjalan dengan baik.",
           },
           data: {

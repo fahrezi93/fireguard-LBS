@@ -58,78 +58,84 @@ export async function POST(request: NextRequest) {
         const users = await queryRows<{ id: number }>('SELECT id FROM users');
 
         // 5. Simpan notifikasi ke tabel `notifications` untuk semua user sekaligus
+        // Simpan ID per user agar bisa disertakan di FCM payload untuk dedup di mobile
+        const userNotifIds = new Map<number, number>(); // userId → notificationId
         if (users.length > 0) {
-            const placeholders = users.map(() => '(?, ?, ?, ?, ?)').join(', ');
-            const values: (number | string)[] = [];
             for (const user of users) {
-                values.push(user.id, title, message, 'broadcast', now);
+                try {
+                    const { executeAndGetLastInsertId } = await import('@/lib/db');
+                    const notifId = await executeAndGetLastInsertId(
+                        `INSERT INTO notifications (user_id, title, message, type, created_at) VALUES (?, ?, ?, ?, ?)`,
+                        [user.id, title, message, 'broadcast', now]
+                    );
+                    userNotifIds.set(user.id, notifId);
+                } catch (insertErr) {
+                    console.error(`[Broadcast] Gagal insert notif untuk user ${user.id}:`, insertErr);
+                }
             }
-            await execute(
-                `INSERT INTO notifications (user_id, title, message, type, created_at) VALUES ${placeholders}`,
-                values
-            );
         }
 
-        // 6. Ambil semua device token aktif (Android & iOS)
-        const tokenRows = await queryRows<{ device_token: string }>(
-            `SELECT device_token
+        // 6. Ambil semua device token aktif (Android & iOS) beserta user_id-nya
+        const tokenRows = await queryRows<{ device_token: string; user_id: number }>(
+            `SELECT device_token, user_id
              FROM device_tokens
              WHERE is_active = TRUE
                AND platform IN ('android', 'ios')`
         );
 
-        const allTokens = tokenRows.map((r) => r.device_token);
-
         let successCount = 0;
         let failureCount = 0;
         const firebase = getMessaging();
 
-        if (firebase && allTokens.length > 0) {
-            // FCM sendEachForMulticast — max 500 token per batch (sesuai Firebase Admin docs)
+        if (firebase && tokenRows.length > 0) {
+            // Kirim per-token agar bisa sertakan notificationId yang tepat per user
             const BATCH_SIZE = 500;
-            for (let i = 0; i < allTokens.length; i += BATCH_SIZE) {
-                const batch = allTokens.slice(i, i + BATCH_SIZE);
-                try {
-                    const batchResponse = await firebase.sendEachForMulticast({
-                        tokens: batch,
-                        notification: {
-                            title,
-                            body: message,
-                        },
-                        data: {
-                            type: 'broadcast',
-                            target: 'mobile',
-                            broadcastTitle: title,
-                            broadcastMessage: message,
-                            sentAt: now,
-                        },
-                        android: {
-                            priority: 'high',
-                            notification: {
-                                channelId: 'fireguard_reports',
-                                priority: 'high',
-                                sound: 'default',
-                                defaultSound: true,
-                                defaultVibrateTimings: true,
+            // Group token by notificationId untuk efisiensi
+            const tokensByNotifId = new Map<string, string[]>();
+            for (const row of tokenRows) {
+                const notifId = userNotifIds.get(row.user_id)?.toString() ?? '';
+                if (!tokensByNotifId.has(notifId)) tokensByNotifId.set(notifId, []);
+                tokensByNotifId.get(notifId)!.push(row.device_token);
+            }
+
+            for (const [notifId, tokens] of tokensByNotifId) {
+                for (let i = 0; i < tokens.length; i += BATCH_SIZE) {
+                    const batch = tokens.slice(i, i + BATCH_SIZE);
+                    try {
+                        const batchResponse = await firebase.sendEachForMulticast({
+                            tokens: batch,
+                            notification: { title, body: message },
+                            data: {
+                                type: 'broadcast',
+                                target: 'mobile',
+                                ...(notifId ? { notificationId: notifId } : {}),
+                                sentAt: now,
                             },
-                        },
-                        apns: {
-                            payload: {
-                                aps: {
+                            android: {
+                                priority: 'high',
+                                notification: {
+                                    channelId: 'fireguard_reports',
+                                    priority: 'high',
                                     sound: 'default',
-                                    badge: 1,
+                                    defaultSound: true,
+                                    defaultVibrateTimings: true,
                                 },
                             },
-                        },
-                    });
-                    successCount += batchResponse.successCount;
-                    failureCount += batchResponse.failureCount;
-                } catch (err) {
-                    console.error('[Broadcast] FCM batch error:', err);
-                    failureCount += batch.length;
+                            apns: {
+                                payload: { aps: { sound: 'default', badge: 1 } },
+                            },
+                        });
+                        successCount += batchResponse.successCount;
+                        failureCount += batchResponse.failureCount;
+                    } catch (err) {
+                        console.error('[Broadcast] FCM batch error:', err);
+                        failureCount += batch.length;
+                    }
                 }
             }
         }
+
+        const allTokens = tokenRows.map(r => r.device_token);
 
         // 7. Log hasil ke tabel broadcast_logs
         try {

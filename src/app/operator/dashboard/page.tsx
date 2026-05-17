@@ -131,6 +131,26 @@ const StatusBadge = ({ status }: { status: string }) => {
       text: "Palsu",
       className: "bg-gray-50 text-gray-600 border-gray-200",
     },
+    false_report: {
+      icon: <FaTimesCircle />,
+      text: "Palsu",
+      className: "bg-gray-50 text-gray-600 border-gray-200",
+    },
+    pending: {
+      icon: <FaFileAlt />,
+      text: "Baru",
+      className: "bg-red-50 text-red-600 border-red-200",
+    },
+    in_progress: {
+      icon: <FaTruck />,
+      text: "Ditangani",
+      className: "bg-cyan-50 text-cyan-600 border-cyan-200",
+    },
+    dibatalkan: {
+      icon: <FaTimesCircle />,
+      text: "Dibatalkan",
+      className: "bg-gray-50 text-gray-500 border-gray-200",
+    },
   };
 
   const config = statusConfig[status] || {
@@ -299,6 +319,19 @@ export default function OperatorDashboard() {
     }
   };
 
+  const handleDeleteReport = async (reportId: number) => {
+    try {
+      const response = await fetch(`/api/operator/reports/${reportId}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) throw new Error("Gagal menghapus laporan");
+      setReports((prev) => prev.filter((r) => r.id !== reportId));
+      success("Laporan berhasil dihapus.");
+    } catch (err) {
+      error("Gagal menghapus laporan.");
+    }
+  };
+
   const handleSendBroadcast = async () => {
     if (!broadcastTitle.trim() || !broadcastMessage.trim()) {
       error("Judul dan pesan wajib diisi.");
@@ -347,7 +380,7 @@ export default function OperatorDashboard() {
         category: r.category_id ? {
           id: r.category_id,
           name: r.category_name || 'Kebakaran',
-          icon: r.category_icon || 'ðŸ”¥',
+          icon: r.category_icon || '??',
         } : undefined,
         kelurahan: r.kelurahan_id ? {
           id: r.kelurahan_id,
@@ -391,12 +424,24 @@ export default function OperatorDashboard() {
       };
 
       socket.onmessage = (event) => {
-        const message = JSON.parse(event.data);
-        if (message.type === "NEW_REPORT") {
-          setReports((prev) => [
-            { ...message.payload, acknowledged: false },
-            ...prev,
-          ]);
+        try {
+          const message = JSON.parse(event.data);
+          if (message.type === "NEW_REPORT") {
+          const r = message.payload;
+          const transformed = {
+            ...r,
+            acknowledged: false,
+            category: r.category_id ? {
+              id: r.category_id,
+              name: r.category_name || 'Kebakaran',
+              icon: r.category_icon || '🔥',
+            } : undefined,
+            kelurahan: r.kelurahan_id ? {
+              id: r.kelurahan_id,
+              name: r.kelurahan_name || 'Tidak tersedia',
+            } : undefined,
+          };
+          setReports((prev) => [transformed, ...prev]);
         } else if (message.type === "STATUS_UPDATE") {
           setReports((prev) =>
             prev.map((r) =>
@@ -405,6 +450,13 @@ export default function OperatorDashboard() {
                 : r
             )
           );
+        } else if (message.type === "REPORT_DELETED") {
+          setReports((prev) =>
+            prev.filter((r) => r.id !== message.payload.reportId)
+          );
+        }
+        } catch (parseErr) {
+          console.error('[WebSocket] Failed to parse message:', parseErr);
         }
       };
 
@@ -465,7 +517,7 @@ export default function OperatorDashboard() {
     (report) => statusFilter === "all" || report.status === statusFilter
   );
   const activeReportsCount = reports.filter(
-    (r) => r.status !== "completed"
+    (r) => !["completed", "false_report", "false", "dibatalkan", "selesai"].includes(r.status)
   ).length;
   const dispatchedCount = reports.filter(
     (r) => r.status === "dispatched" || r.status === "arrived"
@@ -600,6 +652,7 @@ export default function OperatorDashboard() {
           report={selectedReport}
           onClose={handleCloseModal}
           onUpdateStatus={handleUpdateStatus}
+          onDelete={handleDeleteReport}
         />
       )}
 
@@ -744,12 +797,12 @@ export default function OperatorDashboard() {
                   className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none cursor-pointer"
                 >
                   <option value="all">Semua Status Laporan</option>
-                  <option value="submitted">â³ Menunggu Verifikasi</option>
-                  <option value="verified">âœ… Tervalidasi</option>
-                  <option value="dispatched">ðŸš’ Unit Meluncur</option>
-                  <option value="arrived">ðŸ“ Unit Tiba</option>
-                  <option value="completed">â˜‘ï¸ Insiden Selesai</option>
-                  <option value="false">âŒ Laporan Palsu</option>
+                  <option value="submitted">Menunggu Verifikasi</option>
+                  <option value="verified">Tervalidasi</option>
+                  <option value="dispatched">Unit Meluncur</option>
+                  <option value="arrived">Unit Tiba</option>
+                  <option value="completed">Insiden Selesai</option>
+                  <option value="false">Laporan Palsu</option>
                 </select>
               </div>
 

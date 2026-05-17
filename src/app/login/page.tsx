@@ -185,8 +185,8 @@ export default function LoginPage() {
   // --- Truncate phone for display ---
   const truncatedPhone = (() => {
     const formatted = formatPhone(waPhone);
-    if (formatted.length <= 6) return `+${formatted}`;
-    return `+${formatted.slice(0, 4)}xx...`;
+    if (formatted.length <= 6) return "+" + formatted;
+    return "+" + formatted.slice(0, 6) + "xxx...";
   })();
 
   // --- Loading screen ---
@@ -214,65 +214,66 @@ export default function LoginPage() {
 
   return (
     <LazyMotion features={domAnimation}>
-      <main className="min-h-screen flex bg-white text-neutral-900 font-roboto selection:bg-red-500/30 selection:text-white">
+      <main className="h-screen flex bg-white text-gray-900 font-sans selection:bg-red-500/30 overflow-hidden">
         {/* Left: Form Area */}
-        <div className="w-full md:w-[45%] lg:w-[40%] flex flex-col px-8 sm:px-16 md:px-20 py-12 relative z-10 justify-center">
+        <div className="w-full md:w-[55%] lg:w-[48%] h-full flex flex-col px-8 sm:px-16 lg:px-24 py-8 sm:py-12 relative z-10 justify-center bg-white">
           <Link
             href="/"
-            className="absolute top-8 left-8 sm:left-16 md:left-20 flex items-center gap-3 text-neutral-400 hover:text-neutral-900 transition-colors"
+            className="absolute top-6 left-8 sm:left-16 md:left-20 flex items-center gap-3 text-gray-400 hover:text-gray-900 transition-colors"
           >
             <FaArrowLeft className="text-sm" />
           </Link>
 
-          <Link
-            href="/"
-            className="inline-flex items-center gap-3 mb-16 group w-fit mt-10 md:mt-0"
-          >
-            <div className="p-2.5 bg-red-500 rounded-xl shadow-[0_0_15px_rgba(239,68,68,0.4)] group-hover:scale-105 transition-transform">
-              <FaFire className="text-xl text-white" />
+          <div className="mt-8 md:mt-0">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-3 mb-4 group w-fit"
+            >
+              <div className="p-2 bg-red-500 rounded-xl shadow-[0_0_15px_rgba(239,68,68,0.4)] group-hover:scale-105 transition-transform">
+                <FaFire className="text-lg text-white" />
+              </div>
+              <span className="text-xl font-bold tracking-tight">FireGuard</span>
+            </Link>
+
+            <div className="mb-4">
+              <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tighter mb-3 text-gray-900">
+                Selamat Datang.
+              </h1>
+              <p className="text-gray-600 text-base leading-relaxed font-medium">
+                Masuk untuk mengakses portal darurat dan manajemen laporan
+                kebakaran Anda.
+              </p>
             </div>
-            <span className="text-2xl font-bold tracking-tight font-poppins">FireGuard</span>
-          </Link>
 
-          <div className="mb-8">
-            <h1 className="text-4xl sm:text-5xl font-bold tracking-tighter mb-4 text-neutral-900 font-poppins">
-              Selamat Datang.
-            </h1>
-            <p className="text-neutral-500 text-lg leading-relaxed font-light">
-              Masuk untuk mengakses portal darurat dan manajemen laporan
-              kebakaran Anda.
-            </p>
-          </div>
-
-          {/* Tab Switcher */}
-          <div className="flex p-1.5 bg-neutral-100/80 rounded-2xl mb-10 backdrop-blur-sm border border-neutral-200/50">
-            <button
-              type="button"
-              onClick={() => {
-                setLoginMethod("email");
-                setError("");
-              }}
-              className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all duration-500 font-poppins relative overflow-hidden ${
-                loginMethod === "email"
-                  ? "bg-white text-neutral-900 shadow-[0_4px_12px_rgba(0,0,0,0.05)] scale-[1.02]"
-                  : "bg-transparent text-neutral-500 hover:text-neutral-800 hover:bg-white/50"
-              }`}
-            >
-              Email
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setLoginMethod("whatsapp");
-                setWaError("");
-                setWaSuccess("");
-              }}
-              className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all duration-500 font-poppins relative overflow-hidden ${
-                loginMethod === "whatsapp"
-                  ? "bg-white text-neutral-900 shadow-[0_4px_12px_rgba(0,0,0,0.05)] scale-[1.02]"
-                  : "bg-transparent text-neutral-500 hover:text-neutral-800 hover:bg-white/50"
-              }`}
-            >
+            {/* Tab Switcher */}
+            <div className="flex p-1 bg-neutral-100/80 rounded-xl mb-4 backdrop-blur-sm border border-neutral-200/50">
+              <button
+                type="button"
+                onClick={() => {
+                  setLoginMethod("email");
+                  setError("");
+                }}
+                className={`flex-1 py-3 px-4 rounded-xl text-base font-bold transition-all duration-500 relative z-10 ${
+                  loginMethod === "email"
+                    ? "text-white bg-gradient-to-r from-red-500 to-orange-600 shadow-[0_0_15px_rgba(239,68,68,0.4)] shadow-red-500/20"
+                    : "text-neutral-500 hover:text-neutral-900"
+                }`}
+              >
+                Email
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setLoginMethod("whatsapp");
+                  setWaError("");
+                  setWaSuccess("");
+                }}
+                className={`flex-1 py-3 px-4 rounded-xl text-base font-bold transition-all duration-500 relative z-10 ${
+                  loginMethod === "whatsapp"
+                    ? "text-white bg-gradient-to-r from-red-500 to-orange-600 shadow-[0_0_15px_rgba(239,68,68,0.4)] shadow-red-500/20"
+                    : "text-neutral-500 hover:text-neutral-900"
+                }`}
+              >
               WhatsApp
             </button>
           </div>
@@ -287,11 +288,11 @@ export default function LoginPage() {
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
               >
-                <form onSubmit={handlePasswordLogin} className="space-y-7">
-                  <div className="space-y-2 group">
+                <form onSubmit={handlePasswordLogin} className="space-y-4">
+                  <div className="space-y-1 group">
                     <label
                       htmlFor="email"
-                      className="text-[11px] font-bold text-neutral-400 uppercase tracking-[0.15em] ml-1 group-focus-within:text-red-500 transition-colors font-poppins"
+                      className="text-[9px] font-semibold text-gray-400 uppercase tracking-widest pl-1 group-focus-within:text-red-500 transition-colors"
                     >
                       Alamat Email
                     </label>
@@ -300,48 +301,46 @@ export default function LoginPage() {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full bg-neutral-50 border border-neutral-200 text-neutral-900 px-6 py-4.5 rounded-[1.25rem] focus:bg-white focus:outline-none focus:ring-4 focus:ring-red-500/10 focus:border-red-500 transition-all font-medium placeholder:text-neutral-300 font-roboto text-[15px]"
+                      className="w-full bg-gray-50/50 border border-gray-200 text-gray-900 px-4 py-3.5 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all font-medium placeholder:text-gray-300 placeholder:font-normal text-base"
                       placeholder="contoh@fireguard.id"
                       required
                     />
                   </div>
 
-                  <div className="space-y-2 group">
-                    <div className="flex justify-between items-end ml-1 mb-1">
+                  <div className="space-y-1 group">
+                    <div className="flex justify-between items-center pl-1">
                       <label
                         htmlFor="password"
-                        className="text-[11px] font-bold text-neutral-400 uppercase tracking-[0.15em] group-focus-within:text-red-500 transition-colors font-poppins"
+                        className="text-[9px] font-semibold text-gray-400 uppercase tracking-widest group-focus-within:text-red-500 transition-colors"
                       >
                         Kata Sandi
                       </label>
                       <button
                         type="button"
-                        className="text-[11px] font-bold text-red-400 hover:text-red-600 transition-colors uppercase tracking-widest font-poppins"
+                        className="text-[9px] font-bold text-red-500 hover:text-red-600 transition-colors uppercase tracking-widest"
                       >
                         Lupa Password?
                       </button>
                     </div>
                     <div className="relative">
-                      <input
-                        id="password"
-                        type={showPassword ? "text" : "password"}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className={`w-full bg-neutral-50 border border-neutral-200 text-neutral-900 pl-6 pr-14 py-4.5 rounded-[1.25rem] focus:bg-white focus:outline-none focus:ring-4 focus:ring-red-500/10 focus:border-red-500 transition-all font-medium placeholder:text-neutral-300 font-roboto text-[15px] ${!showPassword ? "tracking-[0.3em]" : ""}`}
-                        placeholder={
-                          showPassword ? "Masukkan kata sandi" : "••••••••"
-                        }
-                        required
-                      />
+                        <input
+                          id="password"
+                          type={showPassword ? "text" : "password"}
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          className={`w-full bg-gray-50/50 border border-gray-200 text-gray-900 pl-4 pr-10 py-3.5 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all font-medium placeholder:text-gray-300 placeholder:font-normal text-base ${!showPassword ? 'tracking-wider' : ''}`}
+                          placeholder="••••••••"
+                          required
+                        />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-5 top-1/2 -translate-y-1/2 text-neutral-300 hover:text-red-500 transition-colors p-1"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-900 transition-colors"
                       >
                         {showPassword ? (
-                          <FaEyeSlash className="text-xl" />
+                          <FaEyeSlash className="text-xs" />
                         ) : (
-                          <FaEye className="text-xl" />
+                          <FaEye className="text-xs" />
                         )}
                       </button>
                     </div>
@@ -351,9 +350,9 @@ export default function LoginPage() {
                     <m.div
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      className="bg-red-50 text-red-600 px-6 py-4 rounded-2xl text-sm font-semibold border border-red-100 flex items-center gap-3"
+                      className="bg-red-50 text-red-600 px-4 py-3 rounded-xl text-xs font-medium border border-red-100 flex items-center gap-2"
                     >
-                      <div className="size-2 bg-red-500 rounded-full animate-pulse" />
+                      <div className="size-1.5 bg-red-500 rounded-full animate-pulse" />
                       {error}
                     </m.div>
                   )}
@@ -361,11 +360,11 @@ export default function LoginPage() {
                   <button
                     type="submit"
                     disabled={isPending}
-                    className="w-full bg-neutral-900 hover:bg-red-600 text-white py-4.5 rounded-[1.25rem] font-bold text-lg transition-all duration-300 flex items-center justify-center gap-3 shadow-xl shadow-black/10 hover:shadow-red-500/30 active:scale-[0.98] disabled:opacity-50 mt-6 font-poppins"
+                    className="w-full bg-[#111] hover:bg-neutral-800 text-white py-4 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center gap-3 shadow-lg shadow-black/5 active:scale-[0.98] disabled:opacity-50 mt-4"
                   >
                     {isPending ? (
-                      <span className="flex items-center gap-3">
-                        <FaSpinner className="animate-spin text-xl" /> Autentikasi...
+                      <span className="flex items-center gap-2">
+                        <FaSpinner className="animate-spin text-sm" /> Autentikasi...
                       </span>
                     ) : (
                       "Masuk ke Dashboard"
@@ -390,18 +389,18 @@ export default function LoginPage() {
                       exit={{ opacity: 0, scale: 0.98 }}
                       transition={{ duration: 0.2 }}
                       onSubmit={handleWaSendOtp}
-                      className="space-y-7"
+                      className="space-y-4"
                     >
-                      <div className="space-y-2 group">
+                      <div className="space-y-1 group">
                         <label
                           htmlFor="wa-phone"
-                          className="text-[11px] font-bold text-neutral-400 uppercase tracking-[0.15em] ml-1 group-focus-within:text-green-600 transition-colors font-poppins"
+                          className="text-[9px] font-semibold text-gray-400 uppercase tracking-widest pl-1 group-focus-within:text-green-600 transition-colors"
                         >
                           Nomor WhatsApp
                         </label>
                         <div className="relative">
-                          <div className="absolute left-6 top-1/2 -translate-y-1/2 text-green-500">
-                            <FaWhatsapp className="text-2xl" />
+                          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-green-500">
+                            <FaWhatsapp className="text-lg" />
                           </div>
                           <input
                             id="wa-phone"
@@ -409,23 +408,20 @@ export default function LoginPage() {
                             value={waPhone}
                             onChange={(e) => setWaPhone(e.target.value)}
                             pattern="[0-9\-\s\+]+"
-                            className="w-full bg-neutral-50 border border-neutral-200 text-neutral-900 pl-14 pr-6 py-4.5 rounded-[1.25rem] focus:bg-white focus:outline-none focus:ring-4 focus:ring-green-500/10 focus:border-green-500 transition-all font-medium placeholder:text-neutral-300 font-roboto text-[15px]"
-                            placeholder="0812-3456-7890"
+                            className="w-full bg-gray-50/50 border border-gray-200 text-gray-900 pl-12 pr-4 py-3.5 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all font-medium placeholder:text-gray-300 placeholder:font-normal text-base"
+                            placeholder="0812..."
                             required
                           />
                         </div>
-                        <p className="text-[11px] text-neutral-400 ml-1 font-medium">
-                          Kami akan mengirimkan kode verifikasi 6-digit.
-                        </p>
                       </div>
 
                       {waError && (
                         <m.div
                           initial={{ opacity: 0, scale: 0.95 }}
                           animate={{ opacity: 1, scale: 1 }}
-                          className="bg-red-50 text-red-600 px-6 py-4 rounded-2xl text-sm font-semibold border border-red-100 flex items-center gap-3"
+                          className="bg-red-50 text-red-600 px-4 py-3 rounded-xl text-xs font-medium border border-red-100 flex items-center gap-2"
                         >
-                          <div className="size-2 bg-red-500 rounded-full animate-pulse" />
+                          <div className="size-1.5 bg-red-500 rounded-full animate-pulse" />
                           {waError}
                         </m.div>
                       )}
@@ -433,15 +429,15 @@ export default function LoginPage() {
                       <button
                         type="submit"
                         disabled={waLoading}
-                        className="w-full bg-gradient-to-r from-green-600 to-emerald-700 hover:from-green-500 hover:to-emerald-600 text-white py-4.5 rounded-[1.25rem] font-bold text-lg transition-all duration-300 flex items-center justify-center gap-3 shadow-xl shadow-green-500/20 hover:shadow-green-500/40 active:scale-[0.98] disabled:opacity-50 mt-6 font-poppins"
+                        className="w-full bg-gradient-to-r from-green-600 to-emerald-700 hover:from-green-500 hover:to-emerald-600 text-white py-4 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center gap-3 shadow-lg shadow-green-500/10 active:scale-[0.98] disabled:opacity-50 mt-4"
                       >
                         {waLoading ? (
-                          <span className="flex items-center gap-3">
-                            <FaSpinner className="animate-spin text-xl" /> Meminta OTP...
+                          <span className="flex items-center gap-2">
+                            <FaSpinner className="animate-spin text-sm" /> Meminta OTP...
                           </span>
                         ) : (
-                          <span className="flex items-center gap-3">
-                            <FaWhatsapp className="text-2xl" />
+                          <span className="flex items-center gap-2">
+                            <FaWhatsapp className="text-lg" />
                             Dapatkan Kode OTP
                           </span>
                         )}
@@ -455,157 +451,58 @@ export default function LoginPage() {
                       exit={{ opacity: 0, scale: 0.98 }}
                       transition={{ duration: 0.2 }}
                       onSubmit={handleWaVerifyOtp}
-                      className="space-y-7"
+                      className="space-y-4"
                     >
-                      {/* Phone info card */}
-                      <div className="flex items-center justify-between px-6 py-5 bg-green-50/50 border border-green-100/50 rounded-2xl backdrop-blur-sm">
-                        <div className="flex items-center gap-4">
-                          <div className="size-10 bg-green-500 rounded-full flex items-center justify-center text-white shadow-lg shadow-green-500/20">
-                            <FaWhatsapp className="text-xl" />
-                          </div>
-                          <div>
-                            <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">
-                              Mengirim kode ke
-                            </p>
-                            <p className="text-[15px] font-bold text-neutral-800 mt-0.5">
-                              {truncatedPhone}
-                            </p>
-                          </div>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setWaStep("phone");
-                            setWaOtp("");
-                            setWaError("");
-                            setWaSuccess("");
-                          }}
-                          className="text-[11px] font-bold text-green-600 hover:text-green-800 uppercase tracking-widest transition-colors py-1 px-3 bg-green-100/50 rounded-lg"
-                        >
-                          Ganti
-                        </button>
+                      <div className="mb-2">
+                        <p className="text-gray-500 text-base leading-relaxed font-medium">
+                          Kami telah mengirimkan kode OTP ke WhatsApp <span className="font-bold text-gray-900">{truncatedPhone}</span>
+                        </p>
                       </div>
-
-                      {/* OTP Input */}
-                      <div className="space-y-2 group">
+                      <div className="space-y-1">
                         <label
                           htmlFor="wa-otp"
-                          className="text-[11px] font-bold text-neutral-400 uppercase tracking-[0.15em] ml-1 group-focus-within:text-red-500 transition-colors font-poppins"
+                          className="text-[9px] font-semibold text-gray-400 uppercase tracking-widest pl-1"
                         >
-                          Verifikasi Kode
+                          Kode Verifikasi OTP
                         </label>
-                        <input
-                          id="wa-otp"
-                          type="text"
-                          inputMode="numeric"
-                          pattern="[0-9]*"
-                          maxLength={6}
-                          value={waOtp}
-                          onChange={(e) =>
-                            setWaOtp(
-                              e.target.value.replace(/\D/g, "").slice(0, 6),
-                            )
-                          }
-                          className="w-full bg-neutral-50 border border-neutral-200 text-neutral-900 px-6 py-5 rounded-[1.25rem] focus:bg-white focus:outline-none focus:ring-4 focus:ring-red-500/10 focus:border-red-500 transition-all font-bold text-center text-3xl tracking-[0.6em] placeholder:text-neutral-200 placeholder:font-normal placeholder:tracking-widest font-poppins"
-                          placeholder="000000"
-                          required
-                          autoFocus
-                        />
+                          <input
+                            id="wa-otp"
+                            type="text"
+                            value={waOtp}
+                            onChange={(e) =>
+                              setWaOtp(e.target.value.replace(/\D/g, ""))
+                            }
+                            maxLength={6}
+                            className="w-full bg-gray-50/50 border border-gray-200 text-gray-900 px-4 py-4 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all font-bold tracking-[0.5em] text-center text-xl"
+                            placeholder="••••••"
+                            required
+                          />
                       </div>
 
                       {waError && (
                         <m.div
-                          initial={{ opacity: 0, scale: 0.95 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          className="bg-red-50 text-red-600 px-6 py-4 rounded-2xl text-sm font-semibold border border-red-100 flex items-center gap-3"
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="bg-red-50 text-red-600 px-4 py-3 rounded-xl text-xs font-medium border border-red-100 flex items-center gap-2"
                         >
-                          <div className="size-2 bg-red-500 rounded-full animate-pulse" />
+                          <div className="size-1.5 bg-red-500 rounded-full animate-pulse" />
                           {waError}
-                        </m.div>
-                      )}
-
-                      {waSuccess && !waError && (
-                        <m.div
-                          initial={{ opacity: 0, scale: 0.95 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          className="bg-green-50 text-green-700 px-6 py-4 rounded-2xl text-sm font-semibold border border-green-100 flex items-center gap-3"
-                        >
-                          <div className="size-2 bg-green-500 rounded-full animate-pulse" />
-                          {waSuccess}
                         </m.div>
                       )}
 
                       <button
                         type="submit"
-                        disabled={waLoading || waOtp.length !== 6}
-                        className="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white py-4.5 rounded-[1.25rem] font-bold text-lg transition-all duration-300 flex items-center justify-center gap-3 shadow-xl shadow-red-500/20 hover:shadow-red-500/40 active:scale-[0.98] disabled:opacity-50 font-poppins"
+                        disabled={waLoading}
+                        className="w-full bg-[#111] hover:bg-neutral-800 text-white py-4 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center gap-3 shadow-lg shadow-black/5 active:scale-[0.98] disabled:opacity-50 mt-4"
                       >
                         {waLoading ? (
-                          <span className="flex items-center gap-3">
-                            <FaSpinner className="animate-spin text-xl" /> Verifikasi...
+                          <span className="flex items-center gap-2">
+                            <FaSpinner className="animate-spin text-sm" /> Verifikasi...
                           </span>
                         ) : (
-                          "Konfirmasi & Masuk"
+                          "Verifikasi & Masuk"
                         )}
                       </button>
-
-                      {/* Resend OTP */}
-                      <div className="text-center pt-2">
-                        {waCooldown > 0 ? (
-                          <p className="text-xs text-neutral-400 font-medium">
-                            Kirim ulang tersedia dalam{" "}
-                            <span className="font-bold text-neutral-600 tabular-nums">
-                              {waCooldown}s
-                            </span>
-                          </p>
-                        ) : (
-                          <button
-                            type="button"
-                            disabled={waLoading}
-                            onClick={async () => {
-                              setWaError("");
-                              setWaSuccess("");
-                              setWaLoading(true);
-                              const formattedPhone = formatPhone(waPhone);
-                              try {
-                                const response = await fetch(
-                                  "/api/auth/login/whatsapp",
-                                  {
-                                    method: "POST",
-                                    headers: {
-                                      "Content-Type": "application/json",
-                                    },
-                                    body: JSON.stringify({
-                                      phone_number: formattedPhone,
-                                    }),
-                                  },
-                                );
-                                const data = await response.json();
-                                if (response.ok) {
-                                  setWaCooldown(60);
-                                  setWaSuccess(
-                                    data.message ||
-                                      "OTP berhasil dikirim ulang.",
-                                  );
-                                } else {
-                                  setWaError(
-                                    data.message || "Gagal mengirim ulang OTP.",
-                                  );
-                                }
-                              } catch {
-                                setWaError(
-                                  "Terjadi kesalahan jaringan. Coba lagi.",
-                                );
-                              } finally {
-                                setWaLoading(false);
-                              }
-                            }}
-                            className="text-xs font-bold text-green-600 hover:text-green-800 transition-colors disabled:opacity-50 underline underline-offset-8 decoration-2 decoration-green-200 hover:decoration-green-500 font-poppins"
-                          >
-                            Kirim Ulang Kode OTP
-                          </button>
-                        )}
-                      </div>
                     </m.form>
                   )}
                 </AnimatePresence>
@@ -613,62 +510,78 @@ export default function LoginPage() {
             )}
           </AnimatePresence>
 
-          <p className="mt-12 text-neutral-500 font-medium text-center sm:text-left">
-            Belum punya akun FireGuard?{" "}
-            <Link
-              href="/register"
-              className="text-red-500 hover:text-red-700 hover:underline underline-offset-8 decoration-2 font-bold transition-all"
-            >
-              Buat akun sekarang
-            </Link>
-          </p>
+          {loginMethod === "email" && (
+            <div className="mt-4 text-center">
+              <p className="text-gray-500 text-sm font-medium">
+                Belum punya akun FireGuard?{" "}
+                <Link
+                  href="/register"
+                  className="text-red-500 font-bold hover:underline"
+                >
+                  Buat akun sekarang
+                </Link>
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Right: Illustration/Content Area */}
+      <div className="hidden md:flex md:w-[45%] lg:w-[52%] bg-neutral-50 relative items-center justify-center p-8 lg:p-12 overflow-hidden">
+        {/* Grid Background */}
+        <div className="absolute inset-0 z-0 opacity-[0.03]">
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage:
+                "linear-gradient(#000 1.5px, transparent 1.5px), linear-gradient(90deg, #000 1.5px, transparent 1.5px)",
+              backgroundSize: "40px 40px",
+            }}
+          />
         </div>
 
-        {/* Right: Premium Minimalist Light Area */}
-        <div className="hidden md:flex flex-1 bg-[#fafafa] relative overflow-hidden flex-col items-center justify-center p-20">
-          {/* Subtle Ambient Shapes */}
-          <div className="absolute top-[-10%] right-[-10%] size-[40rem] bg-red-100/40 rounded-full blur-[100px] pointer-events-none" />
-          <div className="absolute bottom-[-10%] left-[-10%] size-[30rem] bg-orange-50/50 rounded-full blur-[80px] pointer-events-none" />
-
-          {/* Minimalist Grid Pattern */}
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none"></div>
-
-          <div className="relative z-10 w-full max-w-lg border border-neutral-200/60 bg-white/80 backdrop-blur-3xl p-12 rounded-[2.5rem] shadow-[0_8px_40px_rgb(0,0,0,0.04)]">
-            <div className="size-14 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center mb-10 border border-red-100 shadow-sm">
-              <FaFire className="text-2xl" />
+        <m.div
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="relative z-10 w-full max-w-xl"
+        >
+          <div className="bg-white/80 backdrop-blur-xl p-10 rounded-[3rem] border border-white shadow-2xl relative">
+            <div className="inline-flex p-4 bg-red-50 rounded-2xl mb-8">
+              <FaFire className="text-3xl text-red-500" />
             </div>
-            <h2 className="text-4xl font-bold text-neutral-900 mb-5 leading-[1.15] tracking-tight font-poppins">
+            <h2 className="text-4xl lg:text-5xl font-extrabold tracking-tighter text-neutral-900 mb-6 leading-[1.1]">
               Satu Laporan,
               <br />
-              Menyelamatkan Semua.
+              <span className="text-red-500">Menyelamatkan Semua.</span>
             </h2>
-            <p className="text-neutral-500 text-lg font-light leading-relaxed">
+            <p className="text-neutral-600 text-lg leading-relaxed mb-10 max-w-md font-medium">
               Terintegrasi langsung dengan unit pemadam kebakaran di lapangan,
               memastikan lokasi terdeteksi tanpa delay respon.
             </p>
 
-            <div className="mt-12 flex items-center gap-8 pt-8 border-t border-neutral-100">
-              <div className="flex flex-col">
-                <span className="text-4xl font-bold tracking-tighter text-neutral-900 font-poppins">
+            <div className="grid grid-cols-2 gap-8 pt-8 border-t border-neutral-100">
+              <div>
+                <div className="text-4xl font-extrabold text-neutral-900 mb-1">
                   4m
-                </span>
-                <span className="text-[11px] font-semibold text-neutral-400 uppercase tracking-[0.2em] mt-2">
+                </div>
+                  <div className="text-xs uppercase tracking-widest font-bold text-neutral-500">
                   Estimasi Respon
-                </span>
+                </div>
               </div>
-              <div className="w-px h-12 bg-neutral-200"></div>
-              <div className="flex flex-col">
-                <span className="text-4xl font-bold tracking-tighter text-neutral-900 font-poppins">
+              <div>
+                <div className="text-4xl font-extrabold text-neutral-900 mb-1">
                   24/7
-                </span>
-                <span className="text-[11px] font-semibold text-neutral-400 uppercase tracking-[0.2em] mt-2">
+                </div>
+                <div className="text-xs uppercase tracking-widest font-bold text-neutral-400">
                   Siaga Total
-                </span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </main>
-    </LazyMotion>
+        </m.div>
+      </div>
+    </main>
+    </LazyMotion >
   );
 }

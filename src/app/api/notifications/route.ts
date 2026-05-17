@@ -106,3 +106,77 @@ export async function POST(request: NextRequest) {
     }
 }
 
+/**
+ * DELETE /api/notifications
+ * Hapus satu atau semua notifikasi milik user yang sedang login.
+ *
+ * Body (hapus satu):   { "notificationId": 123 }
+ * Body (hapus semua):  { "deleteAll": true }
+ *
+ * Hanya bisa menghapus notifikasi milik user sendiri (WHERE user_id = ?).
+ */
+export async function DELETE(request: NextRequest) {
+    try {
+        const user = await getAuthPayload(request);
+
+        let body: { notificationId?: number; deleteAll?: boolean } = {};
+        try {
+            body = await request.json();
+        } catch {
+            // Body kosong atau bukan JSON — anggap tidak ada parameter
+        }
+
+        const { notificationId, deleteAll } = body;
+
+        if (deleteAll === true) {
+            // Hapus semua notifikasi milik user ini
+            await execute(
+                'DELETE FROM notifications WHERE user_id = ?',
+                [user.id]
+            );
+            return jsonWithCors({
+                success: true,
+                message: 'Semua notifikasi berhasil dihapus.',
+            });
+        }
+
+        if (notificationId !== undefined) {
+            const id = Number(notificationId);
+            if (!Number.isInteger(id) || id <= 0) {
+                return jsonWithCors(
+                    { success: false, message: 'notificationId tidak valid.' },
+                    { status: 400 }
+                );
+            }
+
+            // Pastikan notifikasi ini milik user yang sedang login
+            const result = await execute(
+                'DELETE FROM notifications WHERE id = ? AND user_id = ?',
+                [id, user.id]
+            ) as any;
+
+            if (result.affectedRows === 0) {
+                return jsonWithCors(
+                    { success: false, message: 'Notifikasi tidak ditemukan.' },
+                    { status: 404 }
+                );
+            }
+
+            return jsonWithCors({
+                success: true,
+                message: 'Notifikasi berhasil dihapus.',
+            });
+        }
+
+        return jsonWithCors(
+            { success: false, message: 'Sertakan notificationId atau deleteAll: true.' },
+            { status: 400 }
+        );
+    } catch (error: any) {
+        console.error('Error deleting notification:', error);
+        if (error.message?.includes('autentikasi')) {
+            return jsonWithCors({ message: 'Akses ditolak.' }, { status: 401 });
+        }
+        return jsonWithCors({ message: 'Gagal menghapus notifikasi.' }, { status: 500 });
+    }
+}

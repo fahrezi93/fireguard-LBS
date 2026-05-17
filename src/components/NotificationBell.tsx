@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { FaBell, FaCheck, FaExclamationCircle, FaInfoCircle, FaCheckCircle } from "react-icons/fa";
+import { FaBell, FaCheck, FaInfoCircle, FaCheckCircle, FaThumbsUp, FaSync, FaShieldAlt, FaBullhorn, FaTimesCircle } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface Notification {
@@ -94,19 +94,57 @@ export default function NotificationBell({ onViewReport }: NotificationBellProps
     }
   };
 
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case "status_update":
-        return <FaExclamationCircle className="text-blue-500 text-lg" />;
-      case "success":
-        return <FaCheckCircle className="text-green-500 text-lg" />;
-      case "warning":
-        return <FaExclamationCircle className="text-amber-500 text-lg" />;
-      case "error":
-        return <FaExclamationCircle className="text-red-500 text-lg" />;
-      default:
-        return <FaInfoCircle className="text-gray-400 text-lg" />;
+  const getNotificationIcon = (notification: Notification) => {
+    const type = notification.type;
+    // Gabungkan title + message untuk deteksi — handle data lama maupun baru
+    const text = `${notification.title ?? ''} ${notification.message ?? ''}`.toLowerCase();
+
+    if (type === 'broadcast') {
+      return { icon: <FaBullhorn className="text-lg" />, color: 'text-red-500', bg: 'bg-red-50' };
     }
+
+    // Deteksi dari konten teks (title atau message)
+    if (text.includes('disetujui')) {
+      return { icon: <FaThumbsUp className="text-lg" />, color: 'text-green-600', bg: 'bg-green-50' };
+    }
+    if (text.includes('ditangani') || text.includes('diproses') || text.includes('in_progress') || text.includes('sedang')) {
+      return { icon: <FaSync className="text-lg" />, color: 'text-blue-500', bg: 'bg-blue-50' };
+    }
+    if (text.includes('selesai') || text.includes('completed')) {
+      return { icon: <FaCheckCircle className="text-lg" />, color: 'text-teal-600', bg: 'bg-teal-50' };
+    }
+    if (text.includes('terverifikasi') || text.includes('verified') || text.includes('diverifikasi')) {
+      return { icon: <FaShieldAlt className="text-lg" />, color: 'text-indigo-600', bg: 'bg-indigo-50' };
+    }
+    if (text.includes('ditolak') || text.includes('palsu') || text.includes('false')) {
+      return { icon: <FaTimesCircle className="text-lg" />, color: 'text-red-500', bg: 'bg-red-50' };
+    }
+
+    // Fallback untuk status_update yang tidak dikenali
+    if (type === 'status_update') {
+      return { icon: <FaInfoCircle className="text-lg" />, color: 'text-blue-400', bg: 'bg-blue-50' };
+    }
+
+    return { icon: <FaInfoCircle className="text-lg" />, color: 'text-gray-400', bg: 'bg-gray-50' };
+  };
+
+  // Bersihkan emoji dari teks (untuk data lama di DB yang masih pakai emoji)
+  const stripEmoji = (text: string) =>
+    text.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE00}-\u{FEFF}]/gu, '').trim();
+
+  // Normalkan title lama "Status Laporan #X Diperbarui" → ambil dari message jika bisa
+  const getDisplayTitle = (notification: Notification): string => {
+    const title = notification.title ?? '';
+    // Jika title masih format lama, derive dari message
+    if (/^Status Laporan #\d+ Diperbarui$/i.test(title)) {
+      const msg = (notification.message ?? '').toLowerCase();
+      if (msg.includes('disetujui')) return 'Laporan Disetujui';
+      if (msg.includes('ditangani') || msg.includes('diproses') || msg.includes('sedang')) return 'Laporan Sedang Ditangani';
+      if (msg.includes('selesai')) return 'Laporan Selesai';
+      if (msg.includes('terverifikasi') || msg.includes('diverifikasi')) return 'Laporan Terverifikasi';
+      if (msg.includes('palsu') || msg.includes('ditolak')) return 'Laporan Ditolak';
+    }
+    return stripEmoji(title);
   };
 
   const formatTime = (dateString: string) => {
@@ -174,20 +212,27 @@ export default function NotificationBell({ onViewReport }: NotificationBellProps
                     className="px-5 py-4 hover:bg-gray-50 cursor-pointer transition-colors relative group"
                   >
                     <div className="flex items-start gap-4">
-                      <div className={`mt-0.5 shrink-0 ${!notification.is_read ? 'opacity-100' : 'opacity-50'}`}>
-                        {getNotificationIcon(notification.type)}
+                      <div className={`mt-0.5 shrink-0 ${!notification.is_read ? 'opacity-100' : 'opacity-40'}`}>
+                        {(() => {
+                          const { icon, color, bg } = getNotificationIcon(notification);
+                          return (
+                            <div className={`w-8 h-8 rounded-full ${bg} flex items-center justify-center ${color}`}>
+                              {icon}
+                            </div>
+                          );
+                        })()}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2 mb-1">
                           <p className={`text-sm font-bold leading-tight ${!notification.is_read ? "text-gray-900" : "text-gray-500"}`}>
-                            {notification.title}
+                            {getDisplayTitle(notification)}
                           </p>
                           <p className="text-[10px] font-bold text-gray-400 shrink-0 pt-0.5">
                             {formatTime(notification.created_at)}
                           </p>
                         </div>
                         <p className={`text-xs leading-relaxed ${!notification.is_read ? "text-gray-600 font-medium" : "text-gray-400"}`}>
-                          {notification.message}
+                          {stripEmoji(notification.message)}
                         </p>
                       </div>
                       {!notification.is_read && (

@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { queryRows, execute } from '@/lib/db';
-import { unlink } from 'fs/promises';
-import path from 'path';
 import { requireOperator } from '@/lib/api-security';
 
 export async function GET(request: NextRequest) {
@@ -23,6 +21,7 @@ export async function GET(request: NextRequest) {
     );
     return NextResponse.json(reports);
   } catch (error) {
+    console.error('[GET /api/operator/reports]', error);
     return NextResponse.json({ message: 'Terjadi kesalahan pada server.' }, { status: 500 });
   }
 }
@@ -32,21 +31,15 @@ export async function DELETE(request: NextRequest) {
     const auth = await requireOperator(request);
     if ("response" in auth) return auth.response;
 
-    const mediaUrls = await queryRows<{ media_url: string }>('SELECT media_url FROM reports');
-    for (const item of mediaUrls) {
-      if (item.media_url) {
-        const filePath = path.join(process.cwd(), 'public', item.media_url);
-        try {
-          await unlink(filePath);
-        } catch (fileError: any) {
-          // Ignore file not found errors
-        }
-      }
-    }
+    // Hapus notifikasi terkait semua laporan terlebih dahulu
+    await execute('DELETE FROM notifications WHERE report_id IS NOT NULL');
+    // Hapus semua laporan
     await execute('DELETE FROM reports');
     await execute('ALTER TABLE reports AUTO_INCREMENT = 1');
+
     return NextResponse.json({ message: 'Semua laporan berhasil dihapus.' });
   } catch (error) {
+    console.error('[DELETE /api/operator/reports]', error);
     return NextResponse.json({ message: 'Terjadi kesalahan pada server.' }, { status: 500 });
   }
 }

@@ -143,7 +143,12 @@ export default function AdminMap({ reports, onReportClick, selectedReport }: Adm
   const nearestStation: FireStation | null = useMemo(() => {
     if (!selectedReport) return null;
 
-    const firePos: [number, number] = [selectedReport.fire_latitude, selectedReport.fire_longitude];
+    // Pastikan koordinat adalah number (DB bisa mengembalikan string)
+    const fireLat = Number(selectedReport.fire_latitude);
+    const fireLng = Number(selectedReport.fire_longitude);
+    if (isNaN(fireLat) || isNaN(fireLng)) return null;
+
+    const firePos: [number, number] = [fireLat, fireLng];
     let closest: FireStation | null = null;
     let minDistance = Infinity;
 
@@ -156,6 +161,16 @@ export default function AdminMap({ reports, onReportClick, selectedReport }: Adm
     });
     return closest;
   }, [selectedReport]);
+
+  // Tentukan apakah rute harus ditampilkan
+  const showRoute = !!(
+    selectedReport &&
+    nearestStation &&
+    selectedReport.status !== 'selesai' &&
+    selectedReport.status !== 'completed' &&
+    selectedReport.status !== 'false' &&
+    selectedReport.status !== 'false_report'
+  );
 
   return (
     <MapContainer center={defaultPosition} zoom={12} style={{ height: '100%', width: '100%', backgroundColor: '#ffffff' }}>
@@ -176,62 +191,59 @@ export default function AdminMap({ reports, onReportClick, selectedReport }: Adm
         </Marker>
       ))}
 
-      {/* Tampilkan semua laporan */}
+      {/* Marker lokasi kejadian untuk semua laporan */}
       {reports.map(report => {
+        const fireLat = Number(report.fire_latitude);
+        const fireLng = Number(report.fire_longitude);
+        if (isNaN(fireLat) || isNaN(fireLng)) return null;
+
         const isCompleted = report.status === 'Selesai' || report.status === 'completed' || report.status === 'selesai';
         const categoryIcon = createCategoryIcon(report.category?.id, report.category?.icon, isCompleted);
         const categoryName = report.category?.name || 'Kebakaran';
-        const categoryEmoji = report.category?.icon || '🔥';
 
         return (
-          <div key={`report-group-${report.id}`}>
-            {/* Marker lokasi kejadian */}
-            <Marker
-              key={`fire-${report.id}`}
-              position={[report.fire_latitude, report.fire_longitude]}
-              icon={categoryIcon}
-              eventHandlers={{
-                click: () => {
-                  onReportClick(report);
-                }
-              }}
-            >
-              <Popup>
-                <strong>{isCompleted ? `✅ ${categoryName} - Selesai` : `${categoryEmoji} Lokasi ${categoryName}`}</strong><br />
-                Laporan #{report.id} <br />
-                Status: {report.status}
-                {report.kelurahan && <><br />Kelurahan: {report.kelurahan.name}</>}
-              </Popup>
-            </Marker>
-
-            {/* Marker lokasi pelapor jika ada */}
-            {report.reporter_latitude && report.reporter_longitude && (
-              <Marker
-                key={`reporter-${report.id}`}
-                position={[report.reporter_latitude, report.reporter_longitude]}
-                icon={reporterLocationIcon}
-                eventHandlers={{
-                  click: () => {
-                    onReportClick(report);
-                  }
-                }}
-              >
-                <Popup>
-                  <strong>📍 Lokasi Pelapor</strong><br />
-                  Laporan #{report.id}
-                </Popup>
-              </Marker>
-            )}
-          </div>
+          <Marker
+            key={`fire-${report.id}`}
+            position={[fireLat, fireLng]}
+            icon={categoryIcon}
+            eventHandlers={{ click: () => onReportClick(report) }}
+          >
+            <Popup>
+              <strong>{isCompleted ? `${categoryName} - Selesai` : `Lokasi ${categoryName}`}</strong><br />
+              Laporan #{report.id}<br />
+              Status: {report.status}
+              {report.kelurahan && <><br />Kelurahan: {report.kelurahan.name}</>}
+            </Popup>
+          </Marker>
         );
       })}
 
-      {/* Tampilkan rute dari pos damkar terdekat ke lokasi kebakaran untuk laporan yang dipilih */}
-      {selectedReport && nearestStation && selectedReport.status !== 'Selesai' && selectedReport.status !== 'completed' && (
+      {/* Marker lokasi pelapor untuk laporan yang punya koordinat pelapor */}
+      {reports.filter(r => r.reporter_latitude && r.reporter_longitude).map(report => {
+        const repLat = Number(report.reporter_latitude);
+        const repLng = Number(report.reporter_longitude);
+        if (isNaN(repLat) || isNaN(repLng)) return null;
+        return (
+          <Marker
+            key={`reporter-${report.id}`}
+            position={[repLat, repLng]}
+            icon={reporterLocationIcon}
+            eventHandlers={{ click: () => onReportClick(report) }}
+          >
+            <Popup>
+              <strong>Lokasi Pelapor</strong><br />
+              Laporan #{report.id}
+            </Popup>
+          </Marker>
+        );
+      })}
+
+      {/* Rute dari pos damkar terdekat ke lokasi kebakaran */}
+      {showRoute && nearestStation && selectedReport && (
         <RoutingMachine
-          key={`route-${selectedReport.id}-${(nearestStation as FireStation).name}`}
-          start={[(nearestStation as FireStation).latitude, (nearestStation as FireStation).longitude]}
-          end={[selectedReport.fire_latitude, selectedReport.fire_longitude]}
+          key={`route-${selectedReport.id}-${nearestStation.name}`}
+          start={[nearestStation.latitude, nearestStation.longitude]}
+          end={[Number(selectedReport.fire_latitude), Number(selectedReport.fire_longitude)]}
         />
       )}
     </MapContainer>

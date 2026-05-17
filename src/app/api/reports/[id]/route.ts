@@ -143,14 +143,10 @@ export async function PATCH(
       );
     }
 
-    // Trigger FCM push notification secara asinkron (Requirement 9.1–9.5)
-    // Tidak memblokir response walau notifikasi gagal
-    sendReportStatusNotification(reportId, report.user_id, newStatus).catch((error) => {
-      console.error(`[Notification] Failed to send notification for report ${reportId}:`, error);
-    });
-
-    // Simpan juga ke tabel notifications (in-app notification history)
-    createNotification(
+    // Simpan dulu ke tabel notifications (in-app notification history),
+    // dapatkan ID-nya, lalu kirim FCM dengan ID yang sama agar mobile bisa
+    // melakukan dedup, mark-read, dan delete sync ke backend.
+    const dbNotifId = await createNotification(
       report.user_id,
       _getNotificationTitle(newStatus),
       _getNotificationBody(newStatus, reportId),
@@ -158,6 +154,18 @@ export async function PATCH(
       reportId
     ).catch((error) => {
       console.error(`[Notification] Failed to create in-app notification for report ${reportId}:`, error);
+      return null;
+    });
+
+    // Trigger FCM push notification secara asinkron (Requirement 9.1–9.5)
+    // Tidak memblokir response walau notifikasi gagal.
+    sendReportStatusNotification(
+      reportId,
+      report.user_id,
+      newStatus,
+      dbNotifId ?? undefined,
+    ).catch((error) => {
+      console.error(`[Notification] Failed to send notification for report ${reportId}:`, error);
     });
 
     // Broadcast ke WebSocket jika ada (dashboard real-time)
@@ -224,7 +232,7 @@ function _getNotificationTitle(status: string): string {
 }
 
 // Helper: ambil isi notifikasi berdasarkan status
-function _getNotificationBody(status: string, reportId: number): string {
+function _getNotificationBody(status: string, _reportId: number): string {
   const bodies: Record<string, string> = {
     approved: "Laporan Anda telah disetujui dan sedang diproses",
     in_progress: "Petugas sedang menangani laporan Anda",
@@ -232,5 +240,5 @@ function _getNotificationBody(status: string, reportId: number): string {
     verified: "Laporan Anda telah diverifikasi oleh petugas",
     false_report: "Laporan Anda ditandai sebagai laporan palsu",
   };
-  return bodies[status] ?? `Status laporan #${reportId} telah diperbarui`;
+  return bodies[status] ?? "Status laporan Anda telah diperbarui";
 }

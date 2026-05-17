@@ -27,6 +27,7 @@ import {
   FaTruck,
   FaCheckCircle,
   FaTimesCircle,
+  FaTrash,
 } from "react-icons/fa";
 
 interface Report {
@@ -58,6 +59,7 @@ interface ReportDetailModalProps {
   report: Report;
   onClose: () => void;
   onUpdateStatus?: (reportId: number, newStatus: string) => Promise<void>;
+  onDelete?: (reportId: number) => Promise<void>;
   readOnly?: boolean;
 }
 
@@ -85,12 +87,16 @@ export default function ReportDetailModal({
   report,
   onClose,
   onUpdateStatus,
+  onDelete,
   readOnly = false,
 }: ReportDetailModalProps) {
   const [isUpdating, setIsUpdating] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [kelurahanList, setKelurahanList] = useState<{ id: number; name: string }[]>([]);
   const [selectedKelurahan, setSelectedKelurahan] = useState<number | null>(report.kelurahan?.id || null);
   const [isEditingKelurahan, setIsEditingKelurahan] = useState(false);
+  // State lokal untuk kelurahan agar tidak mutasi prop
+  const [localKelurahan, setLocalKelurahan] = useState<{ id: number; name: string } | null | undefined>(report.kelurahan);
 
   // Fetch kelurahan list
   useEffect(() => {
@@ -116,6 +122,18 @@ export default function ReportDetailModal({
     }
   };
 
+  const handleDelete = async () => {
+    if (!onDelete || readOnly) return;
+    setIsUpdating(true);
+    try {
+      await onDelete(report.id);
+      onClose();
+    } finally {
+      setIsUpdating(false);
+      setShowDeleteConfirm(false);
+    }
+  };
+
   const handleSaveKelurahan = async () => {
     if (!selectedKelurahan) return;
     setIsUpdating(true);
@@ -127,11 +145,20 @@ export default function ReportDetailModal({
       });
       if (res.ok) {
         setIsEditingKelurahan(false);
-        // Update local report data
-        report.kelurahan = kelurahanList.find(k => k.id === selectedKelurahan);
+        // Update via callback agar parent state ikut terupdate (tidak mutasi prop)
+        const found = kelurahanList.find(k => k.id === selectedKelurahan);
+        if (found && onUpdateStatus) {
+          // Trigger parent refresh — gunakan status yang sama agar tidak kirim notif
+          // Cukup tutup edit mode, parent akan refresh saat next fetch
+        }
+        // Update tampilan lokal sementara (tidak mutasi prop, pakai state)
+        setLocalKelurahan(found ?? null);
+      } else {
+        alert('Gagal menyimpan kelurahan. Coba lagi.');
       }
     } catch (err) {
       console.error('Error updating kelurahan:', err);
+      alert('Terjadi kesalahan. Coba lagi.');
     } finally {
       setIsUpdating(false);
     }
@@ -265,7 +292,7 @@ export default function ReportDetailModal({
                   ) : (
                     <div className="flex items-center gap-2">
                       <p className="text-sm font-semibold text-gray-900">
-                        {report.kelurahan?.name || 'Tidak tersedia'}
+                        {localKelurahan?.name || 'Tidak tersedia'}
                       </p>
                       {!readOnly && (
                         <button
@@ -487,31 +514,77 @@ export default function ReportDetailModal({
         {!readOnly && onUpdateStatus && (
           <div className="sticky bottom-0 bg-white border-t border-gray-200/60 px-6 py-5">
             <p className="text-xs font-medium text-gray-600 mb-3">Ubah Status Laporan:</p>
-            <div className="flex flex-wrap gap-2.5 justify-end">
-              <StatusButton
-                label="Verifikasi"
-                icon={<FaCheck className="text-sm" />}
-                color="bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700"
-                onClick={() => handleStatusUpdate("verified")}
-              />
-              <StatusButton
-                label="Kirim Unit"
-                icon={<FaTruck className="text-sm" />}
-                color="bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700"
-                onClick={() => handleStatusUpdate("dispatched")}
-              />
-              <StatusButton
-                label="Selesaikan"
-                icon={<FaCheckCircle className="text-sm" />}
-                color="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
-                onClick={() => handleStatusUpdate("completed")}
-              />
-              <StatusButton
-                label="Laporan Palsu"
-                icon={<FaTimesCircle className="text-sm" />}
-                color="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700"
-                onClick={() => handleStatusUpdate("false")}
-              />
+            <div className="flex flex-wrap gap-2.5 justify-between items-center">
+              <div className="flex flex-wrap gap-2.5">
+                <StatusButton
+                  label="Verifikasi"
+                  icon={<FaCheck className="text-sm" />}
+                  color="bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700"
+                  onClick={() => handleStatusUpdate("verified")}
+                />
+                <StatusButton
+                  label="Kirim Unit"
+                  icon={<FaTruck className="text-sm" />}
+                  color="bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700"
+                  onClick={() => handleStatusUpdate("dispatched")}
+                />
+                <StatusButton
+                  label="Selesaikan"
+                  icon={<FaCheckCircle className="text-sm" />}
+                  color="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+                  onClick={() => handleStatusUpdate("completed")}
+                />
+                <StatusButton
+                  label="Laporan Palsu"
+                  icon={<FaTimesCircle className="text-sm" />}
+                  color="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700"
+                  onClick={() => handleStatusUpdate("false")}
+                />
+              </div>
+              {/* Tombol Hapus */}
+              {onDelete && (
+                <button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-red-600 border border-red-200 hover:bg-red-50 transition-all"
+                >
+                  <FaTrash className="text-sm" />
+                  Hapus
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Dialog Konfirmasi Hapus */}
+        {showDeleteConfirm && (
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center rounded-2xl z-10">
+            <div className="bg-white rounded-2xl p-6 shadow-xl mx-4 max-w-sm w-full">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                  <FaTrash className="text-red-600" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900">Hapus Laporan?</h3>
+                  <p className="text-xs text-gray-500">Laporan #{report.id}</p>
+                </div>
+              </div>
+              <p className="text-sm text-gray-600 mb-5">
+                Laporan ini akan dihapus permanen beserta notifikasinya. Tindakan ini tidak dapat dibatalkan.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-700 border border-gray-200 hover:bg-gray-50 transition-all"
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium text-white bg-red-600 hover:bg-red-700 transition-all"
+                >
+                  Ya, Hapus
+                </button>
+              </div>
             </div>
           </div>
         )}

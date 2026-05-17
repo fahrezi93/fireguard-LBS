@@ -23,6 +23,7 @@ interface NotificationPayload {
     status: string;
     type: string;
     target?: string;
+    notificationId?: string;
   };
 }
 
@@ -295,6 +296,9 @@ export async function handleFCMError(
  * @param reportId - The ID of the report that changed status
  * @param userId - The ID of the user who owns the report
  * @param newStatus - The new status of the report
+ * @param notificationId - Optional. The ID dari row di tabel `notifications` (jika sudah dibuat).
+ *   Disertakan di FCM data payload agar mobile bisa pakai ID yang sama untuk
+ *   dedup, mark-read, dan delete (sync ke backend).
  *
  * Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 5.4, 6.5
  */
@@ -302,6 +306,7 @@ export async function sendReportStatusNotification(
   reportId: number,
   userId: number,
   newStatus: string,
+  notificationId?: number,
 ): Promise<void> {
   try {
     const canonicalStatus = normalizeNotificationStatus(newStatus);
@@ -373,6 +378,9 @@ export async function sendReportStatusNotification(
         status: canonicalStatus,
         type: "report_status_change",
         target: "mobile",
+        // Sertakan notificationId agar mobile bisa pakai ID yang sama
+        // untuk dedup, mark-read, dan delete sync ke backend.
+        ...(notificationId !== undefined ? { notificationId: notificationId.toString() } : {}),
       },
     };
 

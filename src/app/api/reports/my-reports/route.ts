@@ -102,7 +102,7 @@ export async function GET(request: NextRequest) {
     return jsonWithCors({ reports });
 
   } catch (error: any) {
-    if (error.message.includes('autentikasi') || error.message.includes('Token')) {
+    if (error.message?.includes('autentikasi') || error.message?.includes('Token')) {
       return jsonWithCors({ message: 'Akses ditolak.' }, { status: 401 });
     }
 
