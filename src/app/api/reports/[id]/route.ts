@@ -169,8 +169,9 @@ export async function PATCH(
     });
 
     // Broadcast ke WebSocket jika ada (dashboard real-time)
-    if (global.wss) {
-      global.wss.broadcast(
+    const wss = global.wss;
+    if (wss) {
+      wss.broadcast(
         JSON.stringify({
           type: "REPORT_STATUS_UPDATED",
           payload: { reportId, status: newStatus, updatedAt: currentTimestamp },

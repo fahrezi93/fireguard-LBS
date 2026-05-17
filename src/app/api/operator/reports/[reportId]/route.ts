@@ -314,8 +314,9 @@ export async function PATCH(
     }
 
     // Broadcast status update via WebSocket
-    if (global.wss) {
-      global.wss.broadcast(
+    const wss = global.wss;
+    if (wss) {
+      wss.broadcast(
         JSON.stringify({
           type: "STATUS_UPDATE",
           payload: { reportId: parsedReportId, newStatus },
@@ -366,8 +367,9 @@ export async function DELETE(
     await execute("DELETE FROM reports WHERE id = ?", [parsedReportId]);
 
     // Broadcast ke operator via WebSocket agar list terupdate
-    if (global.wss) {
-      global.wss.broadcast(
+    const wss = global.wss;
+    if (wss) {
+      wss.broadcast(
         JSON.stringify({ type: "REPORT_DELETED", payload: { reportId: parsedReportId } })
       );
     }

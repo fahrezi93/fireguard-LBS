@@ -222,7 +222,8 @@ export async function POST(request: NextRequest) {
     );
 
     // WebSocket broadcast ke operator — jalankan async tanpa blokir response
-    if (global.wss) {
+    const wss = global.wss;
+    if (wss) {
       void (async () => {
         try {
           const { queryRow: qr } = await import('@/lib/db');
@@ -239,7 +240,7 @@ export async function POST(request: NextRequest) {
              WHERE r.id = ?`,
             [reportId]
           );
-          global.wss.broadcast(
+          wss.broadcast(
             JSON.stringify({
               type: "NEW_REPORT",
               payload: fullReport ?? {
