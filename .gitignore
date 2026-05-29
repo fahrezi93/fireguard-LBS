@@ -45,3 +45,7 @@ coverage/
 
 # Ignore mobile repository (separate repo)
 fireguard_flutter/
+
+# Ignore AI Agent Context
+agents.md
+

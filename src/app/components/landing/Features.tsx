@@ -116,7 +116,7 @@ const Features = () => {
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-red-50 border border-red-100 mb-6 shadow-sm"
             >
-              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.3)]" />
+              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-[0_0_10px_rgba(159,28,25,0.3)]" />
               <span className="text-xs font-bold text-red-600 tracking-widest uppercase">Fitur Unggulan</span>
             </motion.div>
 

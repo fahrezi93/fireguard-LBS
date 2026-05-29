@@ -1,20 +1,7 @@
 import type { Metadata, Viewport } from 'next';
-import { Poppins, Roboto } from 'next/font/google';
 import './globals.css';
 
 export const dynamic = 'force-dynamic';
-
-const poppins = Poppins({
-  variable: '--font-poppins',
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800'],
-});
-
-const roboto = Roboto({
-  variable: '--font-roboto',
-  subsets: ['latin'],
-  weight: ['400', '500', '700'],
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.fireguard-palembang.my.id'),
@@ -82,7 +69,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   userScalable: true,
-  themeColor: '#ef4444',
+  themeColor: '#9F1C19',
 };
 
 export default function RootLayout({
@@ -98,8 +85,11 @@ export default function RootLayout({
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png" />
         <link rel="shortcut icon" href="/favicon.png" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       </head>
-      <body className={`${poppins.variable} ${roboto.variable} antialiased`}>
+      <body className="antialiased">
         {children}
       </body>
     </html>

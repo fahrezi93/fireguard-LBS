@@ -28,7 +28,7 @@ const Footer = ({ isLight = false }: { isLight?: boolean }) => (
         {/* Brand Section */}
         <div className="md:col-span-5 lg:col-span-4">
           <Link href="/" className="inline-flex items-center gap-3 mb-6 group">
-            <div className="p-2.5 bg-gradient-to-br from-red-500 to-orange-600 rounded-xl shadow-[0_0_20px_rgba(239,68,68,0.3)] group-hover:shadow-[0_0_25px_rgba(239,68,68,0.5)] transition-shadow">
+            <div className="p-2.5 bg-gradient-to-br from-red-500 to-orange-600 rounded-xl shadow-[0_0_20px_rgba(159,28,25,0.3)] group-hover:shadow-[0_0_25px_rgba(159,28,25,0.5)] transition-shadow">
               <FaFire className="text-xl text-white" />
             </div>
             <span className={`text-2xl font-bold tracking-tight ${isLight ? 'text-gray-900' : 'text-white'}`}>FireGuard</span>

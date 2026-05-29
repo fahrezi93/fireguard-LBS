@@ -1,13 +1,21 @@
-import { GET, PUT } from './route';
 import { NextRequest } from 'next/server';
 import * as db from '@/lib/db';
 import * as cors from '@/lib/cors';
 import * as rateLimit from '@/lib/rate-limit';
 
 // Mock dependencies
-jest.mock('@/lib/db');
+jest.mock('@/lib/db', () => ({
+  execute: jest.fn(),
+  queryRow: jest.fn(),
+  formatDateForMySQL: jest.fn(),
+}));
 jest.mock('@/lib/cors');
 jest.mock('@/lib/rate-limit');
+
+type RouteHandler = (request: NextRequest) => Promise<Response>;
+
+let GET: RouteHandler;
+let PUT: RouteHandler;
 
 describe('Notification Preferences API', () => {
   const mockExecute = db.execute as jest.MockedFunction<typeof db.execute>;
@@ -16,6 +24,10 @@ describe('Notification Preferences API', () => {
   const mockGetAuthPayloadFromRequest = cors.getAuthPayloadFromRequest as jest.MockedFunction<typeof cors.getAuthPayloadFromRequest>;
   const mockJsonWithCors = cors.jsonWithCors as jest.MockedFunction<typeof cors.jsonWithCors>;
   const mockEnforceRateLimit = rateLimit.enforceRateLimit as jest.MockedFunction<typeof rateLimit.enforceRateLimit>;
+
+  beforeAll(async () => {
+    ({ GET, PUT } = await import('./route'));
+  });
 
   beforeEach(() => {
     jest.clearAllMocks();

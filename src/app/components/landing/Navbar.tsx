@@ -53,6 +53,17 @@ const Navbar = ({ isLight = false }: { isLight?: boolean }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [mobileMenuOpen]);
+
   const handleLogout = async () => {
     const redirectTarget = "/";
 
@@ -137,18 +148,38 @@ const Navbar = ({ isLight = false }: { isLight?: boolean }) => {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className={`md:hidden relative z-50 p-2 -mr-2 rounded-full transition-all active:scale-90 ${isLight ? 'bg-black/5 border-black/10 text-black' : 'bg-white/5 border-white/10 text-white'}`}
-            aria-label="Toggle Menu"
+            className={`relative z-50 -mr-2 rounded-full p-2 transition-all active:scale-90 md:hidden ${isLight ? 'bg-black/5 border-black/10 text-black' : 'bg-white/5 border-white/10 text-white'} ${mobileMenuOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+            aria-label="Buka menu"
+            aria-expanded={mobileMenuOpen}
           >
-            {mobileMenuOpen ? <FaTimes className="text-lg" /> : <FaBars className="text-lg" />}
+            <FaBars className="text-lg" />
           </button>
         </div>
       </div>
 
       {/* Mobile Menu Fullscreen Overlay */}
-      <div className={`fixed inset-0 z-40 transition-all duration-500 md:hidden ${isLight ? 'bg-white/95' : 'bg-[#050505]/95'} backdrop-blur-2xl ${mobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'}`}>
-        <div className="flex flex-col justify-center h-full px-8 py-20 space-y-8">
-          <div className="flex flex-col space-y-6 text-center">
+      <div className={`fixed inset-0 z-[60] transition-all duration-500 md:hidden ${isLight ? 'bg-white/95' : 'bg-[#050505]/95'} backdrop-blur-2xl ${mobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'}`}>
+        <div className="fixed inset-x-0 top-0 z-10 px-8 pt-[max(1.5rem,env(safe-area-inset-top))]">
+          <div className="flex items-center justify-between">
+            <Link href="/" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3">
+              <div className={`flex size-10 items-center justify-center rounded-full ${isLight ? 'bg-black/5 text-red-500' : 'bg-white/10 text-white'}`}>
+                <FaFire className="text-lg" />
+              </div>
+              <span className={`text-xl font-bold ${isLight ? 'text-neutral-900' : 'text-white'}`}>FireGuard</span>
+            </Link>
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`flex size-10 items-center justify-center rounded-full transition-all active:scale-90 ${isLight ? 'bg-black/5 text-neutral-900 hover:bg-black/10' : 'bg-white/10 text-white hover:bg-white/15'}`}
+              aria-label="Tutup menu"
+            >
+              <FaTimes className="text-lg" />
+            </button>
+          </div>
+        </div>
+
+        <div className="flex h-full flex-col justify-center gap-y-8 overflow-y-auto px-8 pb-10 pt-28">
+          <div className="flex flex-col gap-y-6 text-center">
             <Link href="#features" onClick={() => setMobileMenuOpen(false)} className={`text-3xl font-bold transition-colors ${isLight ? 'text-neutral-400 hover:text-black' : 'text-neutral-400 hover:text-white'}`}>Fitur
             </Link>
             <Link href="#stations" onClick={() => setMobileMenuOpen(false)} className={`text-3xl font-bold transition-colors ${isLight ? 'text-neutral-400 hover:text-black' : 'text-neutral-400 hover:text-white'}`}>Lokasi Pos
@@ -172,7 +203,7 @@ const Navbar = ({ isLight = false }: { isLight?: boolean }) => {
                 Masuk / Login
               </button>
             )}
-            <button onClick={() => { setMobileMenuOpen(false); push('/report/new'); }} className="w-full bg-[#e63946] text-white py-4 rounded-2xl font-bold text-lg shadow-[0_0_30px_rgba(230,57,70,0.3)]">
+            <button onClick={() => { setMobileMenuOpen(false); push('/report/new'); }} className="w-full bg-[#9F1C19] text-white py-4 rounded-2xl font-bold text-lg shadow-[0_0_30px_rgba(159,28,25,0.3)]">
               Lapor Darurat Sekarang
             </button>
           </div>

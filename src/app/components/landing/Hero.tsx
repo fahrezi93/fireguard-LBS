@@ -75,7 +75,7 @@ const Hero = () => {
         >
           <button
             onClick={() => router.push('/report/new')}
-            className="group relative w-full sm:w-auto overflow-hidden bg-[#e63946] text-white px-8 py-4 rounded-full font-bold text-sm sm:text-base transition-all hover:-translate-y-1 shadow-[0_0_30px_rgba(230,57,70,0.3)]"
+            className="group relative w-full sm:w-auto overflow-hidden bg-[#9F1C19] text-white px-8 py-4 rounded-full font-bold text-sm sm:text-base transition-all hover:-translate-y-1 shadow-[0_0_30px_rgba(159,28,25,0.3)]"
           >
             {/* Inner Glow / Plasma */}
             <div className="absolute inset-0 bg-gradient-to-r from-red-500 to-orange-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

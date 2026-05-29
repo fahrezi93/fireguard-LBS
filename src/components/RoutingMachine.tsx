@@ -97,7 +97,7 @@ const RoutingMachine = ({ start, end, onRouteFound, onLoadingChange }: RoutingMa
       
       // Buat polyline untuk animasi
       animatedPolylineRef.current = L.polyline([], {
-        color: '#EF4444',
+        color: '#9F1C19',
         weight: 6,
         opacity: 0.8,
         lineJoin: 'round',
@@ -229,7 +229,7 @@ const RoutingMachine = ({ start, end, onRouteFound, onLoadingChange }: RoutingMa
         clearRouteLayers();
 
         fallbackPolylineRef.current = L.polyline([start, end], {
-          color: '#EF4444',
+          color: '#9F1C19',
           weight: 4,
           opacity: 0.5,
           dashArray: '10, 10',

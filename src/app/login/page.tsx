@@ -229,7 +229,7 @@ export default function LoginPage() {
               href="/"
               className="inline-flex items-center gap-3 mb-4 group w-fit"
             >
-              <div className="p-2 bg-red-500 rounded-xl shadow-[0_0_15px_rgba(239,68,68,0.4)] group-hover:scale-105 transition-transform">
+              <div className="p-2 bg-red-500 rounded-xl shadow-[0_0_15px_rgba(159,28,25,0.4)] group-hover:scale-105 transition-transform">
                 <FaFire className="text-lg text-white" />
               </div>
               <span className="text-xl font-bold tracking-tight">FireGuard</span>
@@ -255,7 +255,7 @@ export default function LoginPage() {
                 }}
                 className={`flex-1 py-3 px-4 rounded-xl text-base font-bold transition-all duration-500 relative z-10 ${
                   loginMethod === "email"
-                    ? "text-white bg-gradient-to-r from-red-500 to-orange-600 shadow-[0_0_15px_rgba(239,68,68,0.4)] shadow-red-500/20"
+                    ? "text-white bg-gradient-to-r from-red-500 to-orange-600 shadow-[0_0_15px_rgba(159,28,25,0.4)] shadow-red-500/20"
                     : "text-neutral-500 hover:text-neutral-900"
                 }`}
               >
@@ -270,7 +270,7 @@ export default function LoginPage() {
                 }}
                 className={`flex-1 py-3 px-4 rounded-xl text-base font-bold transition-all duration-500 relative z-10 ${
                   loginMethod === "whatsapp"
-                    ? "text-white bg-gradient-to-r from-red-500 to-orange-600 shadow-[0_0_15px_rgba(239,68,68,0.4)] shadow-red-500/20"
+                    ? "text-white bg-gradient-to-r from-red-500 to-orange-600 shadow-[0_0_15px_rgba(159,28,25,0.4)] shadow-red-500/20"
                     : "text-neutral-500 hover:text-neutral-900"
                 }`}
               >

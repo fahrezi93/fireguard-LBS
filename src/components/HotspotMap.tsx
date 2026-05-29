@@ -82,8 +82,8 @@ export default function HotspotMap({ hotspots, year }: HotspotMapProps) {
                         center={[group.lat, group.lng]}
                         radius={radius}
                         pathOptions={{
-                            color: intensity > 0.7 ? '#DC2626' : intensity > 0.4 ? '#F97316' : '#EAB308',
-                            fillColor: intensity > 0.7 ? '#DC2626' : intensity > 0.4 ? '#F97316' : '#EAB308',
+                            color: intensity > 0.7 ? '#8B1816' : intensity > 0.4 ? '#DD2C28' : '#EAB308',
+                            fillColor: intensity > 0.7 ? '#8B1816' : intensity > 0.4 ? '#DD2C28' : '#EAB308',
                             fillOpacity: 0.4,
                             weight: 2,
                         }}

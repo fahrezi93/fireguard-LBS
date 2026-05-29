@@ -24,7 +24,7 @@ export default function CategoriesManagementPage() {
   const [formData, setFormData] = useState({
     name: "",
     icon: "",
-    color: "#EF4444",
+    color: "#9F1C19",
     description: "",
   });
 
@@ -73,7 +73,7 @@ export default function CategoriesManagementPage() {
         alert(editingCategory ? "Kategori berhasil diupdate!" : "Kategori berhasil ditambahkan!");
         setShowModal(false);
         setEditingCategory(null);
-        setFormData({ name: "", icon: "", color: "#EF4444", description: "" });
+        setFormData({ name: "", icon: "", color: "#9F1C19", description: "" });
         fetchCategories();
       } else {
         const data = await response.json();
@@ -175,7 +175,7 @@ export default function CategoriesManagementPage() {
             <button
               onClick={() => {
                 setEditingCategory(null);
-                setFormData({ name: "", icon: "", color: "#EF4444", description: "" });
+                setFormData({ name: "", icon: "", color: "#9F1C19", description: "" });
                 setShowModal(true);
               }}
               className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all text-sm font-medium shadow-sm"
@@ -319,7 +319,7 @@ export default function CategoriesManagementPage() {
                     value={formData.color}
                     onChange={(e) => setFormData({ ...formData, color: e.target.value })}
                     className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono"
-                    placeholder="#EF4444"
+                    placeholder="#9F1C19"
                     required
                   />
                 </div>
@@ -344,7 +344,7 @@ export default function CategoriesManagementPage() {
                   onClick={() => {
                     setShowModal(false);
                     setEditingCategory(null);
-                    setFormData({ name: "", icon: "", color: "#EF4444", description: "" });
+                    setFormData({ name: "", icon: "", color: "#9F1C19", description: "" });
                   }}
                   className="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-all"
                 >

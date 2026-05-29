@@ -33,17 +33,17 @@ function buildEmailWrapper(content: string): string {
 <html>
 <head>
   <meta charset="utf-8">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
-<body style="margin:0;padding:0;background-color:#F9FAFB;font-family:'Roboto',Arial,sans-serif;color:#4B5563;">
+<body style="margin:0;padding:0;background-color:#F9FAFB;font-family:'Plus Jakarta Sans',Arial,sans-serif;color:#4B5563;">
   <div style="max-width:600px;margin:40px auto;background-color:#FFFFFF;border:1px solid #E5E7EB;border-radius:24px;overflow:hidden;box-shadow:0 10px 25px rgba(0,0,0,0.05);">
     <!-- Header -->
-    <div style="padding:40px 30px;text-align:center;border-bottom:1px solid #F3F4F6;background:radial-gradient(circle at top,rgba(239,68,68,0.08) 0%,transparent 70%);">
-      <div style="display:inline-block;padding:10px;background:linear-gradient(135deg,#EF4444 0%,#F97316 100%);border-radius:16px;margin-bottom:16px;box-shadow:0 10px 20px rgba(239,68,68,0.2);">
+    <div style="padding:40px 30px;text-align:center;border-bottom:1px solid #F3F4F6;background:radial-gradient(circle at top,rgba(159,28,25,0.08) 0%,transparent 70%);">
+      <div style="display:inline-block;padding:10px;background:linear-gradient(135deg,#9F1C19 0%,#DD2C28 100%);border-radius:16px;margin-bottom:16px;box-shadow:0 10px 20px rgba(159,28,25,0.2);">
         <img src="${logoUrl}" alt="FireGuard" width="40" height="40" style="display:block;border-radius:8px;background:#FFFFFF;padding:4px;" />
       </div>
-      <h1 style="margin:0;font-family:'Poppins',Arial,sans-serif;font-size:28px;font-weight:700;color:#111827;letter-spacing:-0.5px;">FireGuard</h1>
-      <p style="margin:8px 0 0;font-size:14px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#EF4444;">Sistem Pelaporan Darurat</p>
+      <h1 style="margin:0;font-family:'Plus Jakarta Sans',Arial,sans-serif;font-size:28px;font-weight:700;color:#111827;letter-spacing:-0.5px;">FireGuard</h1>
+      <p style="margin:8px 0 0;font-size:14px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#9F1C19;">Sistem Pelaporan Darurat</p>
     </div>
     <!-- Body -->
     <div style="padding:40px 30px;">
@@ -80,7 +80,7 @@ export async function sendEmailOTP(
       : '🔐 Kode Login FireGuard';
 
   const bodyContent = `
-    <h2 style="margin:0 0 16px;font-family:'Poppins',Arial,sans-serif;font-size:20px;font-weight:600;color:#111827;">
+    <h2 style="margin:0 0 16px;font-family:'Plus Jakarta Sans',Arial,sans-serif;font-size:20px;font-weight:600;color:#111827;">
       ${type === 'register' ? 'Verifikasi Email Anda' : 'Kode Login Anda'}
     </h2>
     <p style="margin:0 0 32px;font-size:16px;line-height:1.6;color:#4B5563;">
@@ -89,8 +89,8 @@ export async function sendEmailOTP(
         : 'Gunakan kode OTP berikut untuk masuk ke akun FireGuard Anda. Kode ini bersifat rahasia.'}
     </p>
     <!-- OTP Box -->
-    <div style="background-color:rgba(239,68,68,0.05);border:1px dashed rgba(239,68,68,0.5);border-radius:16px;padding:24px;text-align:center;margin-bottom:32px;">
-      <span style="font-family:'Poppins',monospace;font-size:42px;font-weight:700;letter-spacing:12px;color:#EF4444;">${otp}</span>
+    <div style="background-color:rgba(159,28,25,0.05);border:1px dashed rgba(159,28,25,0.5);border-radius:16px;padding:24px;text-align:center;margin-bottom:32px;">
+      <span style="font-family:'Plus Jakarta Sans',monospace;font-size:42px;font-weight:700;letter-spacing:12px;color:#9F1C19;">${otp}</span>
     </div>
     <div style="background-color:#F9FAFB;border:1px solid #F3F4F6;border-radius:12px;padding:16px;">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -154,15 +154,15 @@ export async function sendStatusUpdateEmail(
     in_progress:  { label: 'Sedang Ditangani',  color: '#3B82F6', emoji: '🔄' },
     completed:    { label: 'Selesai',            color: '#10B981', emoji: '✅' },
     verified:     { label: 'Terverifikasi',      color: '#0EA5E9', emoji: '✅' },
-    false_report: { label: 'Laporan Palsu',      color: '#EF4444', emoji: '⚠️' },
+    false_report: { label: 'Laporan Palsu',      color: '#9F1C19', emoji: '⚠️' },
     diproses:     { label: 'Sedang Diproses',    color: '#3B82F6', emoji: '🔄' },
     dikirim:      { label: 'Tim Dikirim',        color: '#8B5CF6', emoji: '🚒' },
     ditangani:    { label: 'Sedang Ditangani',   color: '#06B6D4', emoji: '👨‍🚒' },
     dispatched:   { label: 'Unit Dikirim',       color: '#8B5CF6', emoji: '🚒' },
     arrived:      { label: 'Unit Tiba',          color: '#6366F1', emoji: '📍' },
     selesai:      { label: 'Selesai',            color: '#10B981', emoji: '✅' },
-    dibatalkan:   { label: 'Dibatalkan',         color: '#EF4444', emoji: '❌' },
-    false:        { label: 'Laporan Palsu',      color: '#EF4444', emoji: '⚠️' },
+    dibatalkan:   { label: 'Dibatalkan',         color: '#9F1C19', emoji: '❌' },
+    false:        { label: 'Laporan Palsu',      color: '#9F1C19', emoji: '⚠️' },
   };
 
   const status = statusLabels[newStatus] || { label: newStatus, color: '#6B7280', emoji: '📋' };
@@ -185,7 +185,7 @@ export async function sendStatusUpdateEmail(
         <tr>
           <td width="40" valign="middle" style="font-size:28px;">${status.emoji}</td>
           <td valign="middle">
-            <p style="margin:0;font-family:'Poppins',Arial,sans-serif;font-size:24px;font-weight:600;color:${status.color};">${status.label}</p>
+            <p style="margin:0;font-family:'Plus Jakarta Sans',Arial,sans-serif;font-size:24px;font-weight:600;color:${status.color};">${status.label}</p>
           </td>
         </tr>
       </table>

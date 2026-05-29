@@ -1,16 +1,6 @@
 /** @type {import('next').NextConfig} */
 
 const nextConfig = {
-  eslint: {
-    // Warning: mengabaikan ESLint errors saat build
-    // Untuk production, sebaiknya fix semua linting errors
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    // Warning: mengabaikan TypeScript errors saat build
-    // Untuk production, sebaiknya fix semua type errors
-    ignoreBuildErrors: true,
-  },
   images: {
     remotePatterns: [
       {

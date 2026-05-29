@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
 
         const id = await executeAndGetLastInsertId(
             'INSERT INTO disaster_categories (name, icon, color, description) VALUES (?, ?, ?, ?)',
-            [name, icon, color || '#ef4444', description || '']
+            [name, icon, color || '#9F1C19', description || '']
         );
 
         return NextResponse.json({

@@ -314,7 +314,7 @@ export default function SettingsPage() {
                     <div className="flex flex-col gap-3">
                         <button
                             onClick={handleDeleteAccount}
-                            className="w-full py-4 bg-red-500 text-white text-[11px] rounded-2xl font-bold uppercase tracking-widest hover:bg-red-600 active:scale-95 transition-all shadow-[0_8px_30px_rgba(239,68,68,0.2)]"
+                            className="w-full py-4 bg-red-500 text-white text-[11px] rounded-2xl font-bold uppercase tracking-widest hover:bg-red-600 active:scale-95 transition-all shadow-[0_8px_30px_rgba(159,28,25,0.2)]"
                         >
                             Verifikasi Penghapusan
                         </button>

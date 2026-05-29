@@ -131,7 +131,7 @@ export default function RegisterPage() {
 
         <div className="mt-8 md:mt-0">
           <Link href="/" className="inline-flex items-center gap-3 mb-4 group w-fit">
-            <div className="p-2 bg-red-500 rounded-xl shadow-[0_0_15px_rgba(239,68,68,0.4)] group-hover:scale-105 transition-transform">
+            <div className="p-2 bg-red-500 rounded-xl shadow-[0_0_15px_rgba(159,28,25,0.4)] group-hover:scale-105 transition-transform">
               <FaFire className="text-lg text-white" />
             </div>
             <span className="text-xl font-bold tracking-tight">FireGuard</span>
@@ -222,12 +222,12 @@ export default function RegisterPage() {
                     </motion.div>
                   )}
 
-                  <button type="submit" disabled={isLoading} className="w-full bg-[#111] hover:bg-[#e63946] text-white py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center shadow-lg shadow-black/5 hover:shadow-red-500/25 active:scale-[0.98] disabled:opacity-50 mt-4">
+                  <button type="submit" disabled={isLoading} className="w-full bg-[#111] hover:bg-[#9F1C19] text-white py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center shadow-lg shadow-black/5 hover:shadow-red-500/25 active:scale-[0.98] disabled:opacity-50 mt-4">
                     {isLoading ? <span className="flex items-center gap-2"><FaSpinner className="animate-spin text-sm" /> Sedang Mengirim...</span> : "Lanjut Verifikasi OTP"}
                   </button>
 
                   <p className="mt-4 text-center text-gray-500 font-medium text-sm">
-                    Punya akun? <Link href="/login" className="text-[#e63946] hover:underline decoration-2 underline-offset-4">Masuk di sini</Link>
+                    Punya akun? <Link href="/login" className="text-[#9F1C19] hover:underline decoration-2 underline-offset-4">Masuk di sini</Link>
                   </p>
                 </form>
               </motion.div>
@@ -280,7 +280,7 @@ export default function RegisterPage() {
                   )}
 
                   <div className="pt-2">
-                    <button type="submit" disabled={isLoading || otp.length !== 6} className="w-full bg-[#111] hover:bg-[#e63946] text-white py-4 rounded-2xl font-bold text-lg transition-all flex items-center justify-center shadow-lg shadow-black/5 hover:shadow-red-500/25 active:scale-[0.98] disabled:opacity-50">
+                    <button type="submit" disabled={isLoading || otp.length !== 6} className="w-full bg-[#111] hover:bg-[#9F1C19] text-white py-4 rounded-2xl font-bold text-lg transition-all flex items-center justify-center shadow-lg shadow-black/5 hover:shadow-red-500/25 active:scale-[0.98] disabled:opacity-50">
                       {isLoading ? <span className="flex items-center gap-2"><FaSpinner className="animate-spin" /> Memverifikasi...</span> : "Selesaikan Pendaftaran"}
                     </button>
                   </div>

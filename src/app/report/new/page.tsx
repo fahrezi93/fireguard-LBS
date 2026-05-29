@@ -53,7 +53,7 @@ function MapInstructions() {
         </div>
         <ul className="space-y-2.5">
           <li className="flex items-center gap-3 text-xs md:text-sm text-gray-400 font-medium">
-            <span className="w-2 h-2 rounded-full bg-red-500 shrink-0 shadow-[0_0_8px_rgba(239,68,68,0.6)]"></span>
+            <span className="w-2 h-2 rounded-full bg-red-500 shrink-0 shadow-[0_0_8px_rgba(159,28,25,0.6)]"></span>
             <span><strong className="text-white">Klik</strong> untuk menandai titik darurat.</span>
           </li>
           <li className="flex items-center gap-3 text-xs md:text-sm text-gray-400 font-medium">

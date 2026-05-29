@@ -18,7 +18,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
         await execute(
             'UPDATE disaster_categories SET name = ?, icon = ?, color = ?, description = ? WHERE id = ?',
-            [name, icon, color || '#ef4444', description || '', id]
+            [name, icon, color || '#9F1C19', description || '', id]
         );
 
         return NextResponse.json({

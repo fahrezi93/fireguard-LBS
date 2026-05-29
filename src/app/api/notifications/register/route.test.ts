@@ -1,13 +1,17 @@
-import { POST } from './route';
 import { NextRequest } from 'next/server';
 import * as db from '@/lib/db';
 import * as cors from '@/lib/cors';
 import * as rateLimit from '@/lib/rate-limit';
 
 // Mock dependencies
-jest.mock('@/lib/db');
+jest.mock('@/lib/db', () => ({
+  execute: jest.fn(),
+  formatDateForMySQL: jest.fn(),
+}));
 jest.mock('@/lib/cors');
 jest.mock('@/lib/rate-limit');
+
+let POST: (request: NextRequest) => Promise<Response>;
 
 describe('POST /api/notifications/register', () => {
   const mockExecute = db.execute as jest.MockedFunction<typeof db.execute>;
@@ -15,6 +19,10 @@ describe('POST /api/notifications/register', () => {
   const mockGetAuthPayloadFromRequest = cors.getAuthPayloadFromRequest as jest.MockedFunction<typeof cors.getAuthPayloadFromRequest>;
   const mockJsonWithCors = cors.jsonWithCors as jest.MockedFunction<typeof cors.jsonWithCors>;
   const mockEnforceRateLimit = rateLimit.enforceRateLimit as jest.MockedFunction<typeof rateLimit.enforceRateLimit>;
+
+  beforeAll(async () => {
+    ({ POST } = await import('./route'));
+  });
 
   beforeEach(() => {
     jest.clearAllMocks();

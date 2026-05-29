@@ -149,17 +149,16 @@ export default function AdminMap({ reports, onReportClick, selectedReport }: Adm
     if (isNaN(fireLat) || isNaN(fireLng)) return null;
 
     const firePos: [number, number] = [fireLat, fireLng];
-    let closest: FireStation | null = null;
-    let minDistance = Infinity;
 
-    fireStations.forEach(station => {
+    return fireStations.reduce<FireStation | null>((closest, station) => {
       const distance = haversineDistance(firePos, [station.latitude, station.longitude]);
-      if (distance < minDistance) {
-        minDistance = distance;
-        closest = station;
+      if (!closest) {
+        return station;
       }
-    });
-    return closest;
+
+      const closestDistance = haversineDistance(firePos, [closest.latitude, closest.longitude]);
+      return distance < closestDistance ? station : closest;
+    }, null);
   }, [selectedReport]);
 
   // Tentukan apakah rute harus ditampilkan
@@ -219,11 +218,14 @@ export default function AdminMap({ reports, onReportClick, selectedReport }: Adm
       })}
 
       {/* Marker lokasi pelapor untuk laporan yang punya koordinat pelapor */}
-      {reports.filter(r => r.reporter_latitude && r.reporter_longitude).map(report => {
+      {reports.flatMap(report => {
+        if (!report.reporter_latitude || !report.reporter_longitude) return [];
+
         const repLat = Number(report.reporter_latitude);
         const repLng = Number(report.reporter_longitude);
-        if (isNaN(repLat) || isNaN(repLng)) return null;
-        return (
+        if (isNaN(repLat) || isNaN(repLng)) return [];
+
+        return [(
           <Marker
             key={`reporter-${report.id}`}
             position={[repLat, repLng]}
@@ -235,7 +237,7 @@ export default function AdminMap({ reports, onReportClick, selectedReport }: Adm
               Laporan #{report.id}
             </Popup>
           </Marker>
-        );
+        )];
       })}
 
       {/* Rute dari pos damkar terdekat ke lokasi kebakaran */}
