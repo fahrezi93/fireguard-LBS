@@ -49,3 +49,5 @@ fireguard_flutter/
 # Ignore AI Agent Context
 agents.md
 
+# Ignore scripts
+scripts/

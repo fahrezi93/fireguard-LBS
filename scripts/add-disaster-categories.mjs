@@ -11,7 +11,7 @@ async function setupDisasterCategories() {
   });
 
   try {
-    console.log('🔧 Setting up disaster categories...');
+    console.log('🔧 Setting up disaster categories.');
 
     // 1. Create disaster_categories table if not exists
     await db.execute(`
