@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-    const baseUrl = 'https://www.fireguard-palembang.my.id';
+    const baseUrl = 'https://www.siagabencana-palembang.my.id';
 
     return [
         {

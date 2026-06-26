@@ -15,8 +15,8 @@ export type AuthPayload = {
   jti?: string;
 };
 
-const JWT_ISSUER = process.env.JWT_ISSUER || "fireguard-web";
-const JWT_AUDIENCE = process.env.JWT_AUDIENCE || "fireguard-clients";
+const JWT_ISSUER = process.env.JWT_ISSUER || "siagabencana-web";
+const JWT_AUDIENCE = process.env.JWT_AUDIENCE || "siagabencana-clients";
 
 function unauthorized(message = "Unauthorized") {
   return NextResponse.json({ message }, { status: 401 });

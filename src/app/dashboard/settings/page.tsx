@@ -251,7 +251,7 @@ export default function SettingsPage() {
                 </div>
                 <div>
                     <h2 className="text-sm font-bold text-gray-900 tracking-tight">Informasi Platform</h2>
-                    <p className="text-[11px] uppercase tracking-widest font-bold text-gray-400 mt-0.5">FireGuard System</p>
+                    <p className="text-[11px] uppercase tracking-widest font-bold text-gray-400 mt-0.5">SiagaBencana System</p>
                 </div>
             </div>
             
@@ -266,7 +266,7 @@ export default function SettingsPage() {
                 </div>
                 <div className="flex items-center justify-between">
                     <p className="text-[11px] uppercase tracking-widest font-bold text-gray-400">Maintainer</p>
-                    <p className="text-xs font-bold text-gray-900">FireGuard Plaju Dev</p>
+                    <p className="text-xs font-bold text-gray-900">SiagaBencana Plaju Dev</p>
                 </div>
             </div>
         </motion.div>
@@ -277,7 +277,7 @@ export default function SettingsPage() {
                 <div>
                     <h2 className="text-sm font-bold text-red-600 tracking-tight flex items-center gap-2"><FaExclamationTriangle /> Tutup Permanen</h2>
                     <p className="text-xs font-medium text-red-500/80 mt-1 max-w-sm">
-                        Penghapusan akun bersifat permanen. Seluruh riwayat laporan keselamatan akan dihilangkan dari basis data FireGuard.
+                        Penghapusan akun bersifat permanen. Seluruh riwayat laporan keselamatan akan dihilangkan dari basis data SiagaBencana.
                     </p>
                 </div>
                 <button

@@ -71,7 +71,7 @@ describe('sendReportStatusNotification', () => {
         android: expect.objectContaining({
           priority: 'high',
           notification: expect.objectContaining({
-            channelId: 'fireguard_reports',
+            channelId: 'siagabencana_reports',
             priority: 'high',
             sound: 'default',
           }),

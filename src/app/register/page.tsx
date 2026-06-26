@@ -134,7 +134,7 @@ export default function RegisterPage() {
             <div className="p-2 bg-red-500 rounded-xl shadow-[0_0_15px_rgba(159,28,25,0.4)] group-hover:scale-105 transition-transform">
               <FaFire className="text-lg text-white" />
             </div>
-            <span className="text-xl font-bold tracking-tight">FireGuard</span>
+            <span className="text-xl font-bold tracking-tight">SiagaBencana</span>
           </Link>
 
           <AnimatePresence mode="wait">

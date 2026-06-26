@@ -37,10 +37,10 @@ body {
   --color-red-900: #4f0e0d;
   --color-orange-500: #dd2c28;
   --color-orange-600: #c52723;
-  --color-fireguard-primary: #9f1c19;
-  --color-fireguard-primary-dark: #8b1816;
-  --color-fireguard-accent: #dd2c28;
-  --color-fireguard-accent-dark: #c52723;
+  --color-siagabencana-primary: #9f1c19;
+  --color-siagabencana-primary-dark: #8b1816;
+  --color-siagabencana-accent: #dd2c28;
+  --color-siagabencana-accent-dark: #c52723;
 }
 
 @layer base {

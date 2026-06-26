@@ -1,4 +1,4 @@
-export const ONBOARDING_STORAGE_KEY = "fireguard_onboarding_completed_v1";
+export const ONBOARDING_STORAGE_KEY = "siagabencana_onboarding_completed_v1";
 export const ONBOARDING_COOKIE_NAME = "fg_onboarding";
 
 export function hasCompletedOnboarding(): boolean {

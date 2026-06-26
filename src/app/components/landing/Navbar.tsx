@@ -97,7 +97,7 @@ const Navbar = ({ isLight = false }: { isLight?: boolean }) => {
               }`}>
               <FaFire className={`text-xl ${scrolled ? 'text-white' : isLight ? 'text-red-500' : 'text-white'}`} />
             </div>
-            <span className={`text-xl font-bold tracking-tight ${isLight && !scrolled ? 'text-neutral-900' : scrolled && isLight ? 'text-neutral-900' : 'text-white'}`}>FireGuard</span>
+            <span className={`text-xl font-bold tracking-tight ${isLight && !scrolled ? 'text-neutral-900' : scrolled && isLight ? 'text-neutral-900' : 'text-white'}`}>SiagaBencana</span>
           </Link>
 
           {/* Desktop Menu */}
@@ -165,7 +165,7 @@ const Navbar = ({ isLight = false }: { isLight?: boolean }) => {
               <div className={`flex size-10 items-center justify-center rounded-full ${isLight ? 'bg-black/5 text-red-500' : 'bg-white/10 text-white'}`}>
                 <FaFire className="text-lg" />
               </div>
-              <span className={`text-xl font-bold ${isLight ? 'text-neutral-900' : 'text-white'}`}>FireGuard</span>
+              <span className={`text-xl font-bold ${isLight ? 'text-neutral-900' : 'text-white'}`}>SiagaBencana</span>
             </Link>
             <button
               type="button"

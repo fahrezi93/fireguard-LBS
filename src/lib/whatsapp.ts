@@ -53,16 +53,16 @@ export async function sendWhatsAppOTP(phone: string, otp: string, type: 'registe
 
   if (type === 'register') {
     subject = "Pendaftaran";
-    action = "menyelesaikan pendaftaran akun FireGuard Anda";
+    action = "menyelesaikan pendaftaran akun SiagaBencana Anda";
   } else if (type === 'login') {
     subject = "Login";
-    action = "masuk ke akun FireGuard Anda";
+    action = "masuk ke akun SiagaBencana Anda";
   } else if (type === 'reset') {
     subject = "Reset Password";
-    action = "mereset kata sandi akun FireGuard Anda";
+    action = "mereset kata sandi akun SiagaBencana Anda";
   }
 
-  const message = `*🔥 FireGuard - ${subject}*\n\nGunakan kode OTP berikut untuk ${action}:\n\n👉 *${otp}*\n\n⚠️ _Berlaku selama 10 menit. Jangan bagikan kode ini kepada siapapun demi keamanan akun Anda._\n\n_Sent via FireGuard System_`;
+  const message = `*🔥 SiagaBencana - ${subject}*\n\nGunakan kode OTP berikut untuk ${action}:\n\n👉 *${otp}*\n\n⚠️ _Berlaku selama 10 menit. Jangan bagikan kode ini kepada siapapun demi keamanan akun Anda._\n\n_Sent via SiagaBencana System_`;
 
   return sendWhatsApp(phone, message);
 }
@@ -79,7 +79,7 @@ export async function sendWhatsAppReportUpdate(
   adminNotes?: string
 ) {
   // Template yang lebih profesional dan informatif
-  let message = `*🔥 FIREGUARD - NOTIFIKASI STATUS*\n\n`;
+  let message = `*🔥 SIAGABENCANA - NOTIFIKASI STATUS*\n\n`;
   message += `Halo *${userName}*,\n`;
   message += `Laporan kejadian Anda dengan ID *#${reportId}* telah diperbarui oleh petugas.\n\n`;
   message += `━━━━━━━━━━━━━━━━━━\n`;
@@ -91,7 +91,7 @@ export async function sendWhatsAppReportUpdate(
   }
   message += `━━━━━━━━━━━━━━━━━━\n\n`;
   message += `Terima kasih telah berkontribusi dalam menjaga keamanan lingkungan. Tetap waspada dan utamakan keselamatan!\n\n`;
-  message += `_Pesan ini dikirim secara otomatis oleh sistem FireGuard_`;
+  message += `_Pesan ini dikirim secara otomatis oleh sistem SiagaBencana_`;
 
   return sendWhatsApp(phone, message);
 }

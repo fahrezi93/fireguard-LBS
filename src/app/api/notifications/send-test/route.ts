@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
       return jsonWithCors({
         success: false,
         message: "Firebase Admin SDK BELUM diinisialisasi!",
-        hint: "Pastikan FIREBASE_SERVICE_ACCOUNT_KEY sudah di-set di .env VPS lalu restart PM2 (pm2 reload fireguard-web).",
+        hint: "Pastikan FIREBASE_SERVICE_ACCOUNT_KEY sudah di-set di .env VPS lalu restart PM2 (pm2 reload siagabencana-web).",
         firebase_ready: false,
         tokens_registered: tokens.length,
         tokens,
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
         await messaging!.send({
           token: device_token,
           notification: {
-            title: "Test Notifikasi FireGuard",
+            title: "Test Notifikasi SiagaBencana",
             body: "Notifikasi berhasil! FCM berjalan dengan baik.",
           },
           data: {
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
           android: {
             priority: "high",
             notification: {
-              channelId: "fireguard_reports",
+              channelId: "siagabencana_reports",
               priority: "high",
               sound: "default",
               defaultSound: true,

@@ -233,7 +233,7 @@ function playWarningSound() {
 
 const BROADCAST_TEMPLATES = [
   { title: "⚠️ Peringatan Kebakaran Hutan", message: "Titik api terdeteksi di area sekitar Anda. Harap waspada dan hindari aktivitas di luar ruangan." },
-  { title: "📢 Info Pemeliharaan Sistem", message: "Sistem FireGuard akan mengalami pemeliharaan rutin pada pukul 00:00 - 02:00 WIB. Layanan mungkin akan terganggu sementara." },
+  { title: "📢 Info Pemeliharaan Sistem", message: "Sistem SiagaBencana akan mengalami pemeliharaan rutin pada pukul 00:00 - 02:00 WIB. Layanan mungkin akan terganggu sementara." },
   { title: "🚨 Status Siaga Darurat", message: "Status Siaga Darurat diberlakukan untuk wilayah Anda. Segera amankan barang berharga dan bersiap untuk evakuasi jika diinstruksikan." },
   { title: "✅ Penanganan Selesai", message: "Insiden di wilayah Anda telah berhasil ditangani oleh tim pemadam. Kondisi saat ini sudah aman terkendali." },
   { title: "🌤️ Info Cuaca Ekstrem", message: "Peringatan cuaca ekstrem: Suhu sangat tinggi berpotensi memicu kebakaran. Hindari membakar sampah atau lahan." },
@@ -241,7 +241,7 @@ const BROADCAST_TEMPLATES = [
   { title: "🌫️ Peringatan Asap Tebal", message: "Terpantau asap tebal di wilayah Anda. Gunakan masker saat beraktivitas di luar ruangan untuk kesehatan pernapasan." },
   { title: "📢 Sosialisasi Pencegahan", message: "Mari cegah kebakaran dengan tidak membuang puntung rokok sembarangan dan mematikan peralatan listrik yang tidak digunakan." },
   { title: "🚧 Penutupan Jalan Akses", message: "Beberapa jalan di sekitar lokasi insiden ditutup sementara untuk proses pemadaman. Harap gunakan jalur alternatif." },
-  { title: "ℹ️ Update Nomor Darurat", message: "Simpan nomor darurat Posko Utama FireGuard: 113. Segera laporkan jika melihat potensi bahaya." },
+  { title: "ℹ️ Update Nomor Darurat", message: "Simpan nomor darurat Posko Utama SiagaBencana: 113. Segera laporkan jika melihat potensi bahaya." },
 ];
 
 export default function OperatorDashboard() {
@@ -441,7 +441,12 @@ export default function OperatorDashboard() {
               name: r.kelurahan_name || 'Tidak tersedia',
             } : undefined,
           };
-          setReports((prev) => [transformed, ...prev]);
+          setReports((prev) => {
+            if (prev.some((item) => item.id === transformed.id)) {
+              return prev;
+            }
+            return [transformed, ...prev];
+          });
         } else if (message.type === "STATUS_UPDATE") {
           setReports((prev) =>
             prev.map((r) =>
@@ -478,6 +483,8 @@ export default function OperatorDashboard() {
     return () => {
       clearTimeout(reconnectionTimer);
       if (ws.current) {
+        ws.current.onclose = null;
+        ws.current.onerror = null;
         ws.current.close();
       }
     };
@@ -584,7 +591,7 @@ export default function OperatorDashboard() {
                   type="text"
                   value={broadcastTitle}
                   onChange={(e) => setBroadcastTitle(e.target.value)}
-                  placeholder="contoh: ⚠️ Info Penting dari FireGuard"
+                  placeholder="contoh: ⚠️ Info Penting dari SiagaBencana"
                   maxLength={200}
                   disabled={isSendingBroadcast}
                   className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-900 bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all disabled:opacity-60 disabled:bg-gray-50"
@@ -668,7 +675,7 @@ export default function OperatorDashboard() {
                   <FaFire className="text-white text-lg" />
                 </div>
                 <div>
-                  <h1 className="text-lg font-bold tracking-tight text-gray-900">FireGuard <span className="text-red-500">Ops</span></h1>
+                  <h1 className="text-lg font-bold tracking-tight text-gray-900">SiagaBencana <span className="text-red-500">Ops</span></h1>
                   <p className="text-xs font-medium text-gray-500 uppercase tracking-widest">Dashboard Operator</p>
                 </div>
               </div>

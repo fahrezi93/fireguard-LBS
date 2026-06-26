@@ -4,19 +4,19 @@ import './globals.css';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://www.fireguard-palembang.my.id'),
+  metadataBase: new URL('https://www.siagabencana-palembang.my.id'),
   title: {
-    default: 'FireGuard Plaju Darat, Palembang - Sistem Cepat Tanggap Kebakaran',
-    template: '%s | FireGuard Palembang'
+    default: 'SiagaBencana Plaju Darat, Palembang - Sistem Cepat Tanggap Kebakaran',
+    template: '%s | SiagaBencana Palembang'
   },
-  description: 'FireGuard adalah sistem peringatan dini dan pelaporan kebakaran real-time untuk wilayah Plaju Darat, Palembang. Lindungi lingkungan Anda dengan respon cepat dan akurat.',
-  applicationName: 'FireGuard Palembang',
-  authors: [{ name: 'FireGuard Team', url: 'https://www.fireguard-palembang.my.id' }],
+  description: 'SiagaBencana adalah sistem peringatan dini dan pelaporan kebakaran real-time untuk wilayah Plaju Darat, Palembang. Lindungi lingkungan Anda dengan respon cepat dan akurat.',
+  applicationName: 'SiagaBencana Palembang',
+  authors: [{ name: 'SiagaBencana Team', url: 'https://www.siagabencana-palembang.my.id' }],
   generator: 'Next.js',
   keywords: ['kebakaran', 'palembang', 'emergency', 'fire', 'report', 'pemadam', 'plaju', 'darurat', 'tanggap darurat', 'pemadam kebakaran palembang'],
   referrer: 'origin-when-cross-origin',
-  creator: 'FireGuard Team',
-  publisher: 'FireGuard Plaju Darat',
+  creator: 'SiagaBencana Team',
+  publisher: 'SiagaBencana Plaju Darat',
   robots: {
     index: true,
     follow: true,
@@ -36,10 +36,10 @@ export const metadata: Metadata = {
   },
   manifest: '/manifest.json', // Basic manifest for SEO/icons
   openGraph: {
-    title: 'FireGuard Plaju Darat, Palembang',
+    title: 'SiagaBencana Plaju Darat, Palembang',
     description: 'Sistem Cepat Tanggap Kebakaran Plaju Darat, Palembang - Laporkan insiden secara instan.',
-    url: 'https://www.fireguard-palembang.my.id',
-    siteName: 'FireGuard',
+    url: 'https://www.siagabencana-palembang.my.id',
+    siteName: 'SiagaBencana',
     locale: 'id_ID',
     type: 'website',
     images: [
@@ -47,15 +47,15 @@ export const metadata: Metadata = {
         url: '/Fireguardthumbnail.png',
         width: 1200,
         height: 630,
-        alt: 'FireGuard Palembang Thumbnail',
+        alt: 'SiagaBencana Palembang Thumbnail',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'FireGuard Plaju Darat, Palembang',
+    title: 'SiagaBencana Plaju Darat, Palembang',
     description: 'Sistem Cepat Tanggap Kebakaran Real-time untuk wilayah Plaju.',
-    creator: '@fireguard_id',
+    creator: '@siagabencana_id',
     images: ['/Fireguardthumbnail.png'],
   },
   alternates: {

@@ -1,6 +1,6 @@
 {
-  "name": "FireGuard Palembang",
-  "short_name": "FireGuard",
+  "name": "SiagaBencana Palembang",
+  "short_name": "SiagaBencana",
   "description": "Sistem Pelaporan Darurat Kebakaran dan Bencana Kecamatan Plaju",
   "start_url": "/",
   "display": "standalone",

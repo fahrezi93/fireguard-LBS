@@ -39,7 +39,7 @@ export default function NotFound() {
 
             {/* Footer Branding */}
             <div className="absolute bottom-8 text-neutral-400 text-xs font-bold tracking-widest uppercase">
-                FireGuard &copy; {new Date().getFullYear()}
+                SiagaBencana &copy; {new Date().getFullYear()}
             </div>
         </div>
     );

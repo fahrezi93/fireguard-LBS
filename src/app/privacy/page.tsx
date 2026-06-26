@@ -21,7 +21,7 @@ export default function PrivacyPage() {
     {
       icon: <FaShieldAlt className="text-blue-500" />,
       title: "Keamanan Data",
-      content: "Seluruh data yang dikirimkan melalui aplikasi FireGuard dilindungi dengan enkripsi SSL/TLS. Server kami menggunakan protap keamanan tingkat tinggi untuk mencegah akses yang tidak sah."
+      content: "Seluruh data yang dikirimkan melalui aplikasi SiagaBencana dilindungi dengan enkripsi SSL/TLS. Server kami menggunakan protap keamanan tingkat tinggi untuk mencegah akses yang tidak sah."
     },
     {
       icon: <FaUserSecret className="text-emerald-500" />,
@@ -51,7 +51,7 @@ export default function PrivacyPage() {
               Kebijakan <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-yellow-500">Privasi.</span>
             </h1>
             <p className="text-gray-500 text-lg leading-relaxed max-w-2xl font-light">
-              Privasi Anda adalah prioritas kami. Di FireGuard, kami berkomitmen untuk melindungi data pribadi Anda sementara memberikan layanan tanggap darurat terbaik.
+              Privasi Anda adalah prioritas kami. Di SiagaBencana, kami berkomitmen untuk melindungi data pribadi Anda sementara memberikan layanan tanggap darurat terbaik.
             </p>
           </motion.div>
 

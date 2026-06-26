@@ -5,7 +5,7 @@ export async function GET() {
   const latestVersion = {
     version: "1.0.1", // version name
     buildNumber: "2",  // version code
-    downloadUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/downloads/fireguard-latest.apk`,
+    downloadUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/downloads/siagabencana-latest.apk`,
     forceUpdate: false,
     changelog: "• Penambahan fitur update otomatis\n• Perbaikan UI pada dashboard\n• Optimasi notifikasi",
   };

@@ -37,7 +37,7 @@ export async function getAddressFromCoordinates(lat: number, lon: number): Promi
       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`,
       {
         headers: {
-          'User-Agent': 'FireGuardApp/1.0 (https://github.com/your-repo)' // Aturan penggunaan Nominatim
+          'User-Agent': 'SiagaBencanaApp/1.0 (https://github.com/your-repo)' // Aturan penggunaan Nominatim
         }
       }
     );

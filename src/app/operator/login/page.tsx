@@ -91,7 +91,7 @@ export default function OperatorLoginPage() {
             <FaUserShield className="text-xl text-white" />
           </div>
           <span className="text-2xl font-bold">
-            FireGuard <span className="text-red-500">Ops</span>
+            SiagaBencana <span className="text-red-500">Ops</span>
           </span>
         </div>
 

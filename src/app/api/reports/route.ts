@@ -21,7 +21,7 @@ async function uploadToCloudinary(buffer: Buffer, filename: string): Promise<str
 
   formData.append('file', blob, filename);
   formData.append('upload_preset', uploadPreset);
-  formData.append('folder', 'fireguard/reports');
+  formData.append('folder', 'siagabencana/reports');
 
   const response = await fetch(
     `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,

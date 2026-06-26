@@ -12,6 +12,6 @@ export default function robots(): MetadataRoute.Robots {
                 '/onboarding/',
             ],
         },
-        sitemap: 'https://www.fireguard-palembang.my.id/sitemap.xml',
+        sitemap: 'https://www.siagabencana-palembang.my.id/sitemap.xml',
     };
 }

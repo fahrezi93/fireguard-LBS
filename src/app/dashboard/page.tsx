@@ -209,7 +209,7 @@ export default function DashboardPage() {
               <div className="p-2 bg-red-500 rounded-xl shadow-sm">
                 <FaFire className="text-white text-base" />
               </div>
-              <span className="text-lg font-bold tracking-tight text-neutral-900">FireGuard</span>
+              <span className="text-lg font-bold tracking-tight text-neutral-900">SiagaBencana</span>
             </Link>
             <button onClick={() => setSidebarOpen(false)} className="lg:hidden p-2 text-neutral-400 hover:text-neutral-900 transition-colors">
               <FaTimes />

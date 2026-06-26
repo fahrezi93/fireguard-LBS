@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
         (user as any).name || 'Pengguna',
         9999,
         'in_progress',
-        'Ini adalah email test dari FireGuard. Jika kamu menerima ini, konfigurasi Resend sudah benar.',
+        'Ini adalah email test dari SiagaBencana. Jika kamu menerima ini, konfigurasi Resend sudah benar.',
       );
     } else {
       result = await sendEmailOTP(email, '123456', 'login');

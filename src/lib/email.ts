@@ -16,14 +16,14 @@ import { Resend } from 'resend';
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Alamat pengirim — harus menggunakan domain yang sudah diverifikasi di Resend
-// Contoh: "FireGuard <noreply@fireguard-palembang.my.id>"
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'FireGuard <noreply@fireguard-palembang.my.id>';
+// Contoh: "SiagaBencana <noreply@siagabencana-palembang.my.id>"
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'SiagaBencana <noreply@siagabencana-palembang.my.id>';
 
 // Logo URL untuk template email
 const getLogoUrl = () =>
   process.env.NEXT_PUBLIC_BASE_URL
     ? `${process.env.NEXT_PUBLIC_BASE_URL}/favicon.png`
-    : 'https://www.fireguard-palembang.my.id/favicon.png';
+    : 'https://www.siagabencana-palembang.my.id/favicon.png';
 
 // ── Template HTML helpers ─────────────────────────────────────────────────────
 
@@ -34,28 +34,41 @@ function buildEmailWrapper(content: string): string {
 <head>
   <meta charset="utf-8">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', Arial, sans-serif; }
+  </style>
 </head>
-<body style="margin:0;padding:0;background-color:#F9FAFB;font-family:'Plus Jakarta Sans',Arial,sans-serif;color:#4B5563;">
-  <div style="max-width:600px;margin:40px auto;background-color:#FFFFFF;border:1px solid #E5E7EB;border-radius:24px;overflow:hidden;box-shadow:0 10px 25px rgba(0,0,0,0.05);">
-    <!-- Header -->
-    <div style="padding:40px 30px;text-align:center;border-bottom:1px solid #F3F4F6;background:radial-gradient(circle at top,rgba(159,28,25,0.08) 0%,transparent 70%);">
-      <div style="display:inline-block;padding:10px;background:linear-gradient(135deg,#9F1C19 0%,#DD2C28 100%);border-radius:16px;margin-bottom:16px;box-shadow:0 10px 20px rgba(159,28,25,0.2);">
-        <img src="${logoUrl}" alt="FireGuard" width="40" height="40" style="display:block;border-radius:8px;background:#FFFFFF;padding:4px;" />
-      </div>
-      <h1 style="margin:0;font-family:'Plus Jakarta Sans',Arial,sans-serif;font-size:28px;font-weight:700;color:#111827;letter-spacing:-0.5px;">FireGuard</h1>
-      <p style="margin:8px 0 0;font-size:14px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#9F1C19;">Sistem Pelaporan Darurat</p>
-    </div>
-    <!-- Body -->
-    <div style="padding:40px 30px;">
-      ${content}
-    </div>
-    <!-- Footer -->
-    <div style="padding:24px 30px;background-color:#F9FAFB;border-top:1px solid #E5E7EB;text-align:center;">
-      <p style="margin:0;font-size:12px;color:#9CA3AF;line-height:1.6;">
-        &copy; ${new Date().getFullYear()} FireGuard.<br>Mengabdi untuk publik. Hak Cipta Dilindungi.<br>Kec. Plaju, Palembang.
-      </p>
-    </div>
-  </div>
+<body style="margin:0;padding:0;background-color:#F9FAFB;font-family:'Plus Jakarta Sans',Arial,sans-serif;color:#1E293B;line-height:1.6;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#F9FAFB;padding:40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background-color:#FFFFFF;border-radius:16px;border:1px solid #E2E8F0;box-shadow:0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);overflow:hidden;">
+          <!-- Header -->
+          <tr>
+            <td style="padding:40px 40px 24px 40px;text-align:center;border-bottom:1px solid #F1F5F9;">
+              <img src="${logoUrl}" alt="SiagaBencana" width="48" height="48" style="display:inline-block;margin-bottom:16px;border-radius:12px;" />
+              <h1 style="margin:0;font-family:'Plus Jakarta Sans',Arial,sans-serif;font-size:24px;font-weight:700;color:#0F172A;letter-spacing:-0.5px;">SiagaBencana</h1>
+              <p style="margin:4px 0 0;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#DC2626;">Sistem Pelaporan Darurat</p>
+            </td>
+          </tr>
+          <!-- Body -->
+          <tr>
+            <td style="padding:40px;">
+              ${content}
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="padding:32px 40px;background-color:#F8FAFC;border-top:1px solid #F1F5F9;text-align:center;">
+              <p style="margin:0;font-size:13px;color:#64748B;line-height:1.6;">
+                &copy; ${new Date().getFullYear()} SiagaBencana.<br>Mengabdi untuk publik. Hak Cipta Dilindungi.<br>Kec. Plaju, Palembang.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
 </body>
 </html>`;
 }
@@ -76,32 +89,27 @@ export async function sendEmailOTP(
 ): Promise<{ success: boolean; error?: string }> {
   const subject =
     type === 'register'
-      ? '🔐 Kode Verifikasi Pendaftaran FireGuard'
-      : '🔐 Kode Login FireGuard';
+      ? '🔐 Kode Verifikasi Pendaftaran SiagaBencana'
+      : '🔐 Kode Login SiagaBencana';
 
   const bodyContent = `
-    <h2 style="margin:0 0 16px;font-family:'Plus Jakarta Sans',Arial,sans-serif;font-size:20px;font-weight:600;color:#111827;">
-      ${type === 'register' ? 'Verifikasi Email Anda' : 'Kode Login Anda'}
+    <h2 style="margin:0 0 12px;font-family:'Plus Jakarta Sans',Arial,sans-serif;font-size:20px;font-weight:700;color:#0F172A;letter-spacing:-0.5px;">
+      ${type === 'register' ? 'Verifikasi Pendaftaran' : 'Kode Login Autentikasi'}
     </h2>
-    <p style="margin:0 0 32px;font-size:16px;line-height:1.6;color:#4B5563;">
+    <p style="margin:0 0 32px;font-size:15px;line-height:1.6;color:#475569;">
       ${type === 'register'
-        ? 'Gunakan kode OTP berikut untuk menyelesaikan pendaftaran akun FireGuard Anda. Kode ini bersifat rahasia.'
-        : 'Gunakan kode OTP berikut untuk masuk ke akun FireGuard Anda. Kode ini bersifat rahasia.'}
+        ? 'Gunakan kode OTP berikut untuk menyelesaikan pendaftaran akun SiagaBencana Anda. Kode ini bersifat rahasia.'
+        : 'Gunakan kode OTP berikut untuk masuk ke akun SiagaBencana Anda. Kode ini bersifat rahasia.'}
     </p>
     <!-- OTP Box -->
-    <div style="background-color:rgba(159,28,25,0.05);border:1px dashed rgba(159,28,25,0.5);border-radius:16px;padding:24px;text-align:center;margin-bottom:32px;">
-      <span style="font-family:'Plus Jakarta Sans',monospace;font-size:42px;font-weight:700;letter-spacing:12px;color:#9F1C19;">${otp}</span>
+    <div style="background-color:#FEF2F2;border:1px solid #FECACA;border-radius:12px;padding:28px;text-align:center;margin-bottom:32px;">
+      <span style="font-family:'Plus Jakarta Sans',monospace;font-size:36px;font-weight:700;letter-spacing:8px;color:#DC2626;">${otp}</span>
     </div>
-    <div style="background-color:#F9FAFB;border:1px solid #F3F4F6;border-radius:12px;padding:16px;">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td width="30" valign="top" style="font-size:20px;">⏱️</td>
-          <td valign="top">
-            <p style="margin:0 0 4px;font-size:14px;color:#374151;">Berlaku selama <strong>5 menit</strong></p>
-            <p style="margin:0;font-size:12px;color:#6B7280;">Jangan bagikan kode ini kepada siapapun, termasuk pihak FireGuard.</p>
-          </td>
-        </tr>
-      </table>
+    <div style="background-color:#F8FAFC;border-left:4px solid #CBD5E1;border-radius:0 8px 8px 0;padding:16px 20px;">
+      <p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#334155;">Peringatan Keamanan</p>
+      <p style="margin:0;font-size:13px;color:#64748B;line-height:1.5;">
+        Kode ini berlaku selama <strong>5 menit</strong>. Jangan bagikan kode ini kepada siapapun demi keamanan akun Anda.
+      </p>
     </div>
   `;
 
@@ -165,35 +173,38 @@ export async function sendStatusUpdateEmail(
     false:        { label: 'Laporan Palsu',      color: '#9F1C19', emoji: '⚠️' },
   };
 
-  const status = statusLabels[newStatus] || { label: newStatus, color: '#6B7280', emoji: '📋' };
+  const status = statusLabels[newStatus] || { label: newStatus, color: '#64748B', emoji: '📋' };
 
   const adminNotesBlock = adminNotes
-    ? `<div style="background-color:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.2);border-radius:12px;padding:20px;margin-bottom:32px;">
-        <p style="margin:0 0 8px;font-size:14px;font-weight:600;color:#D97706;">📝 Catatan Petugas:</p>
-        <p style="margin:0;font-size:14px;line-height:1.6;color:#4B5563;font-style:italic;">"${adminNotes}"</p>
+    ? `<div style="background-color:#FFFBEB;border:1px solid #FEF3C7;border-radius:8px;padding:20px;margin-bottom:32px;">
+        <p style="margin:0 0 6px;font-size:13px;font-weight:600;color:#D97706;text-transform:uppercase;letter-spacing:0.5px;">Catatan Operator</p>
+        <p style="margin:0;font-size:15px;line-height:1.6;color:#92400E;">"${adminNotes}"</p>
       </div>`
     : '';
 
   const bodyContent = `
-    <p style="margin:0 0 16px;font-size:16px;color:#374151;">Halo <strong style="color:#111827;">${name}</strong>,</p>
-    <p style="margin:0 0 32px;font-size:16px;line-height:1.6;color:#4B5563;">
-      Status laporan darurat Anda dengan ID <strong style="color:#111827;">#${reportId}</strong> telah diperbarui oleh operator pusat:
+    <p style="margin:0 0 12px;font-size:16px;color:#475569;">Halo <strong style="color:#0F172A;">${name}</strong>,</p>
+    <p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#475569;">
+      Status laporan darurat Anda dengan ID <strong style="color:#0F172A;">#${reportId}</strong> telah diperbarui.
     </p>
     <!-- Status Box -->
-    <div style="background-color:#F9FAFB;border:1px solid #F3F4F6;border-left:4px solid ${status.color};border-radius:0 12px 12px 0;padding:20px 24px;margin-bottom:32px;">
+    <div style="margin-bottom:32px;padding:20px 24px;background-color:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;">
+      <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:0.5px;">Status Saat Ini</p>
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td width="40" valign="middle" style="font-size:28px;">${status.emoji}</td>
+          <td width="36" valign="middle" style="font-size:24px;">${status.emoji}</td>
           <td valign="middle">
-            <p style="margin:0;font-family:'Plus Jakarta Sans',Arial,sans-serif;font-size:24px;font-weight:600;color:${status.color};">${status.label}</p>
+            <span style="font-family:'Plus Jakarta Sans',Arial,sans-serif;font-size:20px;font-weight:700;color:${status.color};">${status.label}</span>
           </td>
         </tr>
       </table>
     </div>
     ${adminNotesBlock}
-    <p style="margin:0;font-size:14px;line-height:1.6;color:#6B7280;text-align:center;">
-      Terima kasih telah menggunakan FireGuard untuk menjaga keselamatan lingkungan Anda.
-    </p>
+    <div style="border-top:1px solid #E2E8F0;padding-top:24px;">
+      <p style="margin:0;font-size:14px;line-height:1.6;color:#64748B;">
+        Terima kasih telah berpartisipasi menjaga keselamatan bersama. Tim kami selalu siap siaga.
+      </p>
+    </div>
   `;
 
   try {

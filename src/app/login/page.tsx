@@ -232,7 +232,7 @@ export default function LoginPage() {
               <div className="p-2 bg-red-500 rounded-xl shadow-[0_0_15px_rgba(159,28,25,0.4)] group-hover:scale-105 transition-transform">
                 <FaFire className="text-lg text-white" />
               </div>
-              <span className="text-xl font-bold tracking-tight">FireGuard</span>
+              <span className="text-xl font-bold tracking-tight">SiagaBencana</span>
             </Link>
 
             <div className="mb-4">
@@ -302,7 +302,7 @@ export default function LoginPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="w-full bg-gray-50/50 border border-gray-200 text-gray-900 px-4 py-3.5 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all font-medium placeholder:text-gray-300 placeholder:font-normal text-base"
-                      placeholder="contoh@fireguard.id"
+                      placeholder="contoh@siagabencana.id"
                       required
                     />
                   </div>
@@ -513,7 +513,7 @@ export default function LoginPage() {
           {loginMethod === "email" && (
             <div className="mt-4 text-center">
               <p className="text-gray-500 text-sm font-medium">
-                Belum punya akun FireGuard?{" "}
+                Belum punya akun SiagaBencana?{" "}
                 <Link
                   href="/register"
                   className="text-red-500 font-bold hover:underline"

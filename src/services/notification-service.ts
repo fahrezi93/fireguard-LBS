@@ -65,7 +65,7 @@ const STATUS_TO_PREFERENCE_KEY: Record<string, keyof NotificationPreferences> =
 };
 
 const MOBILE_PLATFORMS = ["android", "ios"];
-const ANDROID_NOTIFICATION_CHANNEL_ID = "fireguard_reports";
+const ANDROID_NOTIFICATION_CHANNEL_ID = "siagabencana_reports";
 
 export function normalizeNotificationStatus(status: string): string {
   const normalized = status.trim().toLowerCase();

@@ -1,4 +1,4 @@
-# FireGuard - Sistem Pelaporan Kebakaran
+# SiagaBencana - Sistem Pelaporan Kebakaran
 
 Aplikasi web untuk pelaporan dan monitoring kebakaran real-time dengan fitur peta interaktif dan routing cerdas.
 
@@ -30,7 +30,7 @@ MYSQL_HOST=your-db-host
 MYSQL_PORT=3306
 MYSQL_USER=your-db-user
 MYSQL_PASSWORD=your-db-password
-MYSQL_DATABASE=fireguard
+MYSQL_DATABASE=siagabencana
 
 JWT_SECRET=your-super-secret-jwt-key
 OTP_HASH_SECRET=your-super-secret-otp-key
@@ -42,7 +42,7 @@ GMAIL_APP_PASSWORD=your-app-password
 NEXT_PUBLIC_BASE_URL=https://your-domain.com
 NODE_ENV=production
 
-ANDROID_PACKAGE_NAME=com.yourcompany.fireguard
+ANDROID_PACKAGE_NAME=com.yourcompany.siagabencana
 ANDROID_SHA256_CERT_FINGERPRINT=AA:BB:CC:...
 ```
 
@@ -50,8 +50,8 @@ ANDROID_SHA256_CERT_FINGERPRINT=AA:BB:CC:...
 
 1. Clone repository:
 ```bash
-git clone https://github.com/fahrezi93/fireguard-LBS.git
-cd fireguard-LBS
+git clone https://github.com/fahrezi93/siagabencana-LBS.git
+cd siagabencana-LBS
 ```
 
 2. Install dependencies:
@@ -76,7 +76,7 @@ npm run dev
 
 ### 1) Siapkan domain production HTTPS
 
-- Deploy aplikasi ke domain final (misalnya `https://app.fireguard.id`).
+- Deploy aplikasi ke domain final (misalnya `https://app.siagabencana.id`).
 - Pastikan endpoint ini bisa diakses:
    - `https://your-domain.com/manifest.json`
    - `https://your-domain.com/.well-known/assetlinks.json`
@@ -85,7 +85,7 @@ npm run dev
 
 Set env berikut:
 
-- `ANDROID_PACKAGE_NAME` -> package Android final (contoh `com.sipilip.fireguard`)
+- `ANDROID_PACKAGE_NAME` -> package Android final (contoh `com.sipilip.siagabencana`)
 - `ANDROID_SHA256_CERT_FINGERPRINT` -> SHA-256 dari Play App Signing certificate
 
 Lalu generate file otomatis:
@@ -130,7 +130,7 @@ git push origin main
 1. Buka [vercel.com](https://vercel.com)
 2. Login dengan GitHub
 3. Klik "New Project"
-4. Import repository `fahrezi93/fireguard-LBS`
+4. Import repository `fahrezi93/siagabencana-LBS`
 5. Tambahkan Environment Variables:
    - `MYSQL_HOST`
    - `MYSQL_PORT`
@@ -151,20 +151,20 @@ MYSQL_HOST=your-db-host
 MYSQL_PORT=3306
 MYSQL_USER=your-db-user
 MYSQL_PASSWORD=your-db-password
-MYSQL_DATABASE=fireguard
+MYSQL_DATABASE=siagabencana
 
 JWT_SECRET=generate-random-32-byte-secret
 OTP_HASH_SECRET=generate-random-32-byte-secret
 NEXT_PUBLIC_BASE_URL=https://your-app.vercel.app
 
-ANDROID_PACKAGE_NAME=com.yourcompany.fireguard
+ANDROID_PACKAGE_NAME=com.yourcompany.siagabencana
 ANDROID_SHA256_CERT_FINGERPRINT=AA:BB:CC:...
 ```
 
 ## Struktur Project
 
 ```
-fireguard/
+siagabencana/
 ├── src/
 │   ├── app/              # Next.js App Router
 │   │   ├── api/          # API Routes

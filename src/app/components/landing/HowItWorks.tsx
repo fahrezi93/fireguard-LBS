@@ -7,7 +7,7 @@ const steps = [
     {
         icon: <FaMobileAlt className="w-7 h-7 text-red-600" />,
         title: "Buka & Lapor",
-        description: "Buka aplikasi FireGuard dan tekan tombol darurat merah. Laporan langsung terkirim tanpa proses rumit.",
+        description: "Buka aplikasi SiagaBencana dan tekan tombol darurat merah. Laporan langsung terkirim tanpa proses rumit.",
         bgColor: "bg-red-50",
         ringColor: "ring-red-100",
         num: "1",

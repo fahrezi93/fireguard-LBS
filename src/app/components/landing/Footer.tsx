@@ -31,7 +31,7 @@ const Footer = ({ isLight = false }: { isLight?: boolean }) => (
             <div className="p-2.5 bg-gradient-to-br from-red-500 to-orange-600 rounded-xl shadow-[0_0_20px_rgba(159,28,25,0.3)] group-hover:shadow-[0_0_25px_rgba(159,28,25,0.5)] transition-shadow">
               <FaFire className="text-xl text-white" />
             </div>
-            <span className={`text-2xl font-bold tracking-tight ${isLight ? 'text-gray-900' : 'text-white'}`}>FireGuard</span>
+            <span className={`text-2xl font-bold tracking-tight ${isLight ? 'text-gray-900' : 'text-white'}`}>SiagaBencana</span>
           </Link>
           <p className={`text-sm leading-relaxed xl:pr-10 mb-8 font-light ${isLight ? 'text-gray-600' : 'text-gray-500'}`}>
             Platform modern untuk peringatan dini, pelaporan, dan navigasi armada Pemadam Kebakaran yang berpusat di Plaju, Palembang. Misi kami: meminimalkan risiko kerugian jiwa dan materi.
@@ -78,7 +78,7 @@ const Footer = ({ isLight = false }: { isLight?: boolean }) => (
 
       <div className={`pt-8 border-t flex flex-col md:flex-row items-center justify-between gap-4 ${isLight ? 'border-black/5' : 'border-white/10'}`}>
         <p className={`text-xs font-light ${isLight ? 'text-gray-400' : 'text-gray-600'}`}>
-          &copy; {new Date().getFullYear()} FireGuard. Mengabdi untuk publik. Hak Cipta Dilindungi.
+          &copy; {new Date().getFullYear()} SiagaBencana. Mengabdi untuk publik. Hak Cipta Dilindungi.
         </p>
         <div className="flex items-center gap-2 text-xs text-gray-600 font-light">
         </div>

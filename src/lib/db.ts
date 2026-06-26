@@ -8,7 +8,7 @@ const pool = mysql.createPool({
   port: parseInt(process.env.MYSQL_PORT || '3306'),
   user: process.env.MYSQL_USER || 'root',
   password: process.env.MYSQL_PASSWORD || '',
-  database: process.env.MYSQL_DATABASE || 'fireguard',
+  database: process.env.MYSQL_DATABASE || 'siagabencana',
   waitForConnections: true,
   connectionLimit: 10,  // Lebih tinggi untuk VPS persistent (bukan serverless)
   queueLimit: 30,

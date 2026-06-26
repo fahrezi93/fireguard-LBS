@@ -11,17 +11,17 @@ export default function TermsPage() {
     {
       icon: <FaUserLock className="text-red-500" />,
       title: "1. Penggunaan Layanan",
-      content: "Layanan FireGuard disediakan khusus untuk pelaporan dan pemantauan insiden kebakaran di wilayah Plaju Darat, Palembang. Pengguna wajib memberikan informasi yang akurat dan jujur saat melakukan registrasi maupun pelaporan."
+      content: "Layanan SiagaBencana disediakan khusus untuk pelaporan dan pemantauan insiden kebakaran di wilayah Plaju Darat, Palembang. Pengguna wajib memberikan informasi yang akurat dan jujur saat melakukan registrasi maupun pelaporan."
     },
     {
       icon: <FaExclamationTriangle className="text-orange-500" />,
       title: "2. Larangan Laporan Palsu",
-      content: "Penyalahgunaan tombol darurat untuk laporan palsu (prank) adalah tindakan ilegal. Kami berhak melaporkan data pelaku ke pihak kepolisian dan memblokir akses perangkat secara permanen dari ekosistem FireGuard."
+      content: "Penyalahgunaan tombol darurat untuk laporan palsu (prank) adalah tindakan ilegal. Kami berhak melaporkan data pelaku ke pihak kepolisian dan memblokir akses perangkat secara permanen dari ekosistem SiagaBencana."
     },
     {
       icon: <FaShieldAlt className="text-blue-500" />,
       title: "3. Tanggung Jawab Pengguna",
-      content: "Keamanan akun dan perangkat adalah tanggung jawab pengguna. FireGuard tidak bertanggung jawab atas kerugian yang timbul akibat kelalaian pengguna dalam menjaga kerahasiaan informasi akun atau akses perangkat."
+      content: "Keamanan akun dan perangkat adalah tanggung jawab pengguna. SiagaBencana tidak bertanggung jawab atas kerugian yang timbul akibat kelalaian pengguna dalam menjaga kerahasiaan informasi akun atau akses perangkat."
     },
     {
       icon: <FaGavel className="text-emerald-500" />,
@@ -51,7 +51,7 @@ export default function TermsPage() {
               Syarat & <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-500">Ketentuan.</span>
             </h1>
             <p className="text-gray-500 text-lg leading-relaxed max-w-2xl font-light">
-              Terakhir diperbarui: 19 April 2026. Harap baca dengan teliti sebelum menggunakan layanan FireGuard.
+              Terakhir diperbarui: 19 April 2026. Harap baca dengan teliti sebelum menggunakan layanan SiagaBencana.
             </p>
           </motion.div>
 

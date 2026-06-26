@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
                             android: {
                                 priority: 'high',
                                 notification: {
-                                    channelId: 'fireguard_reports',
+                                    channelId: 'siagabencana_reports',
                                     priority: 'high',
                                     sound: 'default',
                                     defaultSound: true,

@@ -6,8 +6,8 @@ import { FaPlus } from 'react-icons/fa';
 
 const faqs = [
     {
-        question: "Apakah layanan FireGuard ini gratis?",
-        answer: "Ya, FireGuard adalah inisiatif swadaya untuk publik dan sepenuhnya GRATIS 100% tanpa biaya tersembunyi bagi seluruh masyarakat Plaju, Palembang."
+        question: "Apakah layanan SiagaBencana ini gratis?",
+        answer: "Ya, SiagaBencana adalah inisiatif swadaya untuk publik dan sepenuhnya GRATIS 100% tanpa biaya tersembunyi bagi seluruh masyarakat Plaju, Palembang."
     },
     {
         question: "Apakah bisa melapor tanpa koneksi internet yang stabil?",

@@ -4,9 +4,9 @@ const StructuredData = () => {
     const organizationSchema = {
         "@context": "https://schema.org",
         "@type": "Organization",
-        "name": "FireGuard Plaju Darat",
-        "url": "https://www.fireguard-palembang.my.id",
-        "logo": "https://www.fireguard-palembang.my.id/favicon.png",
+        "name": "SiagaBencana Plaju Darat",
+        "url": "https://www.siagabencana-palembang.my.id",
+        "logo": "https://www.siagabencana-palembang.my.id/favicon.png",
         "contactPoint": {
             "@type": "ContactPoint",
             "telephone": "113",
@@ -15,8 +15,8 @@ const StructuredData = () => {
             "availableLanguage": "Indonesian"
         },
         "sameAs": [
-            "https://facebook.com/fireguard",
-            "https://instagram.com/fireguard"
+            "https://facebook.com/siagabencana",
+            "https://instagram.com/siagabencana"
         ]
     };
 
@@ -26,10 +26,10 @@ const StructuredData = () => {
         "mainEntity": [
             {
                 "@type": "Question",
-                "name": "Apakah layanan FireGuard ini gratis?",
+                "name": "Apakah layanan SiagaBencana ini gratis?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Ya, FireGuard adalah inisiatif swadaya untuk publik dan sepenuhnya GRATIS 100% tanpa biaya tersembunyi bagi seluruh masyarakat Plaju, Palembang."
+                    "text": "Ya, SiagaBencana adalah inisiatif swadaya untuk publik dan sepenuhnya GRATIS 100% tanpa biaya tersembunyi bagi seluruh masyarakat Plaju, Palembang."
                 }
             },
             {
