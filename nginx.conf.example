@@ -1,9 +1,9 @@
 server {
     listen 443 ssl;
-    server_name fireguard-palembang.my.id www.fireguard-palembang.my.id;
+    server_name siagabencana.cloud www.siagabencana.cloud;
 
-    ssl_certificate /etc/letsencrypt/live/fireguard-palembang.my.id/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/fireguard-palembang.my.id/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/siagabencana.cloud/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/siagabencana.cloud/privkey.pem;
     include /etc/letsencrypt/options-ssl-nginx.conf;
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
@@ -37,6 +37,6 @@ server {
 # HTTP → HTTPS redirect
 server {
     listen 80;
-    server_name fireguard-palembang.my.id www.fireguard-palembang.my.id;
+    server_name siagabencana.cloud www.siagabencana.cloud;
     return 301 https://$host$request_uri;
 }

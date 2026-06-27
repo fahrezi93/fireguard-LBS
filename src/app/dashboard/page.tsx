@@ -22,7 +22,7 @@ import {
   FaUser,
   FaEdit,
   FaChevronDown,
-  FaFire,
+  FaBell, FaFire,
   FaUserCircle,
 } from "react-icons/fa";
 
@@ -207,7 +207,7 @@ export default function DashboardPage() {
           <div className="h-20 flex items-center justify-between px-6 border-b border-transparent">
             <Link href="/" className="flex items-center gap-3">
               <div className="p-2 bg-red-500 rounded-xl shadow-sm">
-                <FaFire className="text-white text-base" />
+                <FaBell className="text-white text-base" />
               </div>
               <span className="text-lg font-bold tracking-tight text-neutral-900">SiagaBencana</span>
             </Link>

@@ -1,6 +1,14 @@
 /** @type {import('next').NextConfig} */
 
 const nextConfig = {
+  serverActions: {
+    allowedOrigins: [
+      'fireguard-palembang.my.id',
+      'siagabencana.cloud',
+      'localhost:3000',
+      '146.190.84.205'
+    ],
+  },
   images: {
     remotePatterns: [
       {

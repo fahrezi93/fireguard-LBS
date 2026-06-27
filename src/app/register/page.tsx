@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { FaArrowLeft, FaFire, FaSpinner, FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaArrowLeft, FaBell, FaSpinner, FaEye, FaEyeSlash } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 
 type Step = "form" | "otp";
@@ -113,7 +113,7 @@ export default function RegisterPage() {
           className="flex flex-col items-center gap-4"
         >
           <div className="p-4 bg-gradient-to-br from-red-500 to-orange-600 rounded-2xl shadow-xl shadow-red-500/20">
-            <FaFire className="text-4xl text-white" />
+            <FaBell className="text-4xl text-white" />
           </div>
         </motion.div>
       </main>
@@ -132,7 +132,7 @@ export default function RegisterPage() {
         <div className="mt-8 md:mt-0">
           <Link href="/" className="inline-flex items-center gap-3 mb-4 group w-fit">
             <div className="p-2 bg-red-500 rounded-xl shadow-[0_0_15px_rgba(159,28,25,0.4)] group-hover:scale-105 transition-transform">
-              <FaFire className="text-lg text-white" />
+              <FaBell className="text-lg text-white" />
             </div>
             <span className="text-xl font-bold tracking-tight">SiagaBencana</span>
           </Link>

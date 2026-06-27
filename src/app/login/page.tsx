@@ -4,7 +4,7 @@ import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-  FaFire,
+  FaBell,
   FaSpinner,
   FaArrowLeft,
   FaEye,
@@ -204,7 +204,7 @@ export default function LoginPage() {
             className="flex flex-col items-center gap-4"
           >
             <div className="p-4 bg-gradient-to-br from-red-500 to-orange-600 rounded-2xl shadow-xl shadow-red-500/20">
-              <FaFire className="text-4xl text-white" />
+              <FaBell className="text-4xl text-white" />
             </div>
           </m.div>
         </LazyMotion>
@@ -230,7 +230,7 @@ export default function LoginPage() {
               className="inline-flex items-center gap-3 mb-4 group w-fit"
             >
               <div className="p-2 bg-red-500 rounded-xl shadow-[0_0_15px_rgba(159,28,25,0.4)] group-hover:scale-105 transition-transform">
-                <FaFire className="text-lg text-white" />
+                <FaBell className="text-lg text-white" />
               </div>
               <span className="text-xl font-bold tracking-tight">SiagaBencana</span>
             </Link>
@@ -548,7 +548,7 @@ export default function LoginPage() {
         >
           <div className="bg-white/80 backdrop-blur-xl p-10 rounded-[3rem] border border-white shadow-2xl relative">
             <div className="inline-flex p-4 bg-red-50 rounded-2xl mb-8">
-              <FaFire className="text-3xl text-red-500" />
+              <FaBell className="text-3xl text-red-500" />
             </div>
             <h2 className="text-4xl lg:text-5xl font-extrabold tracking-tighter text-neutral-900 mb-6 leading-[1.1]">
               Satu Laporan,

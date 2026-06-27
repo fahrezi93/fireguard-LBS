@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { FaFire, FaUser, FaUserShield, FaChevronDown, FaSignOutAlt, FaBars, FaTimes } from 'react-icons/fa';
+import { FaBell, FaUser, FaUserShield, FaChevronDown, FaSignOutAlt, FaBars, FaTimes } from 'react-icons/fa';
 
 const Navbar = ({ isLight = false }: { isLight?: boolean }) => {
   const { push } = useRouter();
@@ -95,7 +95,7 @@ const Navbar = ({ isLight = false }: { isLight?: boolean }) => {
                 ? 'bg-gradient-to-br from-red-500 to-orange-600 shadow-md shadow-red-500/20'
                 : isLight ? 'bg-black/5 backdrop-blur-md' : 'bg-white/10 backdrop-blur-md'
               }`}>
-              <FaFire className={`text-xl ${scrolled ? 'text-white' : isLight ? 'text-red-500' : 'text-white'}`} />
+              <FaBell className={`text-xl ${scrolled ? 'text-white' : isLight ? 'text-red-500' : 'text-white'}`} />
             </div>
             <span className={`text-xl font-bold tracking-tight ${isLight && !scrolled ? 'text-neutral-900' : scrolled && isLight ? 'text-neutral-900' : 'text-white'}`}>SiagaBencana</span>
           </Link>
@@ -163,7 +163,7 @@ const Navbar = ({ isLight = false }: { isLight?: boolean }) => {
           <div className="flex items-center justify-between">
             <Link href="/" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3">
               <div className={`flex size-10 items-center justify-center rounded-full ${isLight ? 'bg-black/5 text-red-500' : 'bg-white/10 text-white'}`}>
-                <FaFire className="text-lg" />
+                <FaBell className="text-lg" />
               </div>
               <span className={`text-xl font-bold ${isLight ? 'text-neutral-900' : 'text-white'}`}>SiagaBencana</span>
             </Link>

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import {
-  FaFire,
+  FaBell, FaFire,
   FaTruck,
   FaClock,
   FaBuilding,
@@ -672,7 +672,7 @@ export default function OperatorDashboard() {
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center shadow-md">
-                  <FaFire className="text-white text-lg" />
+                  <FaBell className="text-white text-lg" />
                 </div>
                 <div>
                   <h1 className="text-lg font-bold tracking-tight text-gray-900">SiagaBencana <span className="text-red-500">Ops</span></h1>

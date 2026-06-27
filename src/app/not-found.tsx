@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { FaFire, FaArrowLeft } from 'react-icons/fa';
+import { FaBell, FaArrowLeft } from 'react-icons/fa';
 
 export default function NotFound() {
     return (
@@ -10,7 +10,7 @@ export default function NotFound() {
             <div className="relative z-10 flex flex-col items-center">
                 {/* Logo Icon */}
                 <div className="mb-8 p-4 bg-gradient-to-br from-red-500 to-orange-600 rounded-2xl shadow-xl shadow-red-500/20">
-                    <FaFire className="text-4xl text-white" />
+                    <FaBell className="text-4xl text-white" />
                 </div>
 
                 {/* 404 Text */}

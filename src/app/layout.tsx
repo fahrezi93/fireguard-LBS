@@ -4,14 +4,14 @@ import './globals.css';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://www.siagabencana-palembang.my.id'),
+  metadataBase: new URL('https://www.siagabencana.cloud'),
   title: {
     default: 'SiagaBencana Plaju Darat, Palembang - Sistem Cepat Tanggap Kebakaran',
     template: '%s | SiagaBencana Palembang'
   },
   description: 'SiagaBencana adalah sistem peringatan dini dan pelaporan kebakaran real-time untuk wilayah Plaju Darat, Palembang. Lindungi lingkungan Anda dengan respon cepat dan akurat.',
   applicationName: 'SiagaBencana Palembang',
-  authors: [{ name: 'SiagaBencana Team', url: 'https://www.siagabencana-palembang.my.id' }],
+  authors: [{ name: 'SiagaBencana Team', url: 'https://www.siagabencana.cloud' }],
   generator: 'Next.js',
   keywords: ['kebakaran', 'palembang', 'emergency', 'fire', 'report', 'pemadam', 'plaju', 'darurat', 'tanggap darurat', 'pemadam kebakaran palembang'],
   referrer: 'origin-when-cross-origin',
@@ -38,13 +38,13 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'SiagaBencana Plaju Darat, Palembang',
     description: 'Sistem Cepat Tanggap Kebakaran Plaju Darat, Palembang - Laporkan insiden secara instan.',
-    url: 'https://www.siagabencana-palembang.my.id',
+    url: 'https://www.siagabencana.cloud',
     siteName: 'SiagaBencana',
     locale: 'id_ID',
     type: 'website',
     images: [
       {
-        url: '/Fireguardthumbnail.png',
+        url: '/SiagaBencanathumbnail.png',
         width: 1200,
         height: 630,
         alt: 'SiagaBencana Palembang Thumbnail',
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
     title: 'SiagaBencana Plaju Darat, Palembang',
     description: 'Sistem Cepat Tanggap Kebakaran Real-time untuk wilayah Plaju.',
     creator: '@siagabencana_id',
-    images: ['/Fireguardthumbnail.png'],
+    images: ['/SiagaBencanathumbnail.png'],
   },
   alternates: {
     canonical: '/',

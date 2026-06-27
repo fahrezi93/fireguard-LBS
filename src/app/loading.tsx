@@ -1,6 +1,6 @@
 'use client';
 
-import { FaFire } from 'react-icons/fa';
+import { FaBell } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Loading() {
@@ -26,7 +26,7 @@ export default function Loading() {
                     className="flex flex-col items-center gap-4"
                 >
                     <div className="p-4 bg-gradient-to-br from-red-500 to-orange-600 rounded-2xl shadow-xl shadow-red-500/20">
-                        <FaFire className="text-4xl text-white" />
+                        <FaBell className="text-4xl text-white" />
                     </div>
                 </motion.div>
             </main>
