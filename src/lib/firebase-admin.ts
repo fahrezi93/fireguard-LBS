@@ -64,6 +64,12 @@ if (!admin.apps.length) {
 
       const serviceAccount = JSON.parse(sanitized);
 
+      // KUNCI: Perbaiki masalah umum di VPS di mana \n di dalam private_key terbaca sebagai literal teks.
+      // Ini menyebabkan error: "error:1E08010C:DECODER routines::unsupported" saat initializeApp.
+      if (serviceAccount.private_key) {
+        serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
+      }
+
       admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
       });
