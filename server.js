@@ -9,6 +9,7 @@ process.on('uncaughtException', (err) => {
     // Ignore non-critical WebSocket errors during hot-reloading
   } else {
     // Untuk error lainnya, biarkan server crash agar kita tahu ada masalah serius
+    console.error('UNCAUGHT EXCEPTION:', err);
     process.exit(1);
   }
 });
