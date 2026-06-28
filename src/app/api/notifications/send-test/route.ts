@@ -11,7 +11,7 @@
  */
 
 import { NextRequest } from "next/server";
-import { queryRows } from "@/lib/db";
+import { queryRows, execute } from "@/lib/db";
 import { getAuthPayloadFromRequest, handleCorsOptions, jsonWithCors } from "@/lib/cors";
 import { getMessaging } from "@/lib/firebase-admin";
 import { ensureNotificationTables } from "@/lib/db-init";
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Kirim test notification ke semua device token user
-    const results: { token: string; platform: string; success: boolean; error?: string }[] = [];
+    const results: { token: string; platform: string; success: boolean; error?: string; code?: string }[] = [];
 
     for (const { device_token, platform } of tokens) {
       try {
@@ -97,7 +97,24 @@ export async function POST(request: NextRequest) {
           platform,
           success: false,
           error: err?.message ?? "Unknown error",
+          code: err?.code,
         });
+
+        // Hapus token yang sudah mati/tidak valid agar tidak terus-terusan dicoba
+        if (
+          err?.code === 'messaging/invalid-registration-token' ||
+          err?.code === 'messaging/registration-token-not-registered' ||
+          err?.code === 'messaging/invalid-argument'
+        ) {
+          try {
+            await execute(
+              "UPDATE device_tokens SET is_active = FALSE, updated_at = NOW() WHERE device_token = ?",
+              [device_token]
+            );
+          } catch (dbError) {
+            console.error("Failed to mark token as inactive during test:", dbError);
+          }
+        }
       }
     }
 
