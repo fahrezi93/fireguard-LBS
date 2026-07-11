@@ -9,6 +9,7 @@ const compat = new FlatCompat({
   baseDirectory: __dirname,
 });
 
+
 const eslintConfig = [
   {
     ignores: [
@@ -17,6 +18,9 @@ const eslintConfig = [
       "out/**",
       "build/**",
       "next-env.d.ts",
+      "wa-server/**",
+      "fireguard_flutter/**",
+      "test-wa.ts",
     ],
   },
   ...compat.extends("next/core-web-vitals", "next/typescript"),
