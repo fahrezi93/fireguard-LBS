@@ -52,6 +52,17 @@ interface Report {
   kecamatan?: string;
   kota?: string;
   acknowledged?: boolean;
+  assigned_petugas_id?: number | null;
+  assigned_petugas_name?: string | null;
+  dispatched_at?: string | null;
+  accepted_at?: string | null;
+  arrived_at?: string | null;
+  completed_at?: string | null;
+  response_time_seconds?: number | null;
+  status_petugas?: string | null;
+  completion_photo_url?: string | null;
+  needs_backup?: number | boolean;
+  petugas_notes?: string | null;
   category?: {
     id: number;
     name: string;
@@ -367,6 +378,24 @@ export default function OperatorDashboard() {
     }
   };
 
+  const handleDispatchToPetugas = async (reportId: number) => {
+    try {
+      const response = await fetch("/api/operator/dispatch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reportId }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message ?? "Gagal mengirim tugas ke petugas");
+
+      success(`Tugas berhasil di-broadcast ke ${data.petugasCount} petugas aktif.`);
+      // Update status menjadi dispatched (dikirim)
+      handleUpdateStatus(reportId, "dispatched");
+    } catch (err: any) {
+      error(err?.message ?? "Gagal mengirim tugas.");
+    }
+  };
+
   const fetchReports = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -458,6 +487,20 @@ export default function OperatorDashboard() {
         } else if (message.type === "REPORT_DELETED") {
           setReports((prev) =>
             prev.filter((r) => r.id !== message.payload.reportId)
+          );
+        } else if (message.type === "BACKUP_REQUEST") {
+          error(`[SOS] Petugas ${message.payload.petugasName || ''} meminta bantuan armada untuk laporan #${message.payload.reportId}!`);
+          setReports((prev) =>
+            prev.map((r) =>
+              r.id === message.payload.reportId
+                ? { ...r, needs_backup: 1 }
+                : r
+            )
+          );
+          setSelectedReport((prev) => 
+            prev && prev.id === message.payload.reportId 
+              ? { ...prev, needs_backup: 1 }
+              : prev
           );
         }
         } catch (parseErr) {
@@ -659,6 +702,7 @@ export default function OperatorDashboard() {
           report={selectedReport}
           onClose={handleCloseModal}
           onUpdateStatus={handleUpdateStatus}
+          onDispatchToPetugas={handleDispatchToPetugas}
           onDelete={handleDeleteReport}
         />
       )}

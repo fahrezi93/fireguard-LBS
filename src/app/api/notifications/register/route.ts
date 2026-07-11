@@ -79,6 +79,12 @@ export async function POST(request: NextRequest) {
     const currentTimestamp = formatDateForMySQL(new Date());
     const platformValue = platform || "android"; // Default to android if not specified
 
+    // Menonaktifkan token lama milik user yang sama agar tidak menumpuk saat reinstall
+    await execute(
+      "UPDATE device_tokens SET is_active = FALSE WHERE user_id = ? AND device_token != ?",
+      [userId, deviceToken.trim()]
+    );
+
     // Insert or update device token (upsert pattern)
     // If device_token already exists, update is_active to TRUE and update timestamps
     await execute(

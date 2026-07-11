@@ -9,8 +9,8 @@ import { getAuthPayloadFromRequest, handleCorsOptions, jsonWithCors, getTokenFro
 import { getJwtClaimConfig } from '@/lib/api-security';
 
 // OPTIONS: CORS preflight
-export async function OPTIONS() {
-    return handleCorsOptions();
+export async function OPTIONS(request: NextRequest) {
+    return handleCorsOptions(request);
 }
 
 // GET - Get current user profile from database
@@ -19,23 +19,23 @@ export async function GET(request: NextRequest) {
         const payload = await getAuthPayloadFromRequest(request);
 
         if (!payload.id) {
-            return jsonWithCors({ message: 'User ID tidak ditemukan.' }, { status: 401 });
+            return jsonWithCors({ message: 'User ID tidak ditemukan.' }, { status: 401, request });
         }
 
         // Get fresh data from database
         const [rows] = await pool.execute<RowDataPacket[]>(
-            'SELECT id, name, email, phone_number, is_verified, created_at FROM users WHERE id = ?',
+            'SELECT id, name, email, phone_number, is_verified, role, is_on_duty, created_at FROM users WHERE id = ?',
             [payload.id]
         );
 
         if (rows.length === 0) {
-            return jsonWithCors({ message: 'User tidak ditemukan.' }, { status: 404 });
+            return jsonWithCors({ message: 'User tidak ditemukan.' }, { status: 404, request });
         }
 
-        return jsonWithCors(rows[0]);
+        return jsonWithCors(rows[0], { request });
     } catch (error) {
         console.error('Error getting profile:', error);
-        return jsonWithCors({ message: 'Token tidak valid atau kedaluwarsa.' }, { status: 401 });
+        return jsonWithCors({ message: 'Token tidak valid atau kedaluwarsa.' }, { status: 401, request });
     }
 }
 
@@ -77,12 +77,12 @@ export async function PUT(request: NextRequest) {
 
         // Get updated data
         const [rows] = await pool.execute<RowDataPacket[]>(
-            'SELECT id, name, email, phone_number, is_verified, created_at FROM users WHERE id = ?',
+            'SELECT id, name, email, phone_number, is_verified, role, is_on_duty, created_at FROM users WHERE id = ?',
             [payload.id]
         );
 
         if (rows.length === 0) {
-            return jsonWithCors({ message: 'User tidak ditemukan.' }, { status: 404 });
+            return jsonWithCors({ message: 'User tidak ditemukan.' }, { status: 404, request });
         }
 
         // Create new JWT token with updated data
@@ -92,6 +92,7 @@ export async function PUT(request: NextRequest) {
             name: rows[0].name,
             email: rows[0].email,
             phone: rows[0].phone_number,
+            role: rows[0].role,
             isOperator: false,
         })
             .setProtectedHeader({ alg: 'HS256' })
@@ -120,6 +121,6 @@ export async function PUT(request: NextRequest) {
         return response;
     } catch (error) {
         console.error('Error updating profile:', error);
-        return jsonWithCors({ message: 'Gagal memperbarui profil.' }, { status: 500 });
+        return jsonWithCors({ message: 'Gagal memperbarui profil.' }, { status: 500, request });
     }
 }

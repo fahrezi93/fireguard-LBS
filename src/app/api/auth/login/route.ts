@@ -15,8 +15,8 @@ import { getJwtClaimConfig } from "@/lib/api-security";
 import { enforceRateLimit } from "@/lib/rate-limit";
 
 // OPTIONS: CORS preflight
-export async function OPTIONS() {
-  return handleCorsOptions();
+export async function OPTIONS(request: NextRequest) {
+  return handleCorsOptions(request);
 }
 
 // POST: Login dengan password
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
 
     // Validasi input
     if (!email) {
-      return jsonWithCors({ message: "Email wajib diisi." }, { status: 400 });
+      return jsonWithCors({ message: "Email wajib diisi." }, { status: 400, request });
     }
 
     // Validasi format email
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     if (!emailRegex.test(email)) {
       return jsonWithCors(
         { message: "Format email tidak valid." },
-        { status: 400 },
+        { status: 400, request },
       );
     }
 
@@ -57,15 +57,16 @@ export async function POST(request: NextRequest) {
       email: string;
       phone_number: string | null;
       password_hash: string | null;
+      role: string;
     }>(
-      "SELECT id, name, email, phone_number, password_hash FROM users WHERE email = ?",
+      "SELECT id, name, email, phone_number, password_hash, role FROM users WHERE email = ?",
       [email],
     );
 
     if (!user) {
       return jsonWithCors(
         { message: "Email tidak ditemukan. Belum punya akun? Silakan daftar terlebih dahulu." },
-        { status: 404 },
+        { status: 404, request },
       );
     }
 
@@ -77,7 +78,7 @@ export async function POST(request: NextRequest) {
             message:
               "Akun Anda belum memiliki password. Silakan reset password atau hubungi admin.",
           },
-          { status: 409 },
+          { status: 409, request },
         );
       }
 
@@ -88,7 +89,7 @@ export async function POST(request: NextRequest) {
       if (!isValidPassword) {
         return jsonWithCors(
           { message: "Password salah. Periksa kembali kata sandi Anda." },
-          { status: 401 },
+          { status: 401, request },
         );
       }
 
@@ -98,6 +99,7 @@ export async function POST(request: NextRequest) {
         email: user.email,
         name: user.name,
         phone: user.phone_number,
+        role: user.role,
         isOperator: false,
       })
         .setProtectedHeader({ alg: "HS256" })
@@ -136,13 +138,13 @@ export async function POST(request: NextRequest) {
 
     return jsonWithCors(
       { message: "Email dan password wajib diisi." },
-      { status: 400 },
+      { status: 400, request },
     );
   } catch (error: any) {
     console.error("Error in login:", error?.message || error, { stack: error?.stack });
     return jsonWithCors(
       { message: "Terjadi kesalahan pada server.", detail: process.env.NODE_ENV !== "production" ? error?.message : undefined },
-      { status: 500 },
+      { status: 500, request },
     );
   }
 }

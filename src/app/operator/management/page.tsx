@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   FaTags, FaArrowLeft, FaLayerGroup, FaMapMarkerAlt,
   FaFireExtinguisher, FaPlus, FaEdit, FaTrash, FaTimes,
-  FaSave, FaExclamationTriangle, FaSpinner,
+  FaSave, FaExclamationTriangle, FaSpinner, FaUserShield,
 } from "react-icons/fa";
 import { useToast } from "@/hooks/useToast";
 import Toast from "@/components/Toast";
@@ -38,7 +38,20 @@ interface PosPemadam {
   status: "aktif" | "nonaktif";
 }
 
-type ActiveTab = "kategori" | "kelurahan" | "pos";
+type ActiveTab = "kategori" | "kelurahan" | "pos" | "petugas";
+
+interface Petugas {
+  id: number;
+  name: string;
+  email: string;
+  phone_number: string | null;
+  is_verified: number;
+  created_at: string;
+}
+
+const blankPetugas = () => ({
+  name: "", email: "", phone_number: "", password: "",
+});
 
 // ─── Blank form helpers ───────────────────────────────────────────────────────
 
@@ -381,20 +394,23 @@ export default function ManagementPage() {
   const [loadingCat, setLoadingCat] = useState(true);
   const [loadingKel, setLoadingKel] = useState(true);
   const [loadingPos, setLoadingPos] = useState(true);
+  const [loadingPet, setLoadingPet] = useState(true);
 
   // Data
   const [categories, setCategories] = useState<Category[]>([]);
   const [kelurahans, setKelurahans] = useState<Kelurahan[]>([]);
   const [posPemadam, setPosPemadam] = useState<PosPemadam[]>([]);
+  const [petugasList, setPetugasList] = useState<Petugas[]>([]);
 
   // Track which datasets have been fetched at least once
-  const fetchedRef = useRef({ kategori: false, kelurahan: false, pos: false });
+  const fetchedRef = useRef({ kategori: false, kelurahan: false, pos: false, petugas: false });
 
   // Modal states
   const [showAdd, setShowAdd] = useState(false);
   const [editCategory, setEditCategory] = useState<Category | undefined>();
   const [editKelurahan, setEditKelurahan] = useState<Kelurahan | undefined>();
   const [editPos, setEditPos] = useState<PosPemadam | undefined>();
+  const [editPetugas, setEditPetugas] = useState<any>();
   const [deleteTarget, setDeleteTarget] = useState<{ id: number; name: string; type: ActiveTab } | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
@@ -454,9 +470,46 @@ export default function ManagementPage() {
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const fetchPetugas = useCallback(async (silent = false) => {
+    if (!silent) setLoadingPet(true);
+    try {
+      const res = await fetch("/api/operator/users/petugas");
+      if (res.ok) {
+        const json = await res.json();
+        setPetugasList(Array.isArray(json) ? json : (json.data ?? []));
+        fetchedRef.current.petugas = true;
+      } else {
+        error("Gagal memuat data petugas");
+      }
+    } catch {
+      error("Gagal memuat data petugas");
+    } finally {
+      setLoadingPet(false);
+    }
+  }, [error]);
+
+  const handleAddSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const res = await fetch("/api/operator/users/petugas", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editPetugas),
+      });
+      const json = await res.json();
+      if (res.ok) {
+        handleSaved("Akun petugas berhasil dibuat");
+      } else {
+        error(json.message || "Gagal membuat akun");
+      }
+    } catch {
+      error("Terjadi kesalahan jaringan");
+    }
+  };
+
   // On mount: fire all 3 requests in parallel
   useEffect(() => {
-    Promise.all([fetchCategories(), fetchKelurahan(), fetchPos()]);
+    Promise.all([fetchCategories(), fetchKelurahan(), fetchPos(), fetchPetugas()]);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Handlers ─────────────────────────────────────────────────────────────
@@ -464,8 +517,9 @@ export default function ManagementPage() {
   const refetchActive = useCallback(() => {
     if (activeTab === "kategori") fetchCategories();
     else if (activeTab === "kelurahan") fetchKelurahan();
-    else fetchPos();
-  }, [activeTab, fetchCategories, fetchKelurahan, fetchPos]);
+    else if (activeTab === "pos") fetchPos();
+    else if (activeTab === "petugas") fetchPetugas();
+  }, [activeTab, fetchCategories, fetchKelurahan, fetchPos, fetchPetugas]);
 
   const handleSaved = (msg: string) => {
     success(msg);
@@ -484,6 +538,7 @@ export default function ManagementPage() {
         kategori: `/api/operator/categories/${deleteTarget.id}`,
         kelurahan: `/api/operator/kelurahan/${deleteTarget.id}`,
         pos: `/api/operator/fire-stations/${deleteTarget.id}`,
+        petugas: `/api/operator/users/petugas/${deleteTarget.id}`,
       };
       const res = await fetch(urlMap[deleteTarget.type], { method: "DELETE" });
       const json = await res.json();
@@ -517,6 +572,7 @@ export default function ManagementPage() {
     kategori: "Kategori Darurat",
     kelurahan: "Area Kelurahan",
     pos: "Pos Pemadam",
+    petugas: "Akun Petugas",
   };
 
   // ── Render ────────────────────────────────────────────────────────────────
@@ -526,6 +582,39 @@ export default function ManagementPage() {
       {toast.show && <Toast {...toast} onClose={hideToast} />}
 
       {/* ── Modals ── */}
+            {showAdd && activeTab === "petugas" && (
+        <Modal title="Tambah Akun Petugas" onClose={() => setShowAdd(false)}>
+          <form onSubmit={handleAddSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Nama Lengkap</label>
+              <input required type="text" value={editPetugas?.name || ""} onChange={(e) => setEditPetugas({ ...editPetugas, name: e.target.value })}
+                className={inputCls}
+                placeholder="Misal: Budi Santoso" />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Email</label>
+              <input required type="email" value={editPetugas?.email || ""} onChange={(e) => setEditPetugas({ ...editPetugas, email: e.target.value })}
+                className={inputCls}
+                placeholder="budi@example.com" />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">No WhatsApp</label>
+              <input required type="text" value={editPetugas?.phone_number || ""} onChange={(e) => setEditPetugas({ ...editPetugas, phone_number: e.target.value })}
+                className={inputCls}
+                placeholder="Misal: 08123456789" />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Password Sementara</label>
+              <input required type="text" value={editPetugas?.password || ""} onChange={(e) => setEditPetugas({ ...editPetugas, password: e.target.value })}
+                className={inputCls}
+                placeholder="Minimal 6 karakter" />
+            </div>
+            <button type="submit" className="w-full py-2.5 bg-gray-900 hover:bg-gray-800 text-white rounded-xl text-sm font-bold shadow-lg shadow-gray-900/20 transition-all flex items-center justify-center gap-2 mt-4">
+              <FaSave /> Simpan
+            </button>
+          </form>
+        </Modal>
+      )}
       {showAdd && activeTab === "kategori" && (
         <CategoryModal onClose={() => setShowAdd(false)} onSaved={() => handleSaved("Kategori berhasil ditambahkan")} />
       )}
@@ -574,7 +663,7 @@ export default function ManagementPage() {
 
             {/* Tabs */}
             <div className="flex items-center gap-2 bg-gray-50 p-1.5 rounded-xl border border-gray-200/60">
-              {(["kategori", "kelurahan", "pos"] as ActiveTab[]).map((tab) => (
+              {(["kategori", "kelurahan", "pos", "petugas"] as ActiveTab[]).map((tab) => (
                 <button key={tab} onClick={() => setActiveTab(tab)}
                   className={`px-5 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all ${
                     activeTab === tab
@@ -584,7 +673,8 @@ export default function ManagementPage() {
                   {tab === "kategori" && <FaLayerGroup />}
                   {tab === "kelurahan" && <FaMapMarkerAlt />}
                   {tab === "pos" && <FaFireExtinguisher />}
-                  {tab === "kategori" ? "Kategori" : tab === "kelurahan" ? "Kelurahan" : "Pos Pemadam"}
+                  {tab === "petugas" && <FaUserShield />}
+                  {tab === "kategori" ? "Kategori" : tab === "kelurahan" ? "Kelurahan" : tab === "pos" ? "Pos Pemadam" : "Akun Petugas"}
                 </button>
               ))}
             </div>
@@ -610,6 +700,14 @@ export default function ManagementPage() {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-gray-50/80 border-b border-gray-200">
+                    {activeTab === "petugas" && (
+                      <>
+                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-16">ID</th>
+                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Nama & Kontak</th>
+                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Tanggal Dibuat</th>
+                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-24">Aksi</th>
+                      </>
+                    )}
                     {activeTab === "kategori" && (
                       <>
                         <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider w-16">ID</th>
@@ -647,6 +745,29 @@ export default function ManagementPage() {
                   ))}
 
                   {/* Data rows */}
+                                    {!isLoading && activeTab === "petugas" && petugasList.map((pet) => (
+                    <tr key={pet.id} className="border-b border-gray-100 hover:bg-gray-50/50 transition-colors">
+                      <td className="px-6 py-4 text-sm font-semibold text-gray-900">#{pet.id}</td>
+                      <td className="px-6 py-4">
+                        <div className="font-bold text-gray-900">{pet.name}</div>
+                        <div className="text-sm text-gray-500 flex flex-col mt-0.5">
+                          <span>Email: {pet.email}</span>
+                          <span>WA: {pet.phone_number || '-'}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-600">
+                         {new Date(pet.created_at).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'})}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex gap-2">
+                          <button onClick={() => setDeleteTarget({ id: pet.id, name: pet.name, type: "petugas" })}
+                            className="p-2 text-red-500 bg-red-50 hover:bg-red-100 rounded-lg transition-colors">
+                            <FaTrash />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
                   {!isLoading && activeTab === "kategori" && categories.map((cat) => (
                     <tr key={cat.id} className="hover:bg-gray-50/50 transition-colors group">
                       <td className="px-6 py-4 text-sm text-gray-400 font-bold">{cat.id}</td>
@@ -694,6 +815,7 @@ export default function ManagementPage() {
               </table>
 
               {/* Empty states */}
+              {!isLoading && activeTab === "petugas" && petugasList.length === 0 && <EmptyState label="akun petugas" />}
               {!isLoading && activeTab === "kategori" && categories.length === 0 && <EmptyState label="kategori darurat" />}
               {!isLoading && activeTab === "kelurahan" && kelurahans.length === 0 && <EmptyState label="data kelurahan" />}
               {!isLoading && activeTab === "pos" && posPemadam.length === 0 && <EmptyState label="pos pemadam" />}

@@ -1,0 +1,952 @@
+{
+  "info": {
+    "_postman_id": "8c35d9a9-3d14-4fb9-a9a3-5c26b9a8cfdb",
+    "name": "SiagaBencana API Collection",
+    "description": "Postman Collection untuk testing API SiagaBencana (Next.js App Router). Dilengkapi otomatisasi penanganan Auth Token antara User/Petugas dan Operator.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Public APIs",
+      "item": [
+        {
+          "name": "Get App Version",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/app-version",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "app-version"]
+            },
+            "description": "Mendapatkan versi aplikasi mobile terbaru."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Disaster Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/disaster-categories",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "disaster-categories"]
+            },
+            "description": "Mendapatkan daftar kategori bencana alam (kebakaran hutan, kebakaran pemukiman, dll)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Kelurahan List",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/kelurahan",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "kelurahan"]
+            },
+            "description": "Mendapatkan daftar kelurahan untuk pemetaan wilayah."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Auth (User & Petugas)",
+      "item": [
+        {
+          "name": "Register - Request OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Budi Santoso\",\n  \"email\": \"budi@example.com\",\n  \"phoneNumber\": \"081234567890\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            },
+            "description": "Mengirim kode OTP WhatsApp untuk registrasi akun baru."
+          },
+          "response": []
+        },
+        {
+          "name": "Register - Verify OTP & Create Account",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"budi@example.com\",\n  \"otp\": \"123456\",\n  \"name\": \"Budi Santoso\",\n  \"phoneNumber\": \"081234567890\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register/verify",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register", "verify"]
+            },
+            "description": "Memverifikasi kode OTP registrasi dan membuat akun di database."
+          },
+          "response": []
+        },
+        {
+          "name": "Login (Email & Password)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.token) {",
+                  "    pm.collectionVariables.set(\"token\", jsonData.token);",
+                  "    console.log(\"User Token saved:\", jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"petugas@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Login menggunakan email dan password. Token JWT akan otomatis disimpan ke variabel `token`."
+          },
+          "response": []
+        },
+        {
+          "name": "Login WhatsApp - Request OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone_number\": \"081234567890\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login/whatsapp",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login", "whatsapp"]
+            },
+            "description": "Mengirimkan kode OTP login ke WhatsApp pengguna."
+          },
+          "response": []
+        },
+        {
+          "name": "Login WhatsApp - Verify OTP",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.token) {",
+                  "    pm.collectionVariables.set(\"token\", jsonData.token);",
+                  "    console.log(\"User Token saved:\", jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone_number\": \"081234567890\",\n  \"otp\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login/whatsapp/verify",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login", "whatsapp", "verify"]
+            },
+            "description": "Memverifikasi OTP login WhatsApp. Token JWT akan otomatis disimpan ke variabel `token`."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Profile Info",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "profile"]
+            },
+            "description": "Mendapatkan profil akun yang sedang login."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Budi Santoso Baru\",\n  \"phone_number\": \"081234567891\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "profile"]
+            },
+            "description": "Mengubah nama dan nomor telepon profil."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Auth Payload (Me)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "me"]
+            },
+            "description": "Mendapatkan payload JWT mentah dari user."
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "logout"]
+            },
+            "description": "Menghapus sesi JWT user."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. Reports (Pelaporan Kebakaran)",
+      "item": [
+        {
+          "name": "Submit Report (Multipart Form)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "fire_latitude",
+                  "value": "-6.200000",
+                  "type": "text"
+                },
+                {
+                  "key": "fire_longitude",
+                  "value": "106.816666",
+                  "type": "text"
+                },
+                {
+                  "key": "reporter_latitude",
+                  "value": "-6.200100",
+                  "type": "text"
+                },
+                {
+                  "key": "reporter_longitude",
+                  "value": "106.816700",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Kebakaran ruko lantai 2 dekat pasar.",
+                  "type": "text"
+                },
+                {
+                  "key": "address",
+                  "value": "Jl. Jenderal Sudirman No. 10",
+                  "type": "text"
+                },
+                {
+                  "key": "contact",
+                  "value": "081234567890",
+                  "type": "text"
+                },
+                {
+                  "key": "category_id",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "kelurahan_id",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "media",
+                  "type": "file",
+                  "src": "",
+                  "description": "Pilih file foto kebakaran Anda di sini"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/reports",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reports"]
+            },
+            "description": "Mengirim laporan kebakaran baru. Memerlukan multipart/form-data dan lampiran foto (media)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Reports",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/reports/my-reports",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reports", "my-reports"]
+            },
+            "description": "Mendapatkan riwayat laporan yang pernah dikirim oleh user yang sedang login."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Report Detail",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/reports/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reports", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Ganti dengan ID Laporan yang valid"
+                }
+              ]
+            },
+            "description": "Mendapatkan detail laporan tertentu berdasarkan ID."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4. Petugas (Pemadam Kebakaran)",
+      "item": [
+        {
+          "name": "Set On-Duty Status",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"is_on_duty\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/petugas/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "petugas", "status"]
+            },
+            "description": "Mengatur apakah petugas sedang piket (On Duty = true) atau libur (On Duty = false)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Active Tasks",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/petugas/active-tasks",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "petugas", "active-tasks"]
+            },
+            "description": "Mendapatkan daftar laporan kebakaran aktif yang belum terselesaikan."
+          },
+          "response": []
+        },
+        {
+          "name": "Accept Task",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reportId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/petugas/accept",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "petugas", "accept"]
+            },
+            "description": "Menerima (claim) laporan kebakaran agar ditugaskan kepada petugas bersangkutan."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Task Detail",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/petugas/task-detail?reportId=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "petugas", "task-detail"],
+              "query": [
+                {
+                  "key": "reportId",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Mendapatkan info detail rute dan tugas yang sedang dijalankan."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Assignment Status",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reportId\": 1,\n  \"status\": \"arrived\",\n  \"notes\": \"Petugas sudah tiba di lokasi dan mulai memadamkan api.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/petugas/update-status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "petugas", "update-status"]
+            },
+            "description": "Memperbarui status penanganan laporan (on_the_way -> arrived -> completed / false_report)."
+          },
+          "response": []
+        },
+        {
+          "name": "Request Backup",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reportId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/petugas/request-backup",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "petugas", "request-backup"]
+            },
+            "description": "Meminta bantuan armada tambahan karena api membesar di lokasi."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Task History",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/petugas/history",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "petugas", "history"]
+            },
+            "description": "Mendapatkan riwayat pemadaman yang diselesaikan oleh petugas."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "5. Operator (Admin Dashboard)",
+      "item": [
+        {
+          "name": "Login Operator",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var setCookie = pm.response.headers.get(\"Set-Cookie\");",
+                  "if (setCookie) {",
+                  "    var match = setCookie.match(/auth_token=([^;]+)/);",
+                  "    if (match && match[1]) {",
+                  "        pm.collectionVariables.set(\"operatorToken\", match[1]);",
+                  "        console.log(\"Operator Token saved:\", match[1]);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"operator1\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/operator/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "operator", "auth", "login"]
+            },
+            "description": "Login sebagai operator dashboard. Menggunakan cookie JWT yang diekstraksi ke variabel `operatorToken`."
+          },
+          "response": []
+        },
+        {
+          "name": "Dispatch Task (Manual)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{operatorToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reportId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/operator/dispatch",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "operator", "dispatch"]
+            },
+            "description": "Operator secara manual meng-assign/menugaskan laporan kebakaran ke pos pemadam terdekat."
+          },
+          "response": []
+        },
+        {
+          "name": "Broadcast Notification",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{operatorToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"[PENGUMUMAN] Siaga Cuaca Ekstrem\",\n  \"message\": \"Himbauan kepada seluruh warga agar waspada potensi kebakaran akibat korsleting listrik di cuaca panas ekstrim hari ini.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/operator/broadcast",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "operator", "broadcast"]
+            },
+            "description": "Kirim info push notification ke seluruh pengguna aplikasi."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Reports (Operator)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{operatorToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/operator/reports",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "operator", "reports"]
+            },
+            "description": "Mendapatkan daftar semua laporan masuk untuk direview operator."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Petugas Locations",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{operatorToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/operator/petugas-locations",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "operator", "petugas-locations"]
+            },
+            "description": "Mendapatkan lokasi real-time GPS dari semua petugas pemadam yang sedang bertugas."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Statistics",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{operatorToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/operator/statistics",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "operator", "statistics"]
+            },
+            "description": "Mendapatkan grafik data statistik kebakaran bulanan."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "6. Notification Preferences",
+      "item": [
+        {
+          "name": "Get User Preferences",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications/preferences",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "notifications", "preferences"]
+            },
+            "description": "Mengambil preferensi notifikasi user (apakah ingin menerima update via WhatsApp/Email/FCM)."
+          },
+          "response": []
+        },
+        {
+          "name": "Update User Preferences",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"approved\": true,\n  \"inProgress\": true,\n  \"completed\": true,\n  \"verified\": false,\n  \"falseReport\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications/preferences",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "notifications", "preferences"]
+            },
+            "description": "Mengupdate preferensi notifikasi untuk update status laporan."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.test(\"Status code is 200 or 201\", function () {",
+          "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 204]);",
+          "});"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "operatorToken",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

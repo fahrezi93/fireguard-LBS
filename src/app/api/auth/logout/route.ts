@@ -1,9 +1,15 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { serialize } from 'cookie';
+import { handleCorsOptions, corsHeaders } from '@/lib/cors';
 
 const COOKIE_NAME = 'auth_token';
 
-export async function POST() {
+// OPTIONS: CORS preflight
+export async function OPTIONS(request: NextRequest) {
+  return handleCorsOptions(request);
+}
+
+export async function POST(request: NextRequest) {
   // Buat cookie yang sudah kedaluwarsa untuk menghapusnya dari browser
   const serializedCookie = serialize(COOKIE_NAME, '', {
     httpOnly: true,
@@ -23,6 +29,7 @@ export async function POST() {
       'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
       'Pragma': 'no-cache',
       'Expires': '0',
+      ...corsHeaders(request),
     },
   });
 

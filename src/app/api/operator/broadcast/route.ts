@@ -163,7 +163,7 @@ export async function POST(request: NextRequest) {
     } catch (error: any) {
         console.error('[Broadcast] POST error:', error);
         return jsonWithCors(
-            { message: 'Terjadi kesalahan saat mengirim broadcast.', error: error?.message },
+            { message: 'Terjadi kesalahan saat mengirim broadcast.' },
             { status: 500 }
         );
     }

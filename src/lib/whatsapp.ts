@@ -1,19 +1,25 @@
-// Konfigurasi Fonnte
+// Konfigurasi WhatsApp Server Lokal (Baileys)
+const WA_SERVER_URL = process.env.WA_SERVER_URL || "http://localhost:3001";
+// Konfigurasi Fonnte (Sebagai Fallback)
 const FONNTE_TOKEN = process.env.FONNTE_TOKEN || "";
 const ENABLE_WHATSAPP = process.env.ENABLE_WHATSAPP === "true";
 
+export interface WhatsAppResult {
+  success: boolean;
+  message?: string;
+  error?: any;
+}
+
 /**
- * Fungsi dasar untuk mengirim pesan via WhatsApp menggunakan Fonnte
+ * Fungsi internal untuk mengirim via Fonnte
  */
-export async function sendWhatsApp(phone: string, message: string) {
-  if (!ENABLE_WHATSAPP || !FONNTE_TOKEN) {
-    console.warn("⚠️ WhatsApp is disabled or FONNTE_TOKEN is not set.");
-    console.log(`📱 To: ${phone}`);
-    console.log(`💬 Message: ${message}`);
-    return { success: true, message: "WhatsApp Disabled" };
+async function sendViaFonnte(phone: string, message: string): Promise<WhatsAppResult> {
+  if (!FONNTE_TOKEN) {
+    console.error("❌ Fallback to Fonnte failed: FONNTE_TOKEN is not set.");
+    return { success: false, error: "FONNTE_TOKEN is missing" };
   }
 
-  // Format nomor: pastikan menggunakan kode negara
+  // Format nomor untuk Fonnte: hilangkan 0 di depan, API Fonnte biasa menerima format '08...' atau '62...'
   let targetPhone = phone.replace(/\D/g, "");
   if (targetPhone.startsWith("0")) {
     targetPhone = "62" + targetPhone.substring(1);
@@ -33,14 +39,50 @@ export async function sendWhatsApp(phone: string, message: string) {
 
     const result = await response.json();
     if (result.status) {
+      console.log('✅ Fallback: Message sent successfully via Fonnte');
       return { success: true };
     } else {
       console.error('❌ Fonnte Error:', result.reason || result.detail || JSON.stringify(result));
-      return { success: false, error: result.reason || "Failed to send WhatsApp message" };
+      return { success: false, error: result.reason || "Failed to send WhatsApp message via Fonnte" };
     }
   } catch (error: any) {
-    console.error('❌ Error sending WhatsApp:', error);
+    console.error('❌ Error sending WhatsApp via Fonnte:', error);
     return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Fungsi dasar untuk mengirim pesan via WhatsApp (Coba Baileys -> Fallback ke Fonnte)
+ */
+export async function sendWhatsApp(phone: string, message: string): Promise<WhatsAppResult> {
+  if (!ENABLE_WHATSAPP) {
+    console.warn("⚠️ WhatsApp is disabled.");
+    console.log(`📱 To: ${phone}`);
+    console.log(`💬 Message: ${message}`);
+    return { success: true, message: "WhatsApp Disabled" };
+  }
+
+  try {
+    // 1. Mencoba mengirim via Local Baileys Server
+    const response = await fetch(`${WA_SERVER_URL}/send`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ target: phone, message: message }),
+    });
+
+    const result = await response.json();
+    if (result.success) {
+      console.log('✅ Message sent successfully via Baileys Local Server');
+      return { success: true };
+    } else {
+      console.warn('⚠️ Baileys Server Failed (Not connected / Error):', result.error);
+      console.log('🔄 Switching to Fonnte Fallback...');
+      return await sendViaFonnte(phone, message);
+    }
+  } catch (error: any) {
+    // Ini terjadi jika Local Server mati (ECONNREFUSED)
+    console.warn(`⚠️ Baileys Server Unreachable (${error.message}). Switching to Fonnte Fallback...`);
+    return await sendViaFonnte(phone, message);
   }
 }
 

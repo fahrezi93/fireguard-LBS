@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
       return jsonWithCors({ message: 'Akses ditolak.' }, { status: 401, request });
     }
     return jsonWithCors(
-      { success: false, message: 'Terjadi kesalahan.', error: error?.message },
+      { success: false, message: 'Terjadi kesalahan.' },
       { status: 500, request },
     );
   }

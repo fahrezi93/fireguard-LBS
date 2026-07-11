@@ -106,6 +106,13 @@ export function resolveCorsOrigin(request: NextRequest): string | null {
   const origin = request.headers.get("origin");
   if (!origin) return null;
 
+  // In development, allow ANY localhost/127.0.0.1 origin for Flutter Web
+  if (process.env.NODE_ENV !== "production") {
+    if (origin.startsWith("http://localhost:") || origin.startsWith("http://127.0.0.1:")) {
+      return origin;
+    }
+  }
+
   const allowedOrigins = getConfiguredOrigins();
   if (allowedOrigins.includes(origin)) {
     return origin;

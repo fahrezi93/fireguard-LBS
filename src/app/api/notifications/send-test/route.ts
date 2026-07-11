@@ -136,7 +136,6 @@ export async function POST(request: NextRequest) {
     return jsonWithCors({
       success: false,
       message: "Terjadi kesalahan.",
-      error: error?.message,
     }, { status: 500, request });
   }
 }

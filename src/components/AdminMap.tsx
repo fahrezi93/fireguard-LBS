@@ -5,7 +5,7 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { fireStations, FireStation } from '@/lib/fire-stations';
 import RoutingMachine from './RoutingMachine';
-import { useMemo, useEffect } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 
 // Komponen untuk memperbaiki ukuran peta saat container berubah
 function MapResizeHandler() {
@@ -62,6 +62,7 @@ interface Report {
     id: number;
     name: string;
   };
+  needs_backup?: number | boolean;
 }
 
 // Ikon untuk Pos Damkar
@@ -73,7 +74,7 @@ const fireStationIcon = new L.DivIcon({
 });
 
 // Fungsi untuk membuat icon berdasarkan kategori
-const createCategoryIcon = (categoryId?: number, categoryIcon?: string, isCompleted?: boolean) => {
+const createCategoryIcon = (categoryId?: number, categoryIcon?: string, isCompleted?: boolean, needsBackup?: boolean | number) => {
   if (isCompleted) {
     return new L.DivIcon({
       html: `<div style="font-size: 28px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">✅</div>`,
@@ -96,8 +97,15 @@ const createCategoryIcon = (categoryId?: number, categoryIcon?: string, isComple
 
   const emoji = categoryIcon || categoryEmojis[categoryId || 1] || '🔥';
 
+  const backupIndicator = needsBackup 
+    ? `<div style="position: absolute; top: -5px; right: -5px; width: 14px; height: 14px; background-color: #ef4444; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px #ef4444; z-index: 10;" class="animate-pulse"></div>` 
+    : '';
+
   return new L.DivIcon({
-    html: `<div style="font-size: 28px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">${emoji}</div>`,
+    html: `<div style="font-size: 28px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); position: relative; display: inline-block;">
+             ${backupIndicator}
+             ${emoji}
+           </div>`,
     className: 'leaflet-emoji-icon',
     iconSize: [28, 28],
     iconAnchor: [14, 28],
@@ -111,6 +119,23 @@ const reporterLocationIcon = new L.DivIcon({
   iconSize: [24, 24],
   iconAnchor: [12, 24],
 });
+
+// Ikon untuk petugas pemadam
+const petugasIcon = new L.DivIcon({
+  html: `<div style="font-size: 28px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">🚒</div>`,
+  className: 'leaflet-emoji-icon',
+  iconSize: [28, 28],
+  iconAnchor: [14, 28],
+});
+
+interface PetugasLocation {
+  id: number;
+  name: string;
+  last_latitude: number;
+  last_longitude: number;
+  last_location_update: string;
+  is_on_duty: number | boolean;
+}
 
 interface AdminMapProps {
   reports: Report[];
@@ -138,6 +163,26 @@ function haversineDistance(coords1: [number, number], coords2: [number, number])
 
 export default function AdminMap({ reports, onReportClick, selectedReport }: AdminMapProps) {
   const defaultPosition: [number, number] = [-2.976, 104.775]; // Plaju, Palembang
+  const [petugasLocations, setPetugasLocations] = useState<PetugasLocation[]>([]);
+
+  // Fetch lokasi petugas secara periodik
+  useEffect(() => {
+    const fetchPetugas = async () => {
+      try {
+        const res = await fetch('/api/operator/petugas-locations');
+        if (res.ok) {
+          const data = await res.json();
+          setPetugasLocations(data);
+        }
+      } catch (err) {
+        console.error("Gagal fetch petugas:", err);
+      }
+    };
+
+    fetchPetugas();
+    const interval = setInterval(fetchPetugas, 10000); // Tiap 10 detik
+    return () => clearInterval(interval);
+  }, []);
 
   // Hitung pos damkar terdekat untuk laporan yang dipilih
   const nearestStation: FireStation | null = useMemo(() => {
@@ -197,7 +242,7 @@ export default function AdminMap({ reports, onReportClick, selectedReport }: Adm
         if (isNaN(fireLat) || isNaN(fireLng)) return null;
 
         const isCompleted = report.status === 'Selesai' || report.status === 'completed' || report.status === 'selesai';
-        const categoryIcon = createCategoryIcon(report.category?.id, report.category?.icon, isCompleted);
+        const categoryIcon = createCategoryIcon(report.category?.id, report.category?.icon, isCompleted, report.needs_backup);
         const categoryName = report.category?.name || 'Kebakaran';
 
         return (
@@ -239,6 +284,21 @@ export default function AdminMap({ reports, onReportClick, selectedReport }: Adm
           </Marker>
         )];
       })}
+
+      {/* Marker lokasi petugas */}
+      {petugasLocations.map(petugas => (
+        <Marker
+          key={`petugas-${petugas.id}`}
+          position={[Number(petugas.last_latitude), Number(petugas.last_longitude)]}
+          icon={petugasIcon}
+        >
+          <Popup>
+            <strong>{petugas.name}</strong><br />
+            {petugas.is_on_duty ? <span style={{ color: 'green' }}>🟢 Bertugas</span> : <span style={{ color: 'orange' }}>🟡 Standby</span>}<br />
+            <span style={{ fontSize: '10px', color: '#666' }}>Update: {new Date(petugas.last_location_update).toLocaleTimeString('id-ID')}</span>
+          </Popup>
+        </Marker>
+      ))}
 
       {/* Rute dari pos damkar terdekat ke lokasi kebakaran */}
       {showRoute && nearestStation && selectedReport && (

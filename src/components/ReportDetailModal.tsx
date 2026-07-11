@@ -44,6 +44,17 @@ interface Report {
   contact?: string;
   description?: string;
   address?: string;
+  assigned_petugas_id?: number | null;
+  assigned_petugas_name?: string | null;
+  dispatched_at?: string | null;
+  accepted_at?: string | null;
+  arrived_at?: string | null;
+  completed_at?: string | null;
+  response_time_seconds?: number | null;
+  status_petugas?: string | null;
+  completion_photo_url?: string | null;
+  needs_backup?: number | boolean;
+  petugas_notes?: string | null;
   category?: {
     id: number;
     name: string;
@@ -59,6 +70,7 @@ interface ReportDetailModalProps {
   report: Report;
   onClose: () => void;
   onUpdateStatus?: (reportId: number, newStatus: string) => Promise<void>;
+  onDispatchToPetugas?: (reportId: number) => Promise<void>;
   onDelete?: (reportId: number) => Promise<void>;
   readOnly?: boolean;
 }
@@ -68,15 +80,18 @@ const StatusButton = ({
   icon,
   color,
   onClick,
+  disabled = false,
 }: {
   label: string;
   icon: React.ReactNode;
   color: string;
   onClick: () => void;
+  disabled?: boolean;
 }) => (
   <button
     onClick={onClick}
-    className={`${color} text-white px-4 py-2.5 rounded-xl font-medium text-sm flex items-center gap-2 transition-all hover:shadow-lg shadow-md`}
+    disabled={disabled}
+    className={`${color} text-white px-4 py-2.5 rounded-xl font-medium text-sm flex items-center gap-2 transition-all hover:shadow-lg shadow-md disabled:opacity-50 disabled:cursor-not-allowed`}
   >
     {icon}
     {label}
@@ -87,6 +102,7 @@ export default function ReportDetailModal({
   report,
   onClose,
   onUpdateStatus,
+  onDispatchToPetugas,
   onDelete,
   readOnly = false,
 }: ReportDetailModalProps) {
@@ -117,6 +133,16 @@ export default function ReportDetailModal({
     setIsUpdating(true);
     try {
       await onUpdateStatus(report.id, newStatus);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleDispatch = async () => {
+    if (!onDispatchToPetugas || readOnly) return;
+    setIsUpdating(true);
+    try {
+      await onDispatchToPetugas(report.id);
     } finally {
       setIsUpdating(false);
     }
@@ -186,7 +212,7 @@ export default function ReportDetailModal({
       completed: { text: "Selesai", color: "text-green-600", bgColor: "bg-green-50 border-green-200" },
       selesai: { text: "Selesai", color: "text-green-600", bgColor: "bg-green-50 border-green-200" },
       dibatalkan: { text: "Dibatalkan", color: "text-red-600", bgColor: "bg-red-50 border-red-200" },
-      false: { text: "Palsu", color: "text-gray-600", bgColor: "bg-gray-50 border-gray-200" },
+      false_report: { text: "Laporan Palsu", color: "text-gray-600", bgColor: "bg-gray-50 border-gray-200" },
     };
     return (
       statusMap[status] || { text: status, color: "text-gray-600", bgColor: "bg-gray-50 border-gray-200" }
@@ -225,19 +251,96 @@ export default function ReportDetailModal({
           </button>
         </div>
 
+        {/* SOS Backup Banner */}
+        {report.needs_backup ? (
+          <div className="bg-red-600 px-6 py-3 flex items-center justify-between text-white shadow-inner animate-pulse">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">🚨</span>
+              <div>
+                <p className="font-bold text-sm tracking-wide uppercase">PETUGAS MEMBUTUHKAN BANTUAN ARMADA</p>
+                <p className="text-xs text-red-100 mt-0.5">Skala api besar, segera kirimkan unit pemadam tambahan ke lokasi ini!</p>
+              </div>
+            </div>
+          </div>
+        ) : null}
+
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6 space-y-5 bg-gray-50/30">
           {/* Status */}
           <div className={`rounded-xl p-5 border ${statusDisplay.bgColor}`}>
-            <div className="flex items-center gap-3">
-              <div className="flex-1">
-                <p className="text-xs text-gray-500 mb-1">Status Laporan</p>
-                <p className={`text-xl font-semibold ${statusDisplay.color}`}>
-                  {statusDisplay.text}
-                </p>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="flex-1">
+                  <p className="text-xs text-gray-500 mb-1">Status Laporan</p>
+                  <p className={`text-xl font-semibold ${statusDisplay.color}`}>
+                    {statusDisplay.text}
+                  </p>
+                </div>
               </div>
+              {report.assigned_petugas_name && (
+                <div className="bg-white/60 p-3 rounded-lg border border-gray-200/50">
+                  <p className="text-[10px] uppercase font-bold text-gray-500 tracking-wider mb-1">Diambil Oleh Petugas</p>
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center">
+                      <span className="text-xs font-bold text-blue-700">{report.assigned_petugas_name.charAt(0)}</span>
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-gray-900">{report.assigned_petugas_name}</p>
+                      {report.accepted_at && (
+                        <p className="text-xs text-gray-500">
+                          {new Date(report.accepted_at).toLocaleString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })} WIB
+                        </p>
+                      )}
+                      {report.status_petugas && (
+                        <div className="mt-1">
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${
+                            report.status_petugas === 'accepted' ? 'bg-yellow-100 text-yellow-700' :
+                            report.status_petugas === 'arrived' ? 'bg-blue-100 text-blue-700' :
+                            report.status_petugas === 'completed' ? 'bg-green-100 text-green-700' :
+                            report.status_petugas === 'false_report' ? 'bg-gray-100 text-gray-700' :
+                            'bg-gray-100 text-gray-600'
+                          }`}>
+                            {report.status_petugas === 'accepted' ? 'Menuju Lokasi' :
+                             report.status_petugas === 'arrived' ? 'Tiba di Lokasi' :
+                             report.status_petugas === 'completed' ? 'Selesai' :
+                             report.status_petugas === 'false_report' ? 'Laporan Palsu' :
+                             report.status_petugas}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
+
+          {/* Timing Metrics */}
+          {(report.status_petugas === 'completed' || report.status_petugas === 'false_report') && report.dispatched_at && report.arrived_at && report.completed_at && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-white rounded-xl p-4 border border-blue-100 shadow-sm flex flex-col items-center justify-center text-center">
+                <p className="text-[11px] uppercase font-bold text-gray-500 tracking-wider mb-1">Waktu Respon</p>
+                <p className="text-lg font-bold text-blue-700">
+                  {Math.max(0, Math.floor((new Date(report.arrived_at).getTime() - new Date(report.dispatched_at).getTime()) / 60000))} Menit
+                </p>
+                <p className="text-[10px] text-gray-400 mt-1">Dikirim ➔ Tiba</p>
+              </div>
+              <div className="bg-white rounded-xl p-4 border border-orange-100 shadow-sm flex flex-col items-center justify-center text-center">
+                <p className="text-[11px] uppercase font-bold text-gray-500 tracking-wider mb-1">Waktu Penanganan</p>
+                <p className="text-lg font-bold text-orange-700">
+                  {Math.max(0, Math.floor((new Date(report.completed_at).getTime() - new Date(report.arrived_at).getTime()) / 60000))} Menit
+                </p>
+                <p className="text-[10px] text-gray-400 mt-1">Tiba ➔ Selesai</p>
+              </div>
+              <div className="bg-white rounded-xl p-4 border border-green-100 shadow-sm flex flex-col items-center justify-center text-center">
+                <p className="text-[11px] uppercase font-bold text-gray-500 tracking-wider mb-1">Total Waktu</p>
+                <p className="text-lg font-bold text-green-700">
+                  {Math.max(0, Math.floor((new Date(report.completed_at).getTime() - new Date(report.dispatched_at).getTime()) / 60000))} Menit
+                </p>
+                <p className="text-[10px] text-gray-400 mt-1">Dikirim ➔ Selesai</p>
+              </div>
+            </div>
+          )}
 
           {/* Kategori dan Kelurahan */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -508,6 +611,51 @@ export default function ReportDetailModal({
               </div>
             </div>
           )}
+
+          {/* Bukti Penyelesaian */}
+          {report.completion_photo_url && (
+            <div className="bg-white rounded-xl p-5 border border-green-200 shadow-sm bg-green-50/30">
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-green-100 rounded-lg">
+                  <FaCheckCircle className="text-green-600 text-sm" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs text-green-700 font-semibold mb-3">Bukti Penyelesaian (Dari Petugas)</p>
+                  <div className="relative w-full h-64 rounded-xl overflow-hidden border border-green-200">
+                    <Image
+                      src={toSafeExternalUrl(report.completion_photo_url) || ''}
+                      alt="Bukti penyelesaian laporan"
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <a
+                    href={toSafeExternalUrl(report.completion_photo_url) || undefined}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-green-700 hover:text-green-800 text-xs font-medium mt-3 inline-flex items-center gap-1 hover:underline"
+                  >
+                    Lihat Ukuran Penuh →
+                  </a>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Catatan Lapangan dari Petugas */}
+          {report.petugas_notes && (
+            <div className="bg-white rounded-xl p-5 border border-purple-200 shadow-sm bg-purple-50/30">
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-purple-100 rounded-lg">
+                  <FaFileAlt className="text-purple-600 text-sm" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs text-purple-700 font-semibold mb-2">Catatan Lapangan (Dari Petugas)</p>
+                  <p className="text-sm text-gray-900 leading-relaxed bg-white p-3 rounded-lg border border-purple-100">{report.petugas_notes}</p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Action Buttons */}
@@ -521,24 +669,37 @@ export default function ReportDetailModal({
                   icon={<FaCheck className="text-sm" />}
                   color="bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700"
                   onClick={() => handleStatusUpdate("verified")}
+                  disabled={report.status === 'completed' || report.status === 'false' || report.status === 'false_report'}
                 />
+                {onDispatchToPetugas && (
+                  <StatusButton
+                    label={report.assigned_petugas_id ? "Sudah Diambil Petugas" : "Kirim ke Petugas (Broadcast)"}
+                    icon={<FaTruck className="text-sm" />}
+                    color="bg-gradient-to-r from-red-500 to-orange-600 hover:from-red-600 hover:to-orange-700"
+                    onClick={handleDispatch}
+                    disabled={!!report.assigned_petugas_id || report.status === 'completed' || report.status === 'false' || report.status === 'false_report'}
+                  />
+                )}
                 <StatusButton
-                  label="Kirim Unit"
+                  label="Kirim Unit (Manual)"
                   icon={<FaTruck className="text-sm" />}
                   color="bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700"
                   onClick={() => handleStatusUpdate("dispatched")}
+                  disabled={!!report.assigned_petugas_id || report.status === 'completed' || report.status === 'false' || report.status === 'false_report'}
                 />
                 <StatusButton
                   label="Selesaikan"
                   icon={<FaCheckCircle className="text-sm" />}
                   color="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
                   onClick={() => handleStatusUpdate("completed")}
+                  disabled={report.status === 'completed' || report.status === 'false' || report.status === 'false_report'}
                 />
                 <StatusButton
                   label="Laporan Palsu"
                   icon={<FaTimesCircle className="text-sm" />}
                   color="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700"
                   onClick={() => handleStatusUpdate("false")}
+                  disabled={report.status === 'completed' || report.status === 'false' || report.status === 'false_report'}
                 />
               </div>
               {/* Tombol Hapus */}

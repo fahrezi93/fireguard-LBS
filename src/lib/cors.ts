@@ -18,7 +18,7 @@ export async function getAuthPayloadFromRequest(request: NextRequest) {
   if ("response" in auth) {
     throw new Error('Token autentikasi tidak ditemukan.');
   }
-  return auth.payload as { id: number; email: string; name: string; phone?: string; isOperator?: boolean };
+  return auth.payload as { id: number; email: string; name: string; phone?: string; isOperator?: boolean; role?: string };
 }
 
 /**
