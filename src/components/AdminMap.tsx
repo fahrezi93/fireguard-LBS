@@ -165,8 +165,21 @@ export default function AdminMap({ reports, onReportClick, selectedReport }: Adm
   const defaultPosition: [number, number] = [-2.976, 104.775]; // Plaju, Palembang
   const [petugasLocations, setPetugasLocations] = useState<PetugasLocation[]>([]);
 
-  // Fetch lokasi petugas secara periodik
+  // Cek apakah ada laporan aktif yang butuh tracking
+  const hasActiveTracking = useMemo(() => {
+    return reports.some(r => {
+      const s = r.status.toLowerCase();
+      return ['diproses', 'dikirim', 'dispatched', 'arrived', 'ditangani', 'in_progress'].includes(s);
+    });
+  }, [reports]);
+
+  // Fetch lokasi petugas sekali saat ada laporan aktif, lalu dengarkan via WebSocket
   useEffect(() => {
+    if (!hasActiveTracking) {
+      setPetugasLocations([]);
+      return;
+    }
+
     const fetchPetugas = async () => {
       try {
         const res = await fetch('/api/operator/petugas-locations');
@@ -180,9 +193,57 @@ export default function AdminMap({ reports, onReportClick, selectedReport }: Adm
     };
 
     fetchPetugas();
-    const interval = setInterval(fetchPetugas, 10000); // Tiap 10 detik
-    return () => clearInterval(interval);
-  }, []);
+
+    // Setup WebSocket
+    let ws: WebSocket | null = null;
+    let reconnectTimeout: NodeJS.Timeout;
+
+    const connect = () => {
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const wsUrl = `${protocol}//${window.location.host}/ws`;
+        
+        ws = new WebSocket(wsUrl);
+
+        ws.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                if (data.type === "PETUGAS_LOCATION_UPDATE" && data.payload) {
+                    setPetugasLocations(prev => {
+                        const exists = prev.find(p => p.id === data.payload.petugasId);
+                        if (exists) {
+                            return prev.map(p => p.id === data.payload.petugasId ? {
+                                ...p,
+                                last_latitude: data.payload.lat,
+                                last_longitude: data.payload.lng,
+                                last_location_update: new Date().toISOString()
+                            } : p);
+                        } else {
+                            // Fetch ulang jika ada petugas baru yang tiba-tiba broadcast
+                            fetchPetugas();
+                            return prev;
+                        }
+                    });
+                }
+            } catch (e) {
+                // Ignore parsing errors
+            }
+        };
+
+        ws.onclose = () => {
+            reconnectTimeout = setTimeout(connect, 5000);
+        };
+    };
+
+    connect();
+
+    return () => {
+      clearTimeout(reconnectTimeout);
+      if (ws) {
+          ws.onclose = null;
+          ws.close();
+      }
+    };
+  }, [hasActiveTracking]);
 
   // Hitung pos damkar terdekat untuk laporan yang dipilih
   const nearestStation: FireStation | null = useMemo(() => {

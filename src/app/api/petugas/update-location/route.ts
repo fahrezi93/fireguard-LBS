@@ -25,6 +25,17 @@ export async function POST(request: NextRequest) {
       [lat, lng, user.id]
     );
 
+    // Broadcast location update via WebSocket
+    const wss = global.wss;
+    if (wss) {
+      wss.broadcast(
+        JSON.stringify({
+          type: "PETUGAS_LOCATION_UPDATE",
+          payload: { petugasId: user.id, lat, lng },
+        })
+      );
+    }
+
     return jsonWithCors({ success: true, message: "Lokasi berhasil diperbarui." }, { status: 200, request });
 
   } catch (error: any) {

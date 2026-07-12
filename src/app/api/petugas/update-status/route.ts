@@ -2,6 +2,10 @@ import { NextRequest } from "next/server";
 import { queryRow, queryRows, execute } from "@/lib/db";
 import { getAuthPayloadFromRequest, handleCorsOptions, jsonWithCors } from "@/lib/cors";
 import { getMessaging } from "@/lib/firebase-admin";
+import { getAddressFromCoordinates } from "@/lib/geo";
+import { sendStatusUpdateEmail } from "@/lib/email";
+import { sendWhatsAppReportUpdate } from "@/lib/whatsapp";
+import { executeAndGetLastInsertId, formatDateForMySQL } from "@/lib/db";
 
 export async function OPTIONS(request: NextRequest) {
   return handleCorsOptions(request);
@@ -76,9 +80,13 @@ export async function POST(request: NextRequest) {
       return jsonWithCors({ message: "Foto bukti penyelesaian wajib dilampirkan." }, { status: 400, request });
     }
 
-    // Ambil laporan
-    const report = await queryRow<{ id: number, assigned_petugas_id: number, dispatched_at: Date, user_id: number }>(
-      "SELECT id, assigned_petugas_id, dispatched_at, user_id FROM reports WHERE id = ?",
+    // Ambil laporan beserta data user (pelapor)
+    const report = await queryRow<any>(
+      `SELECT r.id, r.assigned_petugas_id, r.dispatched_at, r.user_id, r.fire_latitude, r.fire_longitude,
+              u.name as user_name, u.email as user_email, u.phone_number as user_phone
+       FROM reports r
+       JOIN users u ON r.user_id = u.id
+       WHERE r.id = ?`,
       [reportId]
     );
 
@@ -125,42 +133,80 @@ export async function POST(request: NextRequest) {
     // Kirim notifikasi ke pelapor jika laporan selesai atau palsu
     if (status === 'completed' || status === 'false_report') {
       try {
-        const tokens = await queryRows<{ device_token: string }>(
-          "SELECT device_token FROM device_tokens WHERE user_id = ? AND is_active = TRUE",
-          [report.user_id]
-        );
-        
-        if (tokens.length > 0) {
-          const messaging = await getMessaging();
-          if (messaging) {
-            const tokenStrings = tokens.map(t => t.device_token);
-            const bodyMessage = status === 'completed' 
-              ? "Laporan Selesai! Api telah berhasil dipadamkan oleh petugas." 
-              : "Laporan dibatalkan karena terindikasi sebagai laporan palsu.";
-            
-            await messaging.sendEachForMulticast({
-              tokens: tokenStrings,
-              notification: {
-                title: status === 'completed' ? "✅ Laporan Selesai" : "❌ Laporan Palsu",
-                body: bodyMessage,
-              },
-              data: {
-                type: "status_update",
-                reportId: String(reportId),
-              },
-              android: {
-                priority: "high",
-                notification: {
-                  channelId: "siagabencana_general"
-                }
-              }
-            });
-          }
+        const canonicalStatus = status === 'completed' ? 'completed' : 'false_report';
+
+        // Title dan message standar untuk notifikasi
+        const notifTitle = canonicalStatus === 'completed' ? 'Laporan Selesai' : 'Laporan Ditolak';
+        let notifMessage = canonicalStatus === 'completed' 
+          ? 'Laporan Anda telah diselesaikan' 
+          : 'Laporan Anda ditandai sebagai laporan palsu';
+
+        if (notes) {
+          notifMessage += `\n\nCatatan petugas: ${notes}`;
+        }
+
+        // 1. Simpan ke tabel notifications (untuk inbox di web)
+        const currentTimestamp = formatDateForMySQL(new Date());
+        let dbNotificationId: number | undefined;
+        try {
+          dbNotificationId = await executeAndGetLastInsertId(
+            `INSERT INTO notifications (user_id, title, message, type, report_id, is_read, created_at) 
+             VALUES (?, ?, ?, ?, ?, FALSE, ?)`,
+            [report.user_id, notifTitle, notifMessage, 'status_update', reportId, currentTimestamp]
+          );
+        } catch (notifDbErr) {
+          console.error('Error creating notification in DB:', notifDbErr);
+        }
+
+        // 2. Trigger FCM (hybrid mode)
+        void import('@/services/notification-service')
+          .then(({ sendReportStatusNotification }) =>
+            sendReportStatusNotification(Number(reportId), report.user_id, canonicalStatus, dbNotificationId)
+          )
+          .catch((pushError) => {
+            console.error('Error triggering push notification:', pushError);
+          });
+
+        // 3. Logika Pengiriman Email (Selesai & Palsu)
+        if (report.user_email) {
+          sendStatusUpdateEmail(
+            report.user_email,
+            report.user_name,
+            Number(reportId),
+            canonicalStatus,
+            notes || undefined
+          );
+        }
+
+        // 4. Logika Pengiriman WhatsApp (Hanya untuk Laporan Palsu)
+        const ENABLE_WHATSAPP = process.env.ENABLE_WHATSAPP === "true";
+        if (ENABLE_WHATSAPP && report.user_phone && canonicalStatus === 'false_report') {
+          const address = await getAddressFromCoordinates(report.fire_latitude, report.fire_longitude);
+          const statusLabel = canonicalStatus === 'false_report' ? 'Laporan Palsu' : canonicalStatus;
+
+          sendWhatsAppReportUpdate(
+            report.user_phone,
+            report.user_name,
+            Number(reportId),
+            statusLabel,
+            address,
+            notes || undefined
+          );
         }
       } catch (notifErr) {
-        console.error("Gagal mengirim notifikasi ke pelapor:", notifErr);
-        // Lanjutkan eksekusi meskipun notifikasi gagal
+        console.error("Gagal memproses notifikasi:", notifErr);
       }
+    }
+
+    // Broadcast status update via WebSocket agar Dashboard Web terupdate
+    const wss = global.wss;
+    if (wss) {
+      wss.broadcast(
+        JSON.stringify({
+          type: "STATUS_UPDATE",
+          payload: { reportId: Number(reportId), newStatus: status === 'false_report' ? 'false_report' : status },
+        })
+      );
     }
 
     return jsonWithCors({

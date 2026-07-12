@@ -46,17 +46,22 @@ export async function GET(request: NextRequest) {
           r.media_url as photo_url,
           r.notes,
           r.contact,
+          r.assigned_petugas_id,
           u.phone_number as user_phone,
           c.id as category_id,
           c.name as category_name,
           c.icon as category_icon,
           k.id as kelurahan_id,
           k.name as kelurahan_name,
-          k.kecamatan
+          k.kecamatan,
+          p.name as petugas_name,
+          p.last_latitude as petugas_lat,
+          p.last_longitude as petugas_lng
         FROM reports r 
         LEFT JOIN users u ON r.user_id = u.id
         LEFT JOIN disaster_categories c ON r.category_id = c.id
         LEFT JOIN kelurahan k ON r.kelurahan_id = k.id
+        LEFT JOIN users p ON r.assigned_petugas_id = p.id
         WHERE r.id = ? AND r.user_id = ?`,
         [reportId, user.id]
       );
@@ -85,15 +90,20 @@ export async function GET(request: NextRequest) {
         r.media_url as photo_url,
         r.notes,
         r.contact,
+        r.assigned_petugas_id,
         c.id as category_id,
         c.name as category_name,
         c.icon as category_icon,
         k.id as kelurahan_id,
         k.name as kelurahan_name,
-        k.kecamatan
+        k.kecamatan,
+        p.name as petugas_name,
+        p.last_latitude as petugas_lat,
+        p.last_longitude as petugas_lng
       FROM reports r
       LEFT JOIN disaster_categories c ON r.category_id = c.id
       LEFT JOIN kelurahan k ON r.kelurahan_id = k.id
+      LEFT JOIN users p ON r.assigned_petugas_id = p.id
       WHERE r.user_id = ? 
       ORDER BY r.created_at DESC`,
       [user.id]

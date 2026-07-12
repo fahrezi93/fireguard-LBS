@@ -20,10 +20,15 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'SiagaBencana <noreply@siagabencana-palembang.my.id>';
 
 // Logo URL untuk template email
-const getLogoUrl = () =>
-  process.env.NEXT_PUBLIC_BASE_URL
-    ? `${process.env.NEXT_PUBLIC_BASE_URL}/favicon.png`
-    : 'https://www.siagabencana-palembang.my.id/favicon.png';
+const getLogoUrl = () => {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  // Jangan gunakan localhost untuk email karena Gmail tidak bisa meloadnya
+  if (baseUrl && !baseUrl.includes('localhost') && !baseUrl.includes('127.0.0.1') && !baseUrl.includes('192.168.')) {
+    return `${baseUrl}/favicon.png`;
+  }
+  // Fallback ke public CDN icon jika sedang development lokal atau belum ada domain
+  return 'https://cdn-icons-png.flaticon.com/512/792/792113.png';
+};
 
 // ── Template HTML helpers ─────────────────────────────────────────────────────
 
@@ -158,6 +163,7 @@ export async function sendStatusUpdateEmail(
 ): Promise<{ success: boolean; error?: string }> {
   const statusLabels: Record<string, { label: string; color: string; emoji: string }> = {
     pending:      { label: 'Menunggu',          color: '#F59E0B', emoji: '⏳' },
+    submitted:    { label: 'Menunggu Verifikasi',color: '#F59E0B', emoji: '⏳' },
     approved:     { label: 'Laporan Disetujui', color: '#2563EB', emoji: '✅' },
     in_progress:  { label: 'Sedang Ditangani',  color: '#3B82F6', emoji: '🔄' },
     completed:    { label: 'Selesai',            color: '#10B981', emoji: '✅' },

@@ -261,7 +261,7 @@ export default function OperatorDashboard() {
   const [isLoading, setIsLoading] = useState(true);
 
   const [statusFilter, setStatusFilter] = useState("all");
-  const [isMonitorMode, setIsMonitorMode] = useState(false);
+  const [isMonitorMode, setIsMonitorMode] = useState(true);
   const [wsStatus, setWsStatus] = useState("Connecting");
   const alarmIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const ws = useRef<WebSocket | null>(null);
@@ -298,6 +298,10 @@ export default function OperatorDashboard() {
 
   const handleSelectReport = (report: Report) => {
     setSelectedReport(report);
+    // Hentikan alarm dengan menandai laporan ini sudah 'dilihat' (acknowledged)
+    setReports((prev) => 
+      prev.map((r) => (r.id === report.id ? { ...r, acknowledged: true } : r))
+    );
   };
 
   const handleCloseModal = () => {

@@ -46,6 +46,16 @@ app.prepare().then(() => {
     const parsedUrl = parse(req.url, true);
     const { pathname } = parsedUrl;
 
+    // Log HTTP request (skip internal Next.js assets)
+    if (!pathname.startsWith('/_next/')) {
+      const start = Date.now();
+      res.on('finish', () => {
+        const ms = Date.now() - start;
+        const statusColor = res.statusCode >= 500 ? '\x1b[31m' : res.statusCode >= 400 ? '\x1b[33m' : '\x1b[32m';
+        console.log(`${statusColor}${req.method} ${pathname} ${res.statusCode}\x1b[0m - ${ms}ms`);
+      });
+    }
+
     // Penanganan khusus untuk file yang diunggah
     if (pathname.startsWith('/uploads/')) {
       const filePath = path.join(__dirname, 'public', pathname);

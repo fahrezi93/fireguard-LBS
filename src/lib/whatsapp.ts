@@ -104,7 +104,7 @@ export async function sendWhatsAppOTP(phone: string, otp: string, type: 'registe
     action = "mereset kata sandi akun SiagaBencana Anda";
   }
 
-  const message = `*🔥 SiagaBencana - ${subject}*\n\nGunakan kode OTP berikut untuk ${action}:\n\n👉 *${otp}*\n\n⚠️ _Berlaku selama 10 menit. Jangan bagikan kode ini kepada siapapun demi keamanan akun Anda._\n\n_Sent via SiagaBencana System_`;
+  const message = `*SiagaBencana - ${subject}*\n\nGunakan kode OTP berikut untuk ${action}:\n\n👉 *${otp}*\n\n⚠️ _Berlaku selama 10 menit. Jangan bagikan kode ini kepada siapapun demi keamanan akun Anda._\n\n_Sent via SiagaBencana System_`;
 
   return sendWhatsApp(phone, message);
 }
@@ -113,23 +113,23 @@ export async function sendWhatsAppOTP(phone: string, otp: string, type: 'registe
  * Kirim Update Status Laporan via WhatsApp
  */
 export async function sendWhatsAppReportUpdate(
-  phone: string, 
-  userName: string, 
-  reportId: string | number, 
-  statusLabel: string, 
-  address: string, 
+  phone: string,
+  userName: string,
+  reportId: string | number,
+  statusLabel: string,
+  address: string,
   adminNotes?: string
 ) {
   // Template yang lebih profesional dan informatif
-  let message = `*🔥 SIAGABENCANA - NOTIFIKASI STATUS*\n\n`;
+  let message = `*SIAGABENCANA - NOTIFIKASI STATUS*\n\n`;
   message += `Halo *${userName}*,\n`;
   message += `Laporan kejadian Anda dengan ID *#${reportId}* telah diperbarui oleh petugas.\n\n`;
   message += `━━━━━━━━━━━━━━━━━━\n`;
-  message += `📌 *STATUS BARU:* ${statusLabel.toUpperCase()}\n`;
-  message += `📍 *LOKASI:* ${address}\n`;
-  
+  message += `*STATUS BARU:* ${statusLabel.toUpperCase()}\n`;
+  message += `*LOKASI:* ${address}\n`;
+
   if (adminNotes) {
-    message += `💬 *CATATAN:* ${adminNotes}\n`;
+    message += `*CATATAN:* ${adminNotes}\n`;
   }
   message += `━━━━━━━━━━━━━━━━━━\n\n`;
   message += `Terima kasih telah berkontribusi dalam menjaga keamanan lingkungan. Tetap waspada dan utamakan keselamatan!\n\n`;

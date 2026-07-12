@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
+import dynamic from "next/dynamic";
 import { toSafeExternalUrl } from "@/lib/url-safety";
 import {
     FaTimes,
@@ -12,6 +13,11 @@ import {
     FaFileAlt,
     FaImage,
 } from "react-icons/fa";
+
+const LiveTrackingMap = dynamic(() => import("./LiveTrackingMap"), {
+    ssr: false,
+    loading: () => <div className="w-full h-[300px] bg-gray-100 animate-pulse rounded-xl flex items-center justify-center text-gray-400 text-sm">Memuat Peta Tracking...</div>
+});
 
 interface Report {
     id: number;
@@ -33,6 +39,10 @@ interface Report {
     category_icon?: string;
     kelurahan_name?: string;
     kecamatan?: string;
+    assigned_petugas_id?: number;
+    petugas_lat?: number;
+    petugas_lng?: number;
+    petugas_name?: string;
 }
 
 interface UserReportDetailModalProps {
@@ -41,11 +51,57 @@ interface UserReportDetailModalProps {
 }
 
 export default function UserReportDetailModal({ report, onClose }: UserReportDetailModalProps) {
+    const [livePetugasLocation, setLivePetugasLocation] = useState<[number, number] | null>(
+        report.petugas_lat && report.petugas_lng ? [report.petugas_lat, report.petugas_lng] : null
+    );
+
     useEffect(() => {
         const handleEsc = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
         window.addEventListener("keydown", handleEsc);
         return () => window.removeEventListener("keydown", handleEsc);
     }, [onClose]);
+
+    // WebSocket listener for live tracking
+    useEffect(() => {
+        if (!report.assigned_petugas_id) return;
+        
+        let ws: WebSocket | null = null;
+        let reconnectTimeout: NodeJS.Timeout;
+
+        const connect = () => {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws`;
+            
+            ws = new WebSocket(wsUrl);
+
+            ws.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.type === "PETUGAS_LOCATION_UPDATE" && data.payload) {
+                        if (data.payload.petugasId === report.assigned_petugas_id) {
+                            setLivePetugasLocation([data.payload.lat, data.payload.lng]);
+                        }
+                    }
+                } catch (e) {
+                    console.error("Error parsing WS message", e);
+                }
+            };
+
+            ws.onclose = () => {
+                reconnectTimeout = setTimeout(connect, 3000);
+            };
+        };
+
+        connect();
+
+        return () => {
+            clearTimeout(reconnectTimeout);
+            if (ws) {
+                ws.onclose = null;
+                ws.close();
+            }
+        };
+    }, [report.assigned_petugas_id]);
 
     const getStatusDisplay = (status: string) => {
         const statusMap: { [key: string]: { text: string; color: string; bgColor: string } } = {
@@ -164,6 +220,26 @@ export default function UserReportDetailModal({ report, onClose }: UserReportDet
                                     <p className="text-sm text-gray-700 leading-relaxed bg-gray-50/50 border border-gray-100 p-3 rounded-xl">{report.description}</p>
                                 </div>
                             )}
+                        </div>
+                    )}
+
+                    {/* Live Tracking Map */}
+                    {(report.status === 'dispatched' || report.status === 'dikirim' || report.status === 'arrived' || report.status === 'ditangani') && (
+                        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm space-y-3">
+                            <p className="text-[10px] font-semibold uppercase tracking-wider text-blue-500 flex items-center gap-1.5">
+                                <span className="relative flex h-2 w-2 mr-1">
+                                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                                  <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                                </span>
+                                Live Tracking Petugas
+                            </p>
+                            <div className="h-[300px] w-full relative z-0">
+                                <LiveTrackingMap 
+                                    firePosition={[report.fire_latitude, report.fire_longitude]}
+                                    petugasPosition={livePetugasLocation}
+                                    petugasName={report.petugas_name}
+                                />
+                            </div>
                         </div>
                     )}
 

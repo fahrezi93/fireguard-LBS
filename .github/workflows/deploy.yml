@@ -22,5 +22,8 @@ jobs:
             cd /var/www/fireguard
             git pull origin main
             npm install
+            cd /var/www/fireguard/wa-server && npm install
+            cd /var/www/fireguard
             npm run build
             pm2 reload siagabencana
+            pm2 reload siagabencana-wa
