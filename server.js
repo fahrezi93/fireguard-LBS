@@ -1,17 +1,30 @@
-// Global error handler untuk mencegah server crash karena error spesifik dari WebSocket
+// Global error handler untuk mencegah server crash karena error non-fatal
 process.on('uncaughtException', (err) => {
-  // Di mode development, beberapa error WebSocket yang tidak kritis bisa muncul karena hot-reloading.
-  // Kita tangkap di sini agar server tidak crash.
-  const isDev = process.env.NODE_ENV !== 'production';
-  const nonCriticalErrors = ['WS_ERR_INVALID_CLOSE_CODE', 'WS_ERR_INVALID_UTF8'];
+  // Error WebSocket yang tidak kritis — jangan crash server
+  const nonCriticalCodes = [
+    'WS_ERR_INVALID_CLOSE_CODE',
+    'WS_ERR_INVALID_UTF8',
+    'ECONNRESET',   // klien disconnect paksa
+    'EPIPE',        // broken pipe saat kirim response
+    'ENOTFOUND',    // DNS gagal (e.g. external API)
+    'ETIMEDOUT',    // timeout koneksi external
+    'ECONNREFUSED', // koneksi ditolak (wa-server mati, dll)
+  ];
 
-  if (isDev && nonCriticalErrors.includes(err.code)) {
-    // Ignore non-critical WebSocket errors during hot-reloading
+  if (nonCriticalCodes.includes(err.code)) {
+    // Log tapi jangan crash
+    console.warn('[Non-fatal] Uncaught error (ignored):', err.code, err.message);
   } else {
-    // Untuk error lainnya, biarkan server crash agar kita tahu ada masalah serius
-    console.error('UNCAUGHT EXCEPTION:', err);
+    // Untuk error benar-benar fatal, crash agar PM2 bisa restart dengan bersih
+    console.error('[FATAL] UNCAUGHT EXCEPTION:', err);
     process.exit(1);
   }
+});
+
+// Tangkap unhandled promise rejections agar tidak crash server
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('[Warning] Unhandled Promise Rejection:', reason);
+  // Jangan exit — cukup log saja
 });
 
 const { createServer } = require('http');

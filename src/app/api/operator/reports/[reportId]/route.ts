@@ -286,21 +286,22 @@ export async function PATCH(
           console.error('Error triggering push notification:', pushError);
         });
 
-      if (user && user.email) {
-        // UTAMA: Kirim notifikasi via Email
-        sendStatusUpdateEmail(
-          user.email,
-          user.name,
-          parsedReportId,
-          canonicalStatus,
-          adminNotes
-        );
+      if (user) {
+        // Logika Pengiriman Email (Untuk Selesai & Laporan Palsu sebagai arsip)
+        if (user.email && (canonicalStatus === 'completed' || canonicalStatus === 'false_report')) {
+          sendStatusUpdateEmail(
+            user.email,
+            user.name,
+            parsedReportId,
+            canonicalStatus,
+            adminNotes
+          );
+        }
 
-        // OPSIONAL: Kirim juga via WhatsApp jika diaktifkan
-        if (ENABLE_WHATSAPP && user.phone_number) {
+        // Logika Pengiriman WhatsApp (Untuk Urgensi: Unit Berangkat & Laporan Palsu)
+        if (ENABLE_WHATSAPP && user.phone_number && (canonicalStatus === 'in_progress' || canonicalStatus === 'false_report')) {
           const address = await getAddressFromCoordinates(report.fire_latitude, report.fire_longitude);
 
-          // Gunakan fungsi terpusat dari @/lib/whatsapp
           sendWhatsAppReportUpdate(
             user.phone_number,
             user.name,

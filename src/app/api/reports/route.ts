@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     const user = await getAuthPayload(request);
 
     // Verify user exists in database
-    const dbUser = await queryRow("SELECT id FROM users WHERE id = ?", [user.id]);
+    const dbUser = await queryRow("SELECT id, name, email FROM users WHERE id = ?", [user.id]) as { id: number, name: string, email: string } | undefined;
 
     if (!dbUser) {
       return jsonWithCors(
@@ -220,6 +220,19 @@ export async function POST(request: NextRequest) {
       { message: "Laporan berhasil dikirim!", reportId },
       { status: 201 }
     );
+
+    // Kirim Email Resi Laporan secara asinkron
+    if (dbUser.email) {
+      void import('@/lib/email').then(({ sendStatusUpdateEmail }) => {
+        sendStatusUpdateEmail(
+          dbUser.email,
+          dbUser.name,
+          reportId,
+          'submitted',
+          'Terima kasih, laporan Anda telah kami terima dan akan segera diverifikasi oleh tim.'
+        );
+      }).catch(err => console.error('[Email Resi] Gagal kirim email resi:', err));
+    }
 
     // WebSocket broadcast ke operator — jalankan async tanpa blokir response
     const wss = global.wss;

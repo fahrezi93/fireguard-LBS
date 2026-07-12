@@ -13,6 +13,8 @@ const PORT = 3001;
 let sock;
 let currentQR = '';
 let isConnected = false;
+let reconnectAttempts = 0;
+const MAX_RECONNECT_DELAY_MS = 30000; // max 30 detik
 
 async function connectToWhatsApp() {
     const { state, saveCreds } = await useMultiFileAuthState('sessions');
@@ -39,17 +41,22 @@ async function connectToWhatsApp() {
             isConnected = false;
             currentQR = '';
             const shouldReconnect = lastDisconnect.error?.output?.statusCode !== DisconnectReason.loggedOut;
-            console.log('Connection closed due to', lastDisconnect.error, ', reconnecting', shouldReconnect);
+            console.log('Connection closed due to', lastDisconnect.error?.message, ', reconnecting:', shouldReconnect);
             
-            // Reconnect if not logged out
+            // Reconnect dengan exponential backoff agar tidak infinite loop
             if (shouldReconnect) {
-                connectToWhatsApp();
+                reconnectAttempts++;
+                // Delay: 2s, 4s, 8s, 16s, max 30s
+                const delay = Math.min(2000 * Math.pow(2, reconnectAttempts - 1), MAX_RECONNECT_DELAY_MS);
+                console.log(`Reconnecting in ${delay / 1000}s (attempt #${reconnectAttempts})...`);
+                setTimeout(connectToWhatsApp, delay);
             } else {
-                console.log('You are logged out. Please restart the server to generate a new QR code or delete the sessions folder.');
+                console.log('Logged out. Delete the sessions folder and restart to re-scan QR.');
             }
         } else if (connection === 'open') {
             isConnected = true;
             currentQR = '';
+            reconnectAttempts = 0; // reset counter kalau berhasil konek
             console.log('WhatsApp connection opened successfully!');
         }
     });
@@ -95,8 +102,7 @@ app.get('/status', (req, res) => {
     });
 });
 
-// 3. Send messagesw
-  +
+// 3. Send message
 app.post('/send', async (req, res) => {
     if (!isConnected || !sock) {
         return res.status(503).json({ success: false, error: 'WhatsApp is not connected yet.' });
