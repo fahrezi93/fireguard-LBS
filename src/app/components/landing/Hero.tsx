@@ -74,21 +74,21 @@ const Hero = () => {
           className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto px-6 sm:px-0"
         >
           <button
-            onClick={() => router.push('/report/new')}
-            className="group relative w-full sm:w-auto overflow-hidden bg-[#9F1C19] text-white px-8 py-4 rounded-full font-bold text-sm sm:text-base transition-all hover:-translate-y-1 shadow-[0_0_30px_rgba(159,28,25,0.3)]"
+            onClick={() => router.push('/lapor-cepat')}
+            className="group relative w-full sm:w-auto overflow-hidden bg-red-600 text-white px-6 py-3 rounded-full font-bold text-sm transition-all hover:-translate-y-1 shadow-[0_0_20px_rgba(220,38,38,0.4)] animate-pulse-new"
           >
             {/* Inner Glow / Plasma */}
-            <div className="absolute inset-0 bg-gradient-to-r from-red-500 to-orange-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="absolute inset-0 bg-gradient-to-r from-red-500 to-red-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <span className="relative flex items-center justify-center gap-2">
-              <FaPhoneAlt className="text-white/90 group-hover:animate-bounce" /> Lapor Darurat Sekarang
+              <FaPhoneAlt className="text-white/90 group-hover:animate-bounce" /> Lapor Darurat (Tanpa Login)
             </span>
           </button>
 
           <Link
-            href="#how-it-works"
-            className="group w-full sm:w-auto px-8 py-4 rounded-full font-bold text-sm sm:text-base text-white border border-white/20 bg-white/5 backdrop-blur-md hover:bg-white/10 hover:border-white/40 transition-all flex items-center justify-center gap-2"
+            href="/login"
+            className="group w-full sm:w-auto px-6 py-3 rounded-full font-bold text-sm text-white border border-white/20 bg-white/5 backdrop-blur-md hover:bg-white/10 hover:border-white/40 transition-all flex items-center justify-center gap-2"
           >
-            Pelajari Sistem Kami
+            Login & Riwayat Laporan
           </Link>
         </motion.div>
       </div>

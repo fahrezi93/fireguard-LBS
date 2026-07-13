@@ -184,6 +184,9 @@ const RoutingMachine = ({ start, end, onRouteFound, onLoadingChange }: RoutingMa
 
         const data = await response.json();
 
+        // FIX: Re-check if component unmounted while awaiting response.json()
+        if (didCleanup || currentRequestId !== routeRequestIdRef.current) return;
+
         if (data.code === 'Ok' && data.routes && data.routes.length > 0) {
           const route = data.routes[0];
           const coordinates = route.geometry.coordinates;

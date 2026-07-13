@@ -243,7 +243,7 @@ export async function POST(request: NextRequest) {
           const fullReport = await qr(
             `SELECT r.id, r.fire_latitude, r.fire_longitude, r.reporter_latitude, r.reporter_longitude,
                     r.status, r.created_at, r.media_url, r.description, r.address, r.notes, r.contact,
-                    u.phone_number,
+                    u.name as user_name, u.phone_number,
                     c.id as category_id, c.name as category_name, c.icon as category_icon, c.color as category_color,
                     k.id as kelurahan_id, k.name as kelurahan_name, k.kecamatan, k.kota
              FROM reports r

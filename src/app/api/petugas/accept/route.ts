@@ -46,13 +46,24 @@ export async function POST(request: NextRequest) {
         return jsonWithCors({ message: "Maaf, tugas ini sudah diambil oleh petugas lain." }, { status: 400, request });
       }
 
-      // Tandai diambil
+      // Tandai diambil dan ubah status utama ke in_progress agar operator tahu
       await connection.execute(
-        "UPDATE reports SET assigned_petugas_id = ?, status_petugas = 'accepted', accepted_at = NOW() WHERE id = ?",
+        "UPDATE reports SET assigned_petugas_id = ?, status = 'in_progress', status_petugas = 'accepted', accepted_at = NOW() WHERE id = ?",
         [user.id, reportId]
       );
 
       await connection.commit();
+
+      // Broadcast WebSocket
+      const wss = (global as any).wss;
+      if (wss) {
+        wss.broadcast(
+          JSON.stringify({
+            type: "STATUS_UPDATE",
+            payload: { reportId: Number(reportId), newStatus: 'in_progress' },
+          })
+        );
+      }
 
       return jsonWithCors({
         success: true,

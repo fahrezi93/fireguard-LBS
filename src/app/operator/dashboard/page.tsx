@@ -23,6 +23,8 @@ import {
   FaBullhorn,
   FaTimes,
   FaPaperPlane,
+  FaFireExtinguisher,
+  FaWhatsapp,
 } from "react-icons/fa";
 import ReportDetailModal from "@/components/ReportDetailModal";
 import { useToast } from "@/hooks/useToast";
@@ -31,6 +33,9 @@ import Toast from "@/components/Toast";
 // Tipe data untuk laporan
 interface Report {
   id: number;
+  user_id?: number | null;
+  guest_name?: string | null;
+  user_name?: string | null;
   phone_number: string;
   fire_latitude: number;
   fire_longitude: number;
@@ -54,6 +59,7 @@ interface Report {
   acknowledged?: boolean;
   assigned_petugas_id?: number | null;
   assigned_petugas_name?: string | null;
+  needs_backup?: number | boolean;
   dispatched_at?: string | null;
   accepted_at?: string | null;
   arrived_at?: string | null;
@@ -61,7 +67,6 @@ interface Report {
   response_time_seconds?: number | null;
   status_petugas?: string | null;
   completion_photo_url?: string | null;
-  needs_backup?: number | boolean;
   petugas_notes?: string | null;
   category?: {
     id: number;
@@ -162,6 +167,11 @@ const StatusBadge = ({ status }: { status: string }) => {
       text: "Dibatalkan",
       className: "bg-gray-50 text-gray-500 border-gray-200",
     },
+    escalated_to_damkar: {
+      icon: <FaFireExtinguisher />,
+      text: "Butuh Damkar",
+      className: "bg-orange-50 text-orange-600 border-orange-200",
+    },
   };
 
   const config = statusConfig[status] || {
@@ -189,15 +199,21 @@ const ReportListItem = ({
 }) => (
   <div
     onClick={() => onSelect(report)}
-    className={`bg-white hover:bg-gray-50 p-4 rounded-xl cursor-pointer transition-all duration-200 border border-gray-200/60 hover:border-gray-300 hover:shadow-sm ${!report.acknowledged
-      ? "ring-2 ring-yellow-400 ring-offset-2 animate-pulse-new"
-      : ""
-      }`}
+    className={`bg-white hover:bg-gray-50 p-4 rounded-xl cursor-pointer transition-all duration-200 border border-gray-200/60 hover:border-gray-300 hover:shadow-sm ${
+      report.needs_backup == 1
+        ? "ring-2 ring-red-500 ring-offset-2 animate-pulse"
+        : !report.acknowledged
+        ? "ring-2 ring-yellow-400 ring-offset-2 animate-pulse-new"
+        : ""
+    }`}
   >
     <div className="flex justify-between items-start gap-3">
       <div className="flex-1">
-        <span className="font-semibold text-sm text-gray-900">
+        <span className="font-semibold text-sm text-gray-900 flex items-center gap-2">
           Laporan #{report.id}
+          {report.needs_backup == 1 && (
+            <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full animate-bounce">SOS / BACKUP</span>
+          )}
         </span>
         <p className="text-xs text-gray-500 mt-1 flex items-center gap-1.5">
           <FaPhone className="text-[10px]" /> {report.phone_number}
@@ -482,12 +498,38 @@ export default function OperatorDashboard() {
           });
         } else if (message.type === "STATUS_UPDATE") {
           setReports((prev) =>
+            prev.map((r) => {
+              if (r.id === message.payload.reportId) {
+                return { 
+                  ...r, 
+                  status: message.payload.newStatus !== undefined ? message.payload.newStatus : r.status,
+                  needs_backup: message.payload.needsBackup !== undefined ? message.payload.needsBackup : r.needs_backup
+                };
+              }
+              return r;
+            })
+          );
+          setSelectedReport((prev) => {
+            if (prev && prev.id === message.payload.reportId) {
+              return {
+                ...prev,
+                status: message.payload.newStatus !== undefined ? message.payload.newStatus : prev.status,
+                needs_backup: message.payload.needsBackup !== undefined ? message.payload.needsBackup : prev.needs_backup
+              };
+            }
+            return prev;
+          });
+        } else if (message.type === "BACKUP_REQUEST") {
+          const { reportId, petugasName } = message.payload;
+          setReports((prev) =>
             prev.map((r) =>
-              r.id === message.payload.reportId
-                ? { ...r, status: message.payload.newStatus }
+              r.id === reportId
+                ? { ...r, needs_backup: 1, acknowledged: false }
                 : r
             )
           );
+          startAlarm();
+          error(`🚨 URGENT: Petugas ${petugasName || ''} minta backup armada untuk laporan #${reportId}!`);
         } else if (message.type === "REPORT_DELETED") {
           setReports((prev) =>
             prev.filter((r) => r.id !== message.payload.reportId)
@@ -753,6 +795,14 @@ export default function OperatorDashboard() {
               >
                 <FaTags className="text-gray-500" />
                 <span className="hidden lg:inline text-sm font-semibold text-gray-700">Manajemen</span>
+              </button>
+
+              <button
+                onClick={() => router.push('/operator/whatsapp')}
+                className="px-4 py-2 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-2"
+              >
+                <FaWhatsapp className="text-green-500" />
+                <span className="hidden lg:inline text-sm font-semibold text-gray-700">WhatsApp</span>
               </button>
 
               <button

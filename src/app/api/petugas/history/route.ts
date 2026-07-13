@@ -28,9 +28,12 @@ export async function GET(request: NextRequest) {
       `SELECT r.id, r.description, r.address, r.status, r.status_petugas, 
               r.created_at, r.accepted_at, r.arrived_at, r.completed_at,
               r.completion_photo_url, r.response_time_seconds,
-              c.name as category_name
+              c.name as category_name,
+              r.user_id, r.guest_name, r.contact,
+              u.name as registered_name, u.phone_number as registered_phone
        FROM reports r
        LEFT JOIN disaster_categories c ON r.category_id = c.id
+       LEFT JOIN users u ON r.user_id = u.id
        WHERE r.assigned_petugas_id = ? AND r.status_petugas IN ('completed', 'false_report')
        ORDER BY r.completed_at DESC`,
       [user.id]
@@ -69,6 +72,11 @@ export async function GET(request: NextRequest) {
         photoUrl: h.completion_photo_url,
         durationSeconds: durationSeconds,
         responseTimeSeconds: h.response_time_seconds || 0,
+        user_id: h.user_id,
+        guest_name: h.guest_name,
+        contact: h.contact,
+        registered_name: h.registered_name,
+        registered_phone: h.registered_phone,
       };
     });
 

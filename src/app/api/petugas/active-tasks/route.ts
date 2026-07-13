@@ -29,10 +29,13 @@ export async function GET(request: NextRequest) {
     // atau assigned_petugas_id = user.id dan status belum 'resolved' atau 'false_report'
     const activeTasks = await queryRows(
       `SELECT r.*, c.name as category_name, c.icon as category_icon, 
-       k.name as kelurahan_name
+       k.name as kelurahan_name,
+       u.name as registered_name,
+       u.phone_number as registered_phone
        FROM reports r
        LEFT JOIN disaster_categories c ON r.category_id = c.id
        LEFT JOIN kelurahan k ON r.kelurahan_id = k.id
+       LEFT JOIN users u ON r.user_id = u.id
        WHERE r.assigned_petugas_id = ? 
        AND r.status_petugas IN ('accepted', 'arrived')`,
       [user.id]
@@ -43,10 +46,13 @@ export async function GET(request: NextRequest) {
     if (activeTasks.length === 0 && petugasInfo.is_on_duty === 1) {
       pendingTasks = await queryRows(
         `SELECT r.*, c.name as category_name, c.icon as category_icon, 
-         k.name as kelurahan_name
+         k.name as kelurahan_name,
+         u.name as registered_name,
+         u.phone_number as registered_phone
          FROM reports r
          LEFT JOIN disaster_categories c ON r.category_id = c.id
          LEFT JOIN kelurahan k ON r.kelurahan_id = k.id
+         LEFT JOIN users u ON r.user_id = u.id
          WHERE r.dispatched_at IS NOT NULL 
          AND r.assigned_petugas_id IS NULL
          AND r.status NOT IN ('completed', 'false_report')`

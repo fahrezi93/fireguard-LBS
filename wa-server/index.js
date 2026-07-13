@@ -3,6 +3,7 @@ const cors = require('cors');
 const { default: makeWASocket, useMultiFileAuthState, DisconnectReason } = require('@whiskeysockets/baileys');
 const pino = require('pino');
 const QRCode = require('qrcode');
+const fs = require('fs');
 
 const app = express();
 app.use(cors());
@@ -51,7 +52,13 @@ async function connectToWhatsApp() {
                 console.log(`Reconnecting in ${delay / 1000}s (attempt #${reconnectAttempts})...`);
                 setTimeout(connectToWhatsApp, delay);
             } else {
-                console.log('Logged out. Delete the sessions folder and restart to re-scan QR.');
+                console.log('Logged out. Clearing sessions folder and restarting to re-scan QR...');
+                try {
+                    fs.rmSync('sessions', { recursive: true, force: true });
+                } catch (e) {
+                    console.error('Failed to clear sessions:', e);
+                }
+                setTimeout(connectToWhatsApp, 2000);
             }
         } else if (connection === 'open') {
             isConnected = true;
@@ -94,6 +101,17 @@ app.get('/qr', (req, res) => {
     }
 });
 
+// 1.5 Get QR Code API
+app.get('/api/qr', (req, res) => {
+    if (isConnected) {
+        return res.status(200).json({ status: 'connected' });
+    }
+    if (currentQR) {
+        return res.status(200).json({ status: 'ready', qr: currentQR });
+    }
+    return res.status(200).json({ status: 'loading' });
+});
+
 // 2. Check connection status
 app.get('/status', (req, res) => {
     res.json({
@@ -127,6 +145,21 @@ app.post('/send', async (req, res) => {
     } catch (error) {
         console.error('Error sending message:', error);
         res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// 4. Logout API
+app.post('/logout', async (req, res) => {
+    if (sock && isConnected) {
+        try {
+            await sock.logout();
+            res.json({ success: true, message: 'Logged out successfully' });
+        } catch (e) {
+            console.error('Logout error:', e);
+            res.status(500).json({ success: false, error: e.message });
+        }
+    } else {
+        res.status(400).json({ success: false, message: 'Not connected' });
     }
 });
 

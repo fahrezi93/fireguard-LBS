@@ -51,3 +51,6 @@ agents.md
 
 # Ignore scripts
 scripts/
+
+# Ignore WhatsApp server sessions
+wa-server/sessions/

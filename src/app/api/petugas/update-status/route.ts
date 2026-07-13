@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
       `SELECT r.id, r.assigned_petugas_id, r.dispatched_at, r.user_id, r.fire_latitude, r.fire_longitude,
               u.name as user_name, u.email as user_email, u.phone_number as user_phone
        FROM reports r
-       JOIN users u ON r.user_id = u.id
+       LEFT JOIN users u ON r.user_id = u.id
        WHERE r.id = ?`,
       [reportId]
     );
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
     const params: any[] = [status];
 
     if (status === 'arrived') {
-      query += ", arrived_at = NOW()";
+      query += ", arrived_at = NOW(), status = 'arrived'";
     } else if (['completed', 'false_report', 'escalated_to_damkar'].includes(status)) {
       query += ", completed_at = NOW()";
       
@@ -122,6 +122,8 @@ export async function POST(request: NextRequest) {
         query += ", status = 'completed'";
       } else if (status === 'false_report') {
         query += ", status = 'false_report'";
+      } else if (status === 'escalated_to_damkar') {
+        query += ", status = 'escalated_to_damkar'";
       }
     }
 
@@ -145,27 +147,29 @@ export async function POST(request: NextRequest) {
           notifMessage += `\n\nCatatan petugas: ${notes}`;
         }
 
-        // 1. Simpan ke tabel notifications (untuk inbox di web)
-        const currentTimestamp = formatDateForMySQL(new Date());
-        let dbNotificationId: number | undefined;
-        try {
-          dbNotificationId = await executeAndGetLastInsertId(
-            `INSERT INTO notifications (user_id, title, message, type, report_id, is_read, created_at) 
-             VALUES (?, ?, ?, ?, ?, FALSE, ?)`,
-            [report.user_id, notifTitle, notifMessage, 'status_update', reportId, currentTimestamp]
-          );
-        } catch (notifDbErr) {
-          console.error('Error creating notification in DB:', notifDbErr);
-        }
+        // 1 & 2: Push Notif & DB Notif (hanya jika user terdaftar)
+        if (report.user_id) {
+          const currentTimestamp = formatDateForMySQL(new Date());
+          let dbNotificationId: number | undefined;
+          try {
+            dbNotificationId = await executeAndGetLastInsertId(
+              `INSERT INTO notifications (user_id, title, message, type, report_id, is_read, created_at) 
+               VALUES (?, ?, ?, ?, ?, FALSE, ?)`,
+              [report.user_id, notifTitle, notifMessage, 'status_update', reportId, currentTimestamp]
+            );
+          } catch (notifDbErr) {
+            console.error('Error creating notification in DB:', notifDbErr);
+          }
 
-        // 2. Trigger FCM (hybrid mode)
-        void import('@/services/notification-service')
-          .then(({ sendReportStatusNotification }) =>
-            sendReportStatusNotification(Number(reportId), report.user_id, canonicalStatus, dbNotificationId)
-          )
-          .catch((pushError) => {
-            console.error('Error triggering push notification:', pushError);
-          });
+          // 2. Trigger FCM (hybrid mode)
+          void import('@/services/notification-service')
+            .then(({ sendReportStatusNotification }) =>
+              sendReportStatusNotification(Number(reportId), report.user_id, canonicalStatus, dbNotificationId)
+            )
+            .catch((pushError) => {
+              console.error('Error triggering push notification:', pushError);
+            });
+        }
 
         // 3. Logika Pengiriman Email (Selesai & Palsu)
         if (report.user_email) {
@@ -180,18 +184,33 @@ export async function POST(request: NextRequest) {
 
         // 4. Logika Pengiriman WhatsApp (Hanya untuk Laporan Palsu)
         const ENABLE_WHATSAPP = process.env.ENABLE_WHATSAPP === "true";
-        if (ENABLE_WHATSAPP && report.user_phone && canonicalStatus === 'false_report') {
+        if (ENABLE_WHATSAPP && canonicalStatus === 'false_report') {
           const address = await getAddressFromCoordinates(report.fire_latitude, report.fire_longitude);
-          const statusLabel = canonicalStatus === 'false_report' ? 'Laporan Palsu' : canonicalStatus;
+          const statusLabel = 'Laporan Palsu';
 
-          sendWhatsAppReportUpdate(
-            report.user_phone,
-            report.user_name,
-            Number(reportId),
-            statusLabel,
-            address,
-            notes || undefined
-          );
+          if (report.user_phone) {
+            sendWhatsAppReportUpdate(
+              report.user_phone,
+              report.user_name,
+              Number(reportId),
+              statusLabel,
+              address,
+              notes || undefined
+            );
+          } else if (!report.user_id) {
+             // Fetch contact directly from db if it wasn't fetched in the previous query
+             const guestReport = await queryRow<any>("SELECT contact FROM reports WHERE id = ?", [reportId]);
+             if (guestReport && guestReport.contact) {
+                sendWhatsAppReportUpdate(
+                  guestReport.contact,
+                  "Pelapor",
+                  Number(reportId),
+                  statusLabel,
+                  address,
+                  notes || undefined
+                );
+             }
+          }
         }
       } catch (notifErr) {
         console.error("Gagal memproses notifikasi:", notifErr);

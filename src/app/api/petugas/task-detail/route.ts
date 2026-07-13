@@ -23,10 +23,13 @@ export async function GET(request: NextRequest) {
 
     const task = await queryRow(
       `SELECT r.*, c.name as category_name, c.icon as category_icon, 
-       k.name as kelurahan_name
+       k.name as kelurahan_name,
+       u.name as registered_name,
+       u.phone_number as registered_phone
        FROM reports r
        LEFT JOIN disaster_categories c ON r.category_id = c.id
        LEFT JOIN kelurahan k ON r.kelurahan_id = k.id
+       LEFT JOIN users u ON r.user_id = u.id
        WHERE r.id = ?`,
       [reportId]
     );

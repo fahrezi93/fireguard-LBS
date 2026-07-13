@@ -46,8 +46,11 @@ app.prepare().then(() => {
     const parsedUrl = parse(req.url, true);
     const { pathname } = parsedUrl;
 
-    // Log HTTP request (skip internal Next.js assets)
-    if (!pathname.startsWith('/_next/')) {
+    // Log HTTP request (skip internal Next.js assets, images, and source maps)
+    const ignorePaths = ['/_next/', '/__nextjs', '/favicon', '/manifest', '/.well-known'];
+    const isImage = pathname.match(/\.(jpg|jpeg|png|svg|ico|mp3)$/);
+    
+    if (!ignorePaths.some(p => pathname.startsWith(p)) && !isImage) {
       const start = Date.now();
       res.on('finish', () => {
         const ms = Date.now() - start;

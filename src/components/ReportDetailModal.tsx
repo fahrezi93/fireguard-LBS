@@ -28,10 +28,12 @@ import {
   FaCheckCircle,
   FaTimesCircle,
   FaTrash,
+  FaUser,
 } from "react-icons/fa";
 
 interface Report {
   id: number;
+  user_id?: number | null;
   phone_number: string;
   fire_latitude: number;
   fire_longitude: number;
@@ -44,6 +46,8 @@ interface Report {
   contact?: string;
   description?: string;
   address?: string;
+  guest_name?: string | null;
+  user_name?: string | null;
   assigned_petugas_id?: number | null;
   assigned_petugas_name?: string | null;
   dispatched_at?: string | null;
@@ -238,7 +242,14 @@ export default function ReportDetailModal({
               <FaFileAlt className="text-white text-base" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-gray-900">Detail Laporan #{report.id}</h2>
+              <div className="flex items-center gap-3">
+                <h2 className="text-lg font-semibold text-gray-900">Detail Laporan #{report.id}</h2>
+                {report.needs_backup == 1 && (
+                  <span className="bg-red-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full animate-pulse shadow-sm">
+                    🚨 BUTUH BACKUP
+                  </span>
+                )}
+              </div>
               <p className="text-xs text-gray-500 mt-0.5">Informasi lengkap laporan kebakaran</p>
             </div>
           </div>
@@ -261,6 +272,31 @@ export default function ReportDetailModal({
                 <p className="text-xs text-red-100 mt-0.5">Skala api besar, segera kirimkan unit pemadam tambahan ke lokasi ini!</p>
               </div>
             </div>
+            {!readOnly && onUpdateStatus && (
+              <button
+                onClick={async () => {
+                  try {
+                    const res = await fetch(`/api/operator/reports/${report.id}`, {
+                      method: 'PATCH',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ needsBackup: false }),
+                    });
+                    if (res.ok) {
+                      // Tutup modal agar list refresh, atau panggil onUpdateStatus dengan status saat ini untuk me-trigger reload
+                      await onUpdateStatus(report.id, report.status);
+                      onClose();
+                    } else {
+                      alert('Gagal memproses. Coba lagi.');
+                    }
+                  } catch (e) {
+                    alert('Terjadi kesalahan jaringan.');
+                  }
+                }}
+                className="bg-white text-red-700 px-4 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-red-50 transition-colors whitespace-nowrap"
+              >
+                Tanggapi Bantuan
+              </button>
+            )}
           </div>
         ) : null}
 
@@ -407,6 +443,26 @@ export default function ReportDetailModal({
                       )}
                     </div>
                   )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Informasi Pelapor */}
+          <div className="bg-white rounded-xl p-5 border border-gray-200/60 shadow-sm">
+            <div className="flex items-start gap-3">
+              <div className="p-2 bg-purple-100 rounded-lg">
+                <FaUser className="text-purple-600 text-sm" />
+              </div>
+              <div className="flex-1">
+                <p className="text-xs text-gray-500 mb-1">Informasi Pelapor</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-semibold text-gray-900">
+                    {report.user_name || report.guest_name || 'Tidak diketahui'}
+                  </p>
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${report.user_id ? 'bg-blue-50 text-blue-600' : 'bg-gray-100 text-gray-500'}`}>
+                    {report.user_id ? 'Terdaftar' : 'Guest'}
+                  </span>
                 </div>
               </div>
             </div>

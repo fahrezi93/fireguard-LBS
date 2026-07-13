@@ -66,7 +66,7 @@ interface Report {
 }
 
 // Ikon untuk Pos Damkar
-const fireStationIcon = new L.DivIcon({
+const createFireStationIcon = () => new L.DivIcon({
   html: `<div style="font-size: 24px;">🚒</div>`,
   className: 'leaflet-emoji-icon',
   iconSize: [24, 24],
@@ -113,7 +113,7 @@ const createCategoryIcon = (categoryId?: number, categoryIcon?: string, isComple
 };
 
 // Ikon untuk lokasi pelapor
-const reporterLocationIcon = new L.DivIcon({
+const createReporterLocationIcon = () => new L.DivIcon({
   html: `<div style="font-size: 24px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">📍</div>`,
   className: 'leaflet-emoji-icon',
   iconSize: [24, 24],
@@ -121,7 +121,7 @@ const reporterLocationIcon = new L.DivIcon({
 });
 
 // Ikon untuk petugas pemadam
-const petugasIcon = new L.DivIcon({
+const createPetugasIcon = () => new L.DivIcon({
   html: `<div style="font-size: 28px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">🚒</div>`,
   className: 'leaflet-emoji-icon',
   iconSize: [28, 28],
@@ -290,7 +290,7 @@ export default function AdminMap({ reports, onReportClick, selectedReport }: Adm
         <Marker
           key={`station-${station.name}`}
           position={[station.latitude, station.longitude]}
-          icon={fireStationIcon}
+          icon={createFireStationIcon()}
         >
           <Popup>{station.name}</Popup>
         </Marker>
@@ -335,7 +335,7 @@ export default function AdminMap({ reports, onReportClick, selectedReport }: Adm
           <Marker
             key={`reporter-${report.id}`}
             position={[repLat, repLng]}
-            icon={reporterLocationIcon}
+            icon={createReporterLocationIcon()}
             eventHandlers={{ click: () => onReportClick(report) }}
           >
             <Popup>
@@ -351,7 +351,7 @@ export default function AdminMap({ reports, onReportClick, selectedReport }: Adm
         <Marker
           key={`petugas-${petugas.id}`}
           position={[Number(petugas.last_latitude), Number(petugas.last_longitude)]}
-          icon={petugasIcon}
+          icon={createPetugasIcon()}
         >
           <Popup>
             <strong>{petugas.name}</strong><br />
