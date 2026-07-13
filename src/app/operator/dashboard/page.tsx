@@ -29,6 +29,7 @@ import {
 import ReportDetailModal from "@/components/ReportDetailModal";
 import { useToast } from "@/hooks/useToast";
 import Toast from "@/components/Toast";
+import OperatorLayout from "@/components/OperatorLayout";
 
 // Tipe data untuk laporan
 interface Report {
@@ -620,7 +621,7 @@ export default function OperatorDashboard() {
   ).length;
 
   return (
-    <>
+    <OperatorLayout>
       {toast.show && <Toast {...toast} onClose={hideToast} />}
 
       {/* ── Broadcast Modal ─────────────────────────────────────────────── */}
@@ -753,99 +754,46 @@ export default function OperatorDashboard() {
         />
       )}
 
-      <div className="min-h-screen bg-[#FAFAFA] text-gray-900 font-sans selection:bg-red-500/30 flex flex-col">
-        {/* Top Navigation */}
-        <header className="bg-white border-b border-gray-200/70 sticky top-0 z-40">
-          <div className="max-w-[1600px] mx-auto px-6 h-20 flex justify-between items-center">
-            
-            {/* Brand & Connection Status */}
-            <div className="flex items-center gap-6">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center shadow-md">
-                  <FaBell className="text-white text-lg" />
-                </div>
-                <div>
-                  <h1 className="text-lg font-bold tracking-tight text-gray-900">SiagaBencana <span className="text-red-500">Ops</span></h1>
-                  <p className="text-xs font-medium text-gray-500 uppercase tracking-widest">Dashboard Operator</p>
-                </div>
-              </div>
-              
-              <div className="hidden md:flex items-center gap-2 pl-6 border-l border-gray-200">
-                <div className="relative flex h-2.5 w-2.5">
-                  {wsStatus === "Connected" && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>}
-                  <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${wsStatus === "Connected" ? "bg-emerald-500" : wsStatus === "Connecting" ? "bg-amber-500" : "bg-red-500"}`}></span>
-                </div>
-                <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{wsStatus === "Connected" ? 'System Online' : wsStatus}</span>
-              </div>
+      {/* Dashboard Specific Header Actions */}
+      <div className="bg-white border-b border-gray-200/70 p-4 sticky top-0 z-20 flex justify-between items-center shadow-sm">
+        <div className="flex items-center gap-4">
+          <h2 className="text-xl font-bold text-gray-900">Live Dashboard</h2>
+          <div className="hidden md:flex items-center gap-2 pl-4 border-l border-gray-200">
+            <div className="relative flex h-2.5 w-2.5">
+              {wsStatus === "Connected" && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>}
+              <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${wsStatus === "Connected" ? "bg-emerald-500" : wsStatus === "Connecting" ? "bg-amber-500" : "bg-red-500"}`}></span>
             </div>
-
-            {/* Actions */}
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => router.push('/operator/statistics')}
-                className="px-4 py-2 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-2"
-              >
-                <FaChartBar className="text-gray-500" />
-                <span className="hidden lg:inline text-sm font-semibold text-gray-700">Statistik</span>
-              </button>
-              
-              <button
-                onClick={() => router.push('/operator/management')}
-                className="px-4 py-2 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-2"
-              >
-                <FaTags className="text-gray-500" />
-                <span className="hidden lg:inline text-sm font-semibold text-gray-700">Manajemen</span>
-              </button>
-
-              <button
-                onClick={() => router.push('/operator/whatsapp')}
-                className="px-4 py-2 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-2"
-              >
-                <FaWhatsapp className="text-green-500" />
-                <span className="hidden lg:inline text-sm font-semibold text-gray-700">WhatsApp</span>
-              </button>
-
-              <button
-                onClick={() => setShowBroadcastModal(true)}
-                className="px-4 py-2 bg-red-50 hover:bg-red-100 border border-red-200 hover:border-red-300 rounded-lg transition-all flex items-center gap-2 group"
-                title="Kirim Notifikasi Broadcast"
-              >
-                <FaBullhorn className="text-red-500 group-hover:scale-110 transition-transform" />
-                <span className="hidden lg:inline text-sm font-semibold text-red-600">Broadcast</span>
-              </button>
-
-              <div className="h-8 w-px bg-gray-200 mx-2 hidden sm:block"></div>
-
-              <div className="hidden md:flex items-center gap-3 px-4 py-2 bg-gray-50 rounded-lg border border-gray-200/60">
-                <span className="text-sm font-semibold text-gray-700">Auto-Alarm</span>
-                <button
-                  onClick={() => setIsMonitorMode(!isMonitorMode)}
-                  className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none ${isMonitorMode ? "bg-red-500" : "bg-gray-300"}`}
-                >
-                  <span
-                    className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${isMonitorMode ? "translate-x-4" : "translate-x-1"}`}
-                  />
-                </button>
-              </div>
-
-              <div className="hidden lg:flex items-center gap-2 px-4 py-2">
-                <div className="w-8 h-8 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center">
-                  <FaUserShield className="text-gray-500 text-sm" />
-                </div>
-              </div>
-
-              <button
-                onClick={handleLogout}
-                className="p-2.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                title="Logout System"
-              >
-                <FaSignOutAlt className="text-lg" />
-              </button>
-            </div>
+            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{wsStatus === "Connected" ? 'System Online' : wsStatus}</span>
           </div>
-        </header>
+        </div>
+        
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setShowBroadcastModal(true)}
+            className="px-4 py-2 bg-red-50 hover:bg-red-100 border border-red-200 hover:border-red-300 rounded-lg transition-all flex items-center gap-2 group"
+            title="Kirim Notifikasi Broadcast"
+          >
+            <FaBullhorn className="text-red-500 group-hover:scale-110 transition-transform" />
+            <span className="hidden sm:inline text-sm font-semibold text-red-600">Broadcast</span>
+          </button>
+          
+          <div className="h-8 w-px bg-gray-200 mx-1 hidden sm:block"></div>
+          
+          <div className="flex items-center gap-3 px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-50 rounded-lg border border-gray-200/60">
+            <span className="text-sm font-semibold text-gray-700 hidden sm:inline">Auto-Alarm</span>
+            <button
+              onClick={() => setIsMonitorMode(!isMonitorMode)}
+              className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none ${isMonitorMode ? "bg-red-500" : "bg-gray-300"}`}
+            >
+              <span
+                className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${isMonitorMode ? "translate-x-4" : "translate-x-1"}`}
+              />
+            </button>
+          </div>
+        </div>
+      </div>
 
-        <main className="max-w-[1600px] w-full mx-auto p-4 sm:p-6 lg:p-8 flex-grow flex flex-col gap-6">
+      <div className="max-w-[1600px] w-full mx-auto p-4 sm:p-6 lg:p-8 flex-grow flex flex-col gap-6">
           
           {/* Top Stats Row */}
           <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -950,8 +898,7 @@ export default function OperatorDashboard() {
             </section>
 
           </div>
-        </main>
-      </div>
-    </>
+        </div>
+    </OperatorLayout>
   );
 }

@@ -36,6 +36,10 @@ export async function POST(request: NextRequest) {
       return jsonWithCors({ message: "Laporan sudah selesai, tidak perlu di-dispatch." }, { status: 400, request });
     }
 
+    if (report.status === 'dispatched' || report.status === 'dikirim' || report.status === 'ditangani' || report.status === 'in_progress') {
+      return jsonWithCors({ message: "Laporan ini sudah di-dispatch atau sedang ditangani." }, { status: 400, request });
+    }
+
     if (report.assigned_petugas_id) {
       return jsonWithCors({ message: "Laporan sudah diambil oleh petugas." }, { status: 400, request });
     }

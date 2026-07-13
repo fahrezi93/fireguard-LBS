@@ -141,6 +141,51 @@ export default function DashboardPage() {
     fetchReports();
   }, [checkAuth]);
 
+  // WebSocket untuk update status real-time
+  useEffect(() => {
+    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+    const wsUrl = `${protocol}//${window.location.host}/ws`;
+    let ws: WebSocket | null = null;
+    let reconnectTimeout: NodeJS.Timeout;
+
+    const connect = () => {
+      ws = new WebSocket(wsUrl);
+
+      ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          if (data.type === "STATUS_UPDATE" && data.payload) {
+            const { reportId, newStatus } = data.payload;
+            setReports((prevReports) =>
+              prevReports.map((r) =>
+                r.id === reportId ? { ...r, status: newStatus } : r
+              )
+            );
+            setSelectedReport((prev) => 
+              prev && prev.id === reportId ? { ...prev, status: newStatus } : prev
+            );
+          }
+        } catch (e) {
+          console.error("Error parsing WS message", e);
+        }
+      };
+
+      ws.onclose = () => {
+        reconnectTimeout = setTimeout(connect, 3000);
+      };
+    };
+
+    connect();
+
+    return () => {
+      clearTimeout(reconnectTimeout);
+      if (ws) {
+        ws.onclose = null;
+        ws.close();
+      }
+    };
+  }, []);
+
   const fetchReports = async () => {
     try {
       setIsLoading(true);

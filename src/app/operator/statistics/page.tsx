@@ -1,8 +1,9 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaChartBar, FaArrowLeft, FaFilter, FaFire, FaClock, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
+import OperatorLayout from "@/components/OperatorLayout";
 
 interface Report {
   id: number;
@@ -53,47 +54,35 @@ export default function StatisticsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] text-gray-900 font-sans selection:bg-red-500/30">
-      
-      <header className="bg-white border-b border-gray-200/70 sticky top-0 z-40">
-        <div className="max-w-[1600px] mx-auto px-6 h-20 flex items-center justify-between">
-           <div className="flex items-center gap-6">
-              <button 
-                onClick={() => router.push('/operator/dashboard')}
-                className="p-2.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl transition-colors group"
-              >
-                <FaArrowLeft className="text-gray-400 group-hover:text-gray-900 transition-colors text-sm" />
-              </button>
-              <div className="h-8 w-px bg-gray-200 hidden sm:block"></div>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center shadow-inner border border-gray-200/50">
-                  <FaChartBar className="text-gray-500 text-lg" />
-                </div>
-                <div>
-                  <h1 className="text-lg font-bold tracking-tight text-gray-900">Statistik <span className="text-red-500">Kinerja</span></h1>
-                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest">Analitik Operasional</p>
-                </div>
-              </div>
-           </div>
-           
-           <div className="flex items-center gap-2 bg-gray-50 p-1.5 rounded-xl border border-gray-200/60">
-              <button 
-                onClick={() => setTimeRange('7d')}
-                className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${timeRange === '7d' ? 'bg-white text-gray-900 shadow-[0_2px_10px_rgba(0,0,0,0.05)]' : 'text-gray-500 hover:text-gray-700 hover:bg-white/50'}`}
-              >
-                7 Hari
-              </button>
-              <button 
-                onClick={() => setTimeRange('30d')}
-                className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${timeRange === '30d' ? 'bg-white text-gray-900 shadow-[0_2px_10px_rgba(0,0,0,0.05)]' : 'text-gray-500 hover:text-gray-700 hover:bg-white/50'}`}
-              >
-                30 Hari
-              </button>
-           </div>
+    <OperatorLayout>
+      <div className="bg-white border-b border-gray-200/70 p-4 sticky top-0 z-20 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center shadow-inner border border-gray-200/50">
+            <FaChartBar className="text-gray-500 text-lg" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">Statistik Kinerja</h2>
+            <p className="text-xs font-medium text-gray-500 mt-0.5">Analitik Operasional</p>
+          </div>
         </div>
-      </header>
+        
+        <div className="flex items-center gap-2 bg-gray-50 p-1.5 rounded-xl border border-gray-200/60 self-start sm:self-auto">
+          <button 
+            onClick={() => setTimeRange('7d')}
+            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${timeRange === '7d' ? 'bg-white text-gray-900 shadow-[0_2px_10px_rgba(0,0,0,0.05)]' : 'text-gray-500 hover:text-gray-700 hover:bg-white/50'}`}
+          >
+            7 Hari
+          </button>
+          <button 
+            onClick={() => setTimeRange('30d')}
+            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${timeRange === '30d' ? 'bg-white text-gray-900 shadow-[0_2px_10px_rgba(0,0,0,0.05)]' : 'text-gray-500 hover:text-gray-700 hover:bg-white/50'}`}
+          >
+            30 Hari
+          </button>
+        </div>
+      </div>
 
-      <main className="max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8 flex flex-col gap-6">
+      <div className="max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8 flex flex-col gap-6 w-full">
 
         {/* Global Summary Cards */}
         <section className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -207,7 +196,7 @@ export default function StatisticsPage() {
 
         </section>
 
-      </main>
-    </div>
+      </div>
+    </OperatorLayout>
   );
 }

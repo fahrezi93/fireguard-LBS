@@ -6,6 +6,7 @@ import Image from "next/image";
 import { FaWhatsapp, FaQrcode, FaCheckCircle, FaExclamationTriangle, FaSignOutAlt, FaSpinner, FaArrowLeft } from "react-icons/fa";
 import { useToast } from "@/hooks/useToast";
 import Toast from "@/components/Toast";
+import OperatorLayout from "@/components/OperatorLayout";
 
 export default function OperatorWhatsAppPage() {
   const [status, setStatus] = useState<"loading" | "connected" | "disconnected" | "error">("loading");
@@ -79,32 +80,23 @@ export default function OperatorWhatsAppPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] text-gray-900 font-sans selection:bg-red-500/30 font-medium flex flex-col">
+    <OperatorLayout>
       {/* ── Header ── */}
-      <header className="bg-white border-b border-gray-200/70 sticky top-0 z-40">
-        <div className="max-w-[1600px] mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <button onClick={() => router.push("/operator/dashboard")}
-              className="p-2.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl transition-colors group">
-              <FaArrowLeft className="text-gray-400 group-hover:text-gray-900 transition-colors text-sm" />
-            </button>
-            <div className="h-8 w-px bg-gray-200 hidden sm:block" />
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-green-100 text-green-600 rounded-xl flex items-center justify-center shadow-inner border border-green-200/50">
-                <FaWhatsapp className="text-xl" />
-              </div>
-              <div>
-                <h1 className="text-lg font-bold tracking-tight text-gray-900">
-                  Manajemen <span className="text-green-500">WhatsApp</span>
-                </h1>
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest">Sistem Notifikasi</p>
-              </div>
-            </div>
+      <div className="bg-white border-b border-gray-200/70 p-4 sticky top-0 z-20 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-green-100 text-green-600 rounded-xl flex items-center justify-center shadow-inner border border-green-200/50">
+            <FaWhatsapp className="text-xl" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">
+              Manajemen WhatsApp
+            </h2>
+            <p className="text-xs font-medium text-gray-500 mt-0.5">Sistem Notifikasi</p>
           </div>
         </div>
-      </header>
+      </div>
 
-      <div className="flex-1 p-6 md:p-8 max-w-4xl mx-auto w-full">
+      <div className="flex-1 p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto w-full">
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900">WhatsApp Sender</h2>
           <p className="text-gray-500 mt-2 text-sm">
@@ -222,6 +214,6 @@ export default function OperatorWhatsAppPage() {
       
       {toast.show && <Toast type={toast.type} message={toast.message} onClose={hideToast} />}
       </div>
-    </div>
+    </OperatorLayout>
   );
 }

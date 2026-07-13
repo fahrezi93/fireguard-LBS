@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 :root {
   --background: #ffffff;
@@ -68,3 +69,62 @@ body {
   animation: slide-up 0.4s ease-out;
 }
 
+
+/* ── Article Prose Overrides ─────────────────────────────────── */
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5 {
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: -0.02em;
+}
+.prose h1 { font-size: 2.25rem; line-height: 1.25; margin-bottom: 1.5rem; }
+.prose h2 { font-size: 1.75rem; line-height: 1.3; margin-top: 2.5rem; margin-bottom: 1rem; }
+.prose h3 { font-size: 1.375rem; line-height: 1.35; margin-top: 2rem; margin-bottom: 0.75rem; }
+.prose p {
+  font-size: 1.125rem;
+  line-height: 1.85;
+  color: #374151;
+  margin-bottom: 1.5rem;
+}
+.prose ul, .prose ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.prose li {
+  font-size: 1.125rem;
+  line-height: 1.75;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+.prose strong {
+  font-weight: 700;
+  color: #111827;
+}
+.prose a {
+  color: #8b1816;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.prose a:hover { color: #761412; }
+.prose blockquote {
+  border-left: 4px solid #8b1816;
+  padding-left: 1.25rem;
+  font-style: italic;
+  color: #6b7280;
+  margin: 2rem 0;
+}
+.prose code {
+  background: #f3f4f6;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.9em;
+  color: #8b1816;
+}
+.prose pre {
+  background: #1f2937;
+  color: #f9fafb;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  overflow-x: auto;
+  margin: 2rem 0;
+}

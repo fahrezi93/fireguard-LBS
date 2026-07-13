@@ -12,6 +12,23 @@ export async function GET(request: NextRequest) {
     // Support dual-mode: Bearer token (Flutter) dan Cookie (Web)
     const payload = await getAuthPayloadFromRequest(request);
 
+    // Jika token milik operator, ambil dari tabel operators
+    if (payload.isOperator) {
+      const operator = await queryRow<{ id: number; username: string }>(
+        'SELECT id, username FROM operators WHERE id = ?',
+        [payload.id]
+      );
+      if (!operator) {
+        return jsonWithCors({ message: 'Operator tidak ditemukan.' }, { status: 404, request });
+      }
+      return jsonWithCors({ 
+        id: operator.id, 
+        name: operator.username, 
+        role: 'operator', 
+        isOperator: true 
+      }, { request });
+    }
+
     // Ambil data fresh dari database agar field seperti is_on_duty selalu up-to-date
     const user = await queryRow(
       'SELECT id, name, email, phone_number, is_verified, role, is_on_duty, created_at, kelurahan_id FROM users WHERE id = ?',

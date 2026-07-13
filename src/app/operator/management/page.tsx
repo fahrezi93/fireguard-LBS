@@ -9,6 +9,7 @@ import {
 } from "react-icons/fa";
 import { useToast } from "@/hooks/useToast";
 import Toast from "@/components/Toast";
+import OperatorLayout from "@/components/OperatorLayout";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -637,51 +638,46 @@ export default function ManagementPage() {
         <DeleteModal itemName={deleteTarget.name} loading={deleteLoading} onConfirm={handleDelete} onClose={() => setDeleteTarget(null)} />
       )}
 
-      <div className="min-h-screen bg-[#FAFAFA] text-gray-900 font-sans selection:bg-red-500/30 font-medium">
-
-        {/* ── Header ── */}
-        <header className="bg-white border-b border-gray-200/70 sticky top-0 z-40">
-          <div className="max-w-[1600px] mx-auto px-6 h-20 flex items-center justify-between">
-            <div className="flex items-center gap-6">
-              <button onClick={() => router.push("/operator/dashboard")}
-                className="p-2.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl transition-colors group">
-                <FaArrowLeft className="text-gray-400 group-hover:text-gray-900 transition-colors text-sm" />
-              </button>
-              <div className="h-8 w-px bg-gray-200 hidden sm:block" />
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center shadow-inner border border-gray-200/50">
-                  <FaTags className="text-gray-500 text-lg" />
-                </div>
-                <div>
-                  <h1 className="text-lg font-bold tracking-tight text-gray-900">
-                    Manajemen <span className="text-red-500">Data</span>
-                  </h1>
-                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest">Master Data Sistem</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Tabs */}
-            <div className="flex items-center gap-2 bg-gray-50 p-1.5 rounded-xl border border-gray-200/60">
-              {(["kategori", "kelurahan", "pos", "petugas"] as ActiveTab[]).map((tab) => (
-                <button key={tab} onClick={() => setActiveTab(tab)}
-                  className={`px-5 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all ${
-                    activeTab === tab
-                      ? "bg-white text-gray-900 shadow-[0_2px_10px_rgba(0,0,0,0.05)]"
-                      : "text-gray-500 hover:text-gray-700 hover:bg-white/50"
-                  }`}>
-                  {tab === "kategori" && <FaLayerGroup />}
-                  {tab === "kelurahan" && <FaMapMarkerAlt />}
-                  {tab === "pos" && <FaFireExtinguisher />}
-                  {tab === "petugas" && <FaUserShield />}
-                  {tab === "kategori" ? "Kategori" : tab === "kelurahan" ? "Kelurahan" : tab === "pos" ? "Pos Pemadam" : "Akun Petugas"}
-                </button>
-              ))}
-            </div>
+    <OperatorLayout>
+      {/* ── Header ── */}
+      <div className="bg-white border-b border-gray-200/70 p-4 sticky top-0 z-20 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center shadow-inner border border-gray-200/50">
+            <FaTags className="text-gray-500 text-lg" />
           </div>
-        </header>
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">
+              Manajemen Data
+            </h2>
+            <p className="text-xs font-medium text-gray-500 mt-0.5">Master Data Sistem</p>
+          </div>
+        </div>
 
-        <main className="max-w-[1600px] mx-auto p-8">
+        {/* Tabs */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 bg-gray-50 p-1 rounded-xl border border-gray-200/60 w-full sm:w-auto">
+          {(["kategori", "kelurahan", "pos", "petugas"] as ActiveTab[]).map((tab) => (
+            <button key={tab} onClick={() => setActiveTab(tab)}
+              className={`px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all whitespace-nowrap ${
+                activeTab === tab
+                  ? "bg-white text-gray-900 shadow-[0_2px_10px_rgba(0,0,0,0.05)]"
+                  : "text-gray-500 hover:text-gray-700 hover:bg-white/50"
+              }`}>
+              {tab === "kategori" && <FaLayerGroup />}
+              {tab === "kelurahan" && <FaMapMarkerAlt />}
+              {tab === "pos" && <FaFireExtinguisher />}
+              {tab === "petugas" && <FaUserShield />}
+              <span className="hidden sm:inline">
+                {tab === "kategori" ? "Kategori" : tab === "kelurahan" ? "Kelurahan" : tab === "pos" ? "Pos Pemadam" : "Akun Petugas"}
+              </span>
+              <span className="sm:hidden">
+                {tab === "kategori" ? "Kategori" : tab === "kelurahan" ? "Lurah" : tab === "pos" ? "Pos" : "Petugas"}
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8">
           {/* Title + Add */}
           <div className="flex justify-between items-center mb-8">
             <div>
@@ -821,8 +817,8 @@ export default function ManagementPage() {
               {!isLoading && activeTab === "pos" && posPemadam.length === 0 && <EmptyState label="pos pemadam" />}
             </div>
           </div>
-        </main>
       </div>
+    </OperatorLayout>
     </>
   );
 }

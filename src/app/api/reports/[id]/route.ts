@@ -45,10 +45,12 @@ export async function GET(
     const report = await queryRow<Report>(
       `SELECT r.*, 
               dc.name as category_name, dc.icon as category_icon,
-              k.name as kelurahan_name, k.kecamatan
+              k.name as kelurahan_name, k.kecamatan,
+              u.last_latitude as petugas_lat, u.last_longitude as petugas_lng
        FROM reports r
        LEFT JOIN disaster_categories dc ON r.category_id = dc.id
        LEFT JOIN kelurahan k ON r.kelurahan_id = k.id
+       LEFT JOIN users u ON r.assigned_petugas_id = u.id
        WHERE r.id = ? AND r.user_id = ?`,
       [reportId, user.id]
     );

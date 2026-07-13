@@ -729,11 +729,11 @@ export default function ReportDetailModal({
                 />
                 {onDispatchToPetugas && (
                   <StatusButton
-                    label={report.assigned_petugas_id ? "Sudah Diambil Petugas" : "Kirim ke Petugas (Broadcast)"}
+                    label={report.assigned_petugas_id ? "Sudah Diambil Petugas" : report.status === 'dispatched' || report.status === 'dikirim' ? "Broadcast Terkirim" : "Kirim ke Petugas (Broadcast)"}
                     icon={<FaTruck className="text-sm" />}
                     color="bg-gradient-to-r from-red-500 to-orange-600 hover:from-red-600 hover:to-orange-700"
                     onClick={handleDispatch}
-                    disabled={!!report.assigned_petugas_id || report.status === 'completed' || report.status === 'false' || report.status === 'false_report'}
+                    disabled={!!report.assigned_petugas_id || report.status === 'completed' || report.status === 'selesai' || report.status === 'false' || report.status === 'false_report' || report.status === 'dispatched' || report.status === 'dikirim'}
                   />
                 )}
                 <StatusButton
@@ -741,7 +741,7 @@ export default function ReportDetailModal({
                   icon={<FaTruck className="text-sm" />}
                   color="bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700"
                   onClick={() => handleStatusUpdate("dispatched")}
-                  disabled={!!report.assigned_petugas_id || report.status === 'completed' || report.status === 'false' || report.status === 'false_report'}
+                  disabled={!!report.assigned_petugas_id || report.status === 'completed' || report.status === 'selesai' || report.status === 'false' || report.status === 'false_report' || report.status === 'dispatched' || report.status === 'dikirim'}
                 />
                 <StatusButton
                   label="Selesaikan"

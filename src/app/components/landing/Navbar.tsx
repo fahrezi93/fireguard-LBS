@@ -104,6 +104,8 @@ const Navbar = ({ isLight = false }: { isLight?: boolean }) => {
           <div className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
             <Link href="#features" className={`text-sm font-medium transition-colors ${isLight ? 'text-neutral-600 hover:text-black' : 'text-neutral-300 hover:text-white'}`}>Fitur</Link>
             <Link href="#stations" className={`text-sm font-medium transition-colors ${isLight ? 'text-neutral-600 hover:text-black' : 'text-neutral-300 hover:text-white'}`}>Lokasi Pos</Link>
+            <Link href="/edukasi" className={`text-sm font-medium transition-colors ${isLight ? 'text-neutral-600 hover:text-black' : 'text-neutral-300 hover:text-white'}`}>Berita</Link>
+            <Link href="/download" className={`text-sm font-medium transition-colors ${isLight ? 'text-neutral-600 hover:text-black' : 'text-neutral-300 hover:text-white'}`}>Download App</Link>
             <Link href="#contact" className={`text-sm font-medium transition-colors ${isLight ? 'text-neutral-600 hover:text-black' : 'text-neutral-300 hover:text-white'}`}>Kontak</Link>
           </div>
 
@@ -183,6 +185,10 @@ const Navbar = ({ isLight = false }: { isLight?: boolean }) => {
             <Link href="#features" onClick={() => setMobileMenuOpen(false)} className={`text-3xl font-bold transition-colors ${isLight ? 'text-neutral-400 hover:text-black' : 'text-neutral-400 hover:text-white'}`}>Fitur
             </Link>
             <Link href="#stations" onClick={() => setMobileMenuOpen(false)} className={`text-3xl font-bold transition-colors ${isLight ? 'text-neutral-400 hover:text-black' : 'text-neutral-400 hover:text-white'}`}>Lokasi Pos
+            </Link>
+            <Link href="/edukasi" onClick={() => setMobileMenuOpen(false)} className={`text-3xl font-bold transition-colors ${isLight ? 'text-neutral-400 hover:text-black' : 'text-neutral-400 hover:text-white'}`}>Berita
+            </Link>
+            <Link href="/download" onClick={() => setMobileMenuOpen(false)} className={`text-3xl font-bold transition-colors ${isLight ? 'text-neutral-400 hover:text-black' : 'text-neutral-400 hover:text-white'}`}>Download App
             </Link>
             <Link href="#contact" onClick={() => setMobileMenuOpen(false)} className={`text-3xl font-bold transition-colors ${isLight ? 'text-neutral-400 hover:text-black' : 'text-neutral-400 hover:text-white'}`}>Kontak
             </Link>

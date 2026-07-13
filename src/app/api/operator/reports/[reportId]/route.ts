@@ -157,6 +157,21 @@ export async function PATCH(
       return NextResponse.json({ message: "Status laporan tidak valid." }, { status: 400 });
     }
 
+    // Ambil status saat ini untuk menghindari double update & double notif
+    const currentReport = await queryRow<{ status: string }>(
+      'SELECT status FROM reports WHERE id = ?',
+      [parsedReportId]
+    );
+
+    if (!currentReport) {
+      return NextResponse.json({ message: `Laporan dengan ID ${reportId} tidak ditemukan.` }, { status: 404 });
+    }
+
+    // Mencegah double click / duplicate status update
+    if (newStatus && currentReport.status === newStatus) {
+       return NextResponse.json({ message: `Laporan sudah berstatus ${newStatus}.` }, { status: 200 });
+    }
+
     if (adminNotes !== undefined && (typeof adminNotes !== "string" || adminNotes.length > 1000)) {
       return NextResponse.json({ message: "Catatan petugas tidak valid." }, { status: 400 });
     }
