@@ -50,6 +50,12 @@ async function setup() {
         phone_number VARCHAR(20),
         password_hash VARCHAR(255),
         is_verified TINYINT(1) DEFAULT 0,
+        role VARCHAR(20) DEFAULT 'user',
+        last_latitude DECIMAL(10, 8),
+        last_longitude DECIMAL(11, 8),
+        last_location_update TIMESTAMP NULL,
+        is_on_duty TINYINT(1) DEFAULT 0,
+        kelurahan_id INT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
@@ -113,13 +119,16 @@ async function setup() {
         admin_notes TEXT,
         notes TEXT,
         contact VARCHAR(50),
+        guest_name VARCHAR(100),
         category_id INT DEFAULT 1,
         kelurahan_id INT,
+        assigned_petugas_id INT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
         FOREIGN KEY (category_id) REFERENCES disaster_categories(id) ON DELETE SET NULL,
-        FOREIGN KEY (kelurahan_id) REFERENCES kelurahan(id) ON DELETE SET NULL
+        FOREIGN KEY (kelurahan_id) REFERENCES kelurahan(id) ON DELETE SET NULL,
+        FOREIGN KEY (assigned_petugas_id) REFERENCES users(id) ON DELETE SET NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     `);
     console.log('  ✓ Table reports created');
