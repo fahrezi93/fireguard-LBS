@@ -8,7 +8,6 @@
 
 import { getMessaging } from "@/lib/firebase-admin";
 import { execute, queryRows, formatDateForMySQL } from "@/lib/db";
-import { ensureNotificationTables } from "@/lib/db-init";
 
 interface NotificationContent {
   title: string;
@@ -310,9 +309,6 @@ export async function sendReportStatusNotification(
 ): Promise<void> {
   try {
     const canonicalStatus = normalizeNotificationStatus(newStatus);
-
-    // Pastikan semua tabel notification sudah ada sebelum query
-    await ensureNotificationTables();
 
     // Step 1: Query user's active device tokens (Requirement 2.1)
     const deviceTokens = await queryRows<DeviceToken>(

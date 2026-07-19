@@ -54,3 +54,14 @@ scripts/
 
 # Ignore WhatsApp server sessions
 wa-server/sessions/
+# Ignore TestSprite config and tests
+testsprite_tests/
+.testsprite/
+
+# Ignore TypeScript build cache
+tsconfig.tsbuildinfo
+
+# Ignore generated PRD documents for TestSprite
+siagabencana_prd.md
+prd_siagabencana.md
+

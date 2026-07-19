@@ -42,7 +42,12 @@ export async function GET(request: NextRequest) {
         if ("response" in auth) return auth.response;
 
         const { searchParams } = new URL(request.url);
-        const year = searchParams.get('year') || new Date().getFullYear().toString();
+        const year = parseInt(searchParams.get('year') || new Date().getFullYear().toString());
+
+        // Hitung range tanggal sekali untuk dipakai di semua query
+        // Ini jauh lebih efisien dari YEAR(created_at) = ? karena bisa pakai INDEX
+        const yearStart = `${year}-01-01`;
+        const yearEnd = `${year + 1}-01-01`;
 
         // 1. Get available years
         const availableYears = await queryRows<{ year: number }>(
@@ -66,10 +71,10 @@ export async function GET(request: NextRequest) {
         COUNT(r.id) as total 
        FROM reports r
        LEFT JOIN kelurahan k ON r.kelurahan_id = k.id
-       WHERE YEAR(r.created_at) = ?
+       WHERE r.created_at >= ? AND r.created_at < ?
        GROUP BY k.id, k.name, k.kecamatan
        ORDER BY total DESC`,
-            [parseInt(year)]
+            [yearStart, yearEnd]
         );
 
         // 4. Get statistics by category for selected year
@@ -81,10 +86,10 @@ export async function GET(request: NextRequest) {
         COUNT(r.id) as total 
        FROM reports r
        LEFT JOIN disaster_categories c ON r.category_id = c.id
-       WHERE YEAR(r.created_at) = ?
+       WHERE r.created_at >= ? AND r.created_at < ?
        GROUP BY c.id, c.name, c.icon
        ORDER BY total DESC`,
-            [parseInt(year)]
+            [yearStart, yearEnd]
         );
 
         // 5. Get monthly statistics for selected year
@@ -94,10 +99,10 @@ export async function GET(request: NextRequest) {
         MONTHNAME(created_at) as month_name,
         COUNT(*) as total 
        FROM reports 
-       WHERE YEAR(created_at) = ?
+       WHERE created_at >= ? AND created_at < ?
        GROUP BY MONTH(created_at), MONTHNAME(created_at)
        ORDER BY month ASC`,
-            [parseInt(year)]
+            [yearStart, yearEnd]
         );
 
         // 6. Get hotspot data (all report locations) for selected year
@@ -112,15 +117,15 @@ export async function GET(request: NextRequest) {
        FROM reports r
        LEFT JOIN kelurahan k ON r.kelurahan_id = k.id
        LEFT JOIN disaster_categories c ON r.category_id = c.id
-       WHERE YEAR(r.created_at) = ?
+       WHERE r.created_at >= ? AND r.created_at < ?
        ORDER BY r.created_at DESC`,
-            [parseInt(year)]
+            [yearStart, yearEnd]
         );
 
         // 7. Get total reports for selected year
         const totalReportsResult = await queryRows<{ total: number }>(
-            `SELECT COUNT(*) as total FROM reports WHERE YEAR(created_at) = ?`,
-            [parseInt(year)]
+            `SELECT COUNT(*) as total FROM reports WHERE created_at >= ? AND created_at < ?`,
+            [yearStart, yearEnd]
         );
         const totalReports = totalReportsResult[0]?.total || 0;
 
@@ -128,15 +133,15 @@ export async function GET(request: NextRequest) {
         const statusStats = await queryRows<{ status: string; total: number }>(
             `SELECT status, COUNT(*) as total 
        FROM reports 
-       WHERE YEAR(created_at) = ?
+       WHERE created_at >= ? AND created_at < ?
        GROUP BY status`,
-            [parseInt(year)]
+            [yearStart, yearEnd]
         );
 
         return NextResponse.json({
             success: true,
             data: {
-                selectedYear: parseInt(year),
+                selectedYear: year,
                 availableYears: availableYears.map(y => y.year),
                 totalReports,
                 yearlyStats,

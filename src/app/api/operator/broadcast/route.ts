@@ -21,7 +21,6 @@ import { queryRows, execute, formatDateForMySQL } from '@/lib/db';
 import { requireOperator } from '@/lib/api-security';
 import { jsonWithCors, handleCorsOptions } from '@/lib/cors';
 import { getMessaging } from '@/lib/firebase-admin';
-import { ensureNotificationTables } from '@/lib/db-init';
 
 export async function OPTIONS() {
     return handleCorsOptions();
@@ -48,9 +47,6 @@ export async function POST(request: NextRequest) {
         if (message.length > 1000) {
             return jsonWithCors({ message: 'Pesan terlalu panjang (maks 1000 karakter).' }, { status: 400 });
         }
-
-        // 3. Pastikan semua tabel notification sudah ada
-        await ensureNotificationTables();
 
         const now = formatDateForMySQL(new Date());
 
@@ -174,8 +170,6 @@ export async function GET(request: NextRequest) {
     try {
         const auth = await requireOperator(request);
         if ('response' in auth) return auth.response;
-
-        await ensureNotificationTables();
 
         const logs = await queryRows<{
             id: number;
