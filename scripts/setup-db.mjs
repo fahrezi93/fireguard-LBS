@@ -31,6 +31,8 @@ async function setup() {
 
     console.log('📦 Creating tables...');
     await db.execute('SET FOREIGN_KEY_CHECKS = 0');
+    await db.execute('DROP TABLE IF EXISTS notifications');
+    await db.execute('DROP TABLE IF EXISTS articles');
     await db.execute('DROP TABLE IF EXISTS otp_attempts');
     await db.execute('DROP TABLE IF EXISTS reports');
     await db.execute('DROP TABLE IF EXISTS disaster_categories');
