@@ -71,25 +71,46 @@ export async function POST(request: NextRequest) {
     // Broadcast ke Operator via WebSocket
     const wss = global.wss;
     if (wss) {
-      const payload = {
-        id: newReportId,
-        user_id: null,
-        fire_latitude: parseFloat(lat),
-        fire_longitude: parseFloat(lng),
-        description: desc.trim(),
-        address: address,
-        status: 'pending',
-        contact: cleanPhone,
-        category_id: parseInt(catId, 10),
-        kelurahan_id: parseInt(kelurahanId, 10),
-        media_url: photoUrl,
-        created_at: new Date().toISOString()
-      };
-
-      wss.broadcast(JSON.stringify({
-        type: 'NEW_REPORT',
-        payload: payload
-      }));
+      void (async () => {
+        try {
+          const { queryRow: qr } = await import('@/lib/db');
+          const fullReport = await qr(
+            `SELECT r.id, r.user_id, r.guest_name, r.fire_latitude, r.fire_longitude, r.reporter_latitude, r.reporter_longitude,
+                    r.status, r.created_at, r.media_url, r.description, r.address, r.notes, r.contact,
+                    c.id as category_id, c.name as category_name, c.icon as category_icon, c.color as category_color,
+                    k.id as kelurahan_id, k.name as kelurahan_name, k.kecamatan, k.kota
+             FROM reports r
+             LEFT JOIN disaster_categories c ON r.category_id = c.id
+             LEFT JOIN kelurahan k ON r.kelurahan_id = k.id
+             WHERE r.id = ?`,
+            [newReportId]
+          );
+          
+          wss.broadcast(
+            JSON.stringify({
+              type: "NEW_REPORT",
+              payload: fullReport ?? {
+                id: newReportId,
+                user_id: null,
+                guest_name: reporterName.trim(),
+                fire_latitude: parseFloat(lat),
+                fire_longitude: parseFloat(lng),
+                description: desc.trim(),
+                address: address,
+                status: 'pending',
+                contact: cleanPhone,
+                phone_number: cleanPhone, // Fallback for UI if needed
+                category_id: parseInt(catId, 10),
+                kelurahan_id: parseInt(kelurahanId, 10),
+                media_url: photoUrl,
+                created_at: new Date().toISOString()
+              },
+            })
+          );
+        } catch (wsErr) {
+          console.error('[WebSocket] Gagal broadcast laporan guest baru:', wsErr);
+        }
+      })();
     }
 
     return jsonWithCors({

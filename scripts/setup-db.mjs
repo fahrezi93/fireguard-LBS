@@ -29,8 +29,13 @@ async function setup() {
       database: dbName,
     });
 
-    console.log('📦 Creating tables...');
+    console.log('📦 Dropping existing tables cleanly...');
     await db.execute('SET FOREIGN_KEY_CHECKS = 0');
+    await db.execute('DROP TABLE IF EXISTS fire_stations');
+    await db.execute('DROP TABLE IF EXISTS broadcast_logs');
+    await db.execute('DROP TABLE IF EXISTS notification_logs');
+    await db.execute('DROP TABLE IF EXISTS notification_preferences');
+    await db.execute('DROP TABLE IF EXISTS device_tokens');
     await db.execute('DROP TABLE IF EXISTS notifications');
     await db.execute('DROP TABLE IF EXISTS articles');
     await db.execute('DROP TABLE IF EXISTS otp_attempts');
@@ -41,6 +46,7 @@ async function setup() {
     await db.execute('DROP TABLE IF EXISTS users');
     await db.execute('SET FOREIGN_KEY_CHECKS = 1');
 
+    console.log('📦 Creating tables...');
     // Create users table with name, email, phone_number
     await db.execute(`
       CREATE TABLE users (
@@ -60,7 +66,7 @@ async function setup() {
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     `);
-    console.log('  ✓ Table users created (with name, email, phone_number, password_hash)');
+    console.log('  ✓ Table users created');
 
     // Create operators table
     await db.execute(`
@@ -123,6 +129,15 @@ async function setup() {
         category_id INT DEFAULT 1,
         kelurahan_id INT,
         assigned_petugas_id INT,
+        status_petugas VARCHAR(30),
+        accepted_at TIMESTAMP NULL,
+        dispatched_at TIMESTAMP NULL,
+        arrived_at TIMESTAMP NULL,
+        completed_at TIMESTAMP NULL,
+        needs_backup TINYINT(1) DEFAULT 0,
+        petugas_notes TEXT,
+        completion_photo_url VARCHAR(500),
+        response_time_seconds INT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
@@ -147,6 +162,25 @@ async function setup() {
     `);
     console.log('  ✓ Table otp_attempts created');
 
+    // Create articles table
+    await db.execute(`
+      CREATE TABLE articles (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        slug VARCHAR(255) NOT NULL UNIQUE,
+        content LONGTEXT NOT NULL,
+        category_id INT,
+        author_id INT,
+        cover_image VARCHAR(255),
+        status ENUM('draft', 'published') DEFAULT 'draft',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (category_id) REFERENCES disaster_categories(id) ON DELETE SET NULL,
+        FOREIGN KEY (author_id) REFERENCES operators(id) ON DELETE SET NULL
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+    console.log('  ✓ Table articles created');
+
     // Create notifications table
     await db.execute(`
       CREATE TABLE notifications (
@@ -164,6 +198,98 @@ async function setup() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     `);
     console.log('  ✓ Table notifications created');
+
+    // Create device_tokens table
+    await db.execute(`
+      CREATE TABLE device_tokens (
+        id            INT AUTO_INCREMENT PRIMARY KEY,
+        user_id       INT NOT NULL,
+        device_token  VARCHAR(500) NOT NULL,
+        platform      ENUM('android','ios') NOT NULL DEFAULT 'android',
+        is_active     BOOLEAN NOT NULL DEFAULT TRUE,
+        created_at    DATETIME NOT NULL,
+        updated_at    DATETIME NOT NULL,
+        last_used_at  DATETIME NOT NULL,
+        UNIQUE  KEY uq_device_token (device_token),
+        INDEX   idx_dt_user_id   (user_id),
+        INDEX   idx_dt_is_active (is_active)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    `);
+    console.log('  ✓ Table device_tokens created');
+
+    // Create notification_preferences table
+    await db.execute(`
+      CREATE TABLE notification_preferences (
+        id           INT AUTO_INCREMENT PRIMARY KEY,
+        user_id      INT NOT NULL UNIQUE,
+        approved     BOOLEAN NOT NULL DEFAULT TRUE,
+        in_progress  BOOLEAN NOT NULL DEFAULT TRUE,
+        completed    BOOLEAN NOT NULL DEFAULT TRUE,
+        verified     BOOLEAN NOT NULL DEFAULT TRUE,
+        false_report BOOLEAN NOT NULL DEFAULT TRUE,
+        created_at   DATETIME NOT NULL,
+        updated_at   DATETIME NOT NULL,
+        INDEX idx_np_user_id (user_id)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    `);
+    console.log('  ✓ Table notification_preferences created');
+
+    // Create notification_logs table
+    await db.execute(`
+      CREATE TABLE notification_logs (
+        id              INT AUTO_INCREMENT PRIMARY KEY,
+        report_id       INT NOT NULL,
+        user_id         INT NOT NULL,
+        device_token    VARCHAR(500) NOT NULL,
+        status_change   VARCHAR(50)  NOT NULL,
+        title           VARCHAR(255) NOT NULL,
+        body            TEXT         NOT NULL,
+        delivery_status ENUM('sent','failed','retry') NOT NULL,
+        error_message   TEXT         NULL,
+        retry_count     INT          NOT NULL DEFAULT 0,
+        sent_at         DATETIME     NOT NULL,
+        INDEX idx_nl_report_id (report_id),
+        INDEX idx_nl_user_id   (user_id),
+        INDEX idx_nl_sent_at   (sent_at)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    `);
+    console.log('  ✓ Table notification_logs created');
+
+    // Create broadcast_logs table
+    await db.execute(`
+      CREATE TABLE broadcast_logs (
+        id            INT AUTO_INCREMENT PRIMARY KEY,
+        operator_id   INT NOT NULL,
+        title         VARCHAR(255) NOT NULL,
+        message       TEXT NOT NULL,
+        total_tokens  INT NOT NULL DEFAULT 0,
+        success_count INT NOT NULL DEFAULT 0,
+        failure_count INT NOT NULL DEFAULT 0,
+        sent_at       DATETIME NOT NULL,
+        INDEX idx_bl_operator_id (operator_id),
+        INDEX idx_bl_sent_at (sent_at)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    `);
+    console.log('  ✓ Table broadcast_logs created');
+
+    // Create fire_stations table
+    await db.execute(`
+      CREATE TABLE fire_stations (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        address TEXT,
+        latitude DECIMAL(10,8) NOT NULL,
+        longitude DECIMAL(11,8) NOT NULL,
+        contact_phone VARCHAR(50),
+        status VARCHAR(20) DEFAULT 'aktif',
+        kelurahan_id INT,
+        equipment_details TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (kelurahan_id) REFERENCES kelurahan(id) ON DELETE SET NULL
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    `);
+    console.log('  ✓ Table fire_stations created');
 
     // Insert kelurahan
     console.log('\n📍 Inserting kelurahan Plaju...');
