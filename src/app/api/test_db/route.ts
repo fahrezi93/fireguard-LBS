@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { queryRows } from '@/lib/db';
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
-    let query = `
+    const query = `
       SELECT a.id, a.title, a.slug, a.cover_image, a.created_at, a.category_id,
              c.name as category_name, o.username as author_name 
       FROM articles a
