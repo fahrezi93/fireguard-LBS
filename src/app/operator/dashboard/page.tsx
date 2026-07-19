@@ -30,6 +30,7 @@ import ReportDetailModal from "@/components/ReportDetailModal";
 import { useToast } from "@/hooks/useToast";
 import Toast from "@/components/Toast";
 import OperatorLayout from "@/components/OperatorLayout";
+import Modal from "@/components/Modal";
 
 // Tipe data untuk laporan
 interface Report {
@@ -280,6 +281,7 @@ export default function OperatorDashboard() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [isMonitorMode, setIsMonitorMode] = useState(true);
   const [wsStatus, setWsStatus] = useState("Connecting");
+  const [showBroadcastConfirm, setShowBroadcastConfirm] = useState(false);
   const alarmIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const ws = useRef<WebSocket | null>(null);
 
@@ -364,18 +366,16 @@ export default function OperatorDashboard() {
     }
   };
 
-  const handleSendBroadcast = async () => {
+  const handleSendBroadcast = () => {
     if (!broadcastTitle.trim() || !broadcastMessage.trim()) {
       error("Judul dan pesan wajib diisi.");
       return;
     }
-    if (
-      !window.confirm(
-        `Kirim broadcast ke SEMUA pengguna?\n\nJudul: ${broadcastTitle}\nPesan: ${broadcastMessage}`
-      )
-    )
-      return;
+    setShowBroadcastConfirm(true);
+  };
 
+  const executeSendBroadcast = async () => {
+    setShowBroadcastConfirm(false);
     setIsSendingBroadcast(true);
     try {
       const response = await fetch("/api/operator/broadcast", {
@@ -498,28 +498,45 @@ export default function OperatorDashboard() {
             return [transformed, ...prev];
           });
         } else if (message.type === "STATUS_UPDATE") {
-          setReports((prev) =>
-            prev.map((r) => {
-              if (r.id === message.payload.reportId) {
-                return { 
-                  ...r, 
-                  status: message.payload.newStatus !== undefined ? message.payload.newStatus : r.status,
-                  needs_backup: message.payload.needsBackup !== undefined ? message.payload.needsBackup : r.needs_backup
-                };
-              }
-              return r;
+          // Fetch full report details to get new fields like petugas name, timestamps, etc.
+          fetch(`/api/operator/reports/${message.payload.reportId}`)
+            .then(res => res.json())
+            .then(updatedReport => {
+              setReports((prev) =>
+                prev.map((r) =>
+                  r.id === message.payload.reportId ? { ...r, ...updatedReport, acknowledged: r.acknowledged } : r
+                )
+              );
+              setSelectedReport((prev) =>
+                prev && prev.id === message.payload.reportId ? { ...prev, ...updatedReport } : prev
+              );
             })
-          );
-          setSelectedReport((prev) => {
-            if (prev && prev.id === message.payload.reportId) {
-              return {
-                ...prev,
-                status: message.payload.newStatus !== undefined ? message.payload.newStatus : prev.status,
-                needs_backup: message.payload.needsBackup !== undefined ? message.payload.needsBackup : prev.needs_backup
-              };
-            }
-            return prev;
-          });
+            .catch(err => {
+              console.error('[WebSocket] Failed to fetch updated report:', err);
+              // Fallback to basic update
+              setReports((prev) =>
+                prev.map((r) => {
+                  if (r.id === message.payload.reportId) {
+                    return { 
+                      ...r, 
+                      status: message.payload.newStatus !== undefined ? message.payload.newStatus : r.status,
+                      needs_backup: message.payload.needsBackup !== undefined ? message.payload.needsBackup : r.needs_backup
+                    };
+                  }
+                  return r;
+                })
+              );
+              setSelectedReport((prev) => {
+                if (prev && prev.id === message.payload.reportId) {
+                  return {
+                    ...prev,
+                    status: message.payload.newStatus !== undefined ? message.payload.newStatus : prev.status,
+                    needs_backup: message.payload.needsBackup !== undefined ? message.payload.needsBackup : prev.needs_backup
+                  };
+                }
+                return prev;
+              });
+            });
         } else if (message.type === "BACKUP_REQUEST") {
           const { reportId, petugasName } = message.payload;
           setReports((prev) =>
@@ -899,6 +916,18 @@ export default function OperatorDashboard() {
 
           </div>
         </div>
+
+        {showBroadcastConfirm && (
+          <Modal
+            type="confirm"
+            title="Kirim Broadcast"
+            message={`Anda yakin ingin mengirim broadcast ini ke SEMUA pengguna? \n\nJudul: ${broadcastTitle}\nPesan: ${broadcastMessage}`}
+            confirmText="Ya, Kirim"
+            cancelText="Batal"
+            onConfirm={executeSendBroadcast}
+            onCancel={() => setShowBroadcastConfirm(false)}
+          />
+        )}
     </OperatorLayout>
   );
 }

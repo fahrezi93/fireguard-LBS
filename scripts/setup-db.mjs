@@ -29,27 +29,12 @@ async function setup() {
       database: dbName,
     });
 
-    console.log('📦 Dropping existing tables cleanly...');
-    await db.execute('SET FOREIGN_KEY_CHECKS = 0');
-    await db.execute('DROP TABLE IF EXISTS fire_stations');
-    await db.execute('DROP TABLE IF EXISTS broadcast_logs');
-    await db.execute('DROP TABLE IF EXISTS notification_logs');
-    await db.execute('DROP TABLE IF EXISTS notification_preferences');
-    await db.execute('DROP TABLE IF EXISTS device_tokens');
-    await db.execute('DROP TABLE IF EXISTS notifications');
-    await db.execute('DROP TABLE IF EXISTS articles');
-    await db.execute('DROP TABLE IF EXISTS otp_attempts');
-    await db.execute('DROP TABLE IF EXISTS reports');
-    await db.execute('DROP TABLE IF EXISTS disaster_categories');
-    await db.execute('DROP TABLE IF EXISTS kelurahan');
-    await db.execute('DROP TABLE IF EXISTS operators');
-    await db.execute('DROP TABLE IF EXISTS users');
-    await db.execute('SET FOREIGN_KEY_CHECKS = 1');
+    // Note: DROP TABLE command is removed so it won't overwrite existing data
 
     console.log('📦 Creating tables...');
     // Create users table with name, email, phone_number
     await db.execute(`
-      CREATE TABLE users (
+      CREATE TABLE IF NOT EXISTS users (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(100) NOT NULL,
         email VARCHAR(100) NOT NULL UNIQUE,
@@ -70,7 +55,7 @@ async function setup() {
 
     // Create operators table
     await db.execute(`
-      CREATE TABLE operators (
+      CREATE TABLE IF NOT EXISTS operators (
         id INT AUTO_INCREMENT PRIMARY KEY,
         username VARCHAR(50) NOT NULL UNIQUE,
         password_hash VARCHAR(255) NOT NULL,
@@ -81,7 +66,7 @@ async function setup() {
 
     // Create kelurahan table
     await db.execute(`
-      CREATE TABLE kelurahan (
+      CREATE TABLE IF NOT EXISTS kelurahan (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(100) NOT NULL UNIQUE,
         kode_pos VARCHAR(10) NOT NULL,
@@ -96,7 +81,7 @@ async function setup() {
 
     // Create disaster_categories table
     await db.execute(`
-      CREATE TABLE disaster_categories (
+      CREATE TABLE IF NOT EXISTS disaster_categories (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(100) NOT NULL UNIQUE,
         icon VARCHAR(10) NOT NULL,
@@ -111,7 +96,7 @@ async function setup() {
 
     // Create reports table
     await db.execute(`
-      CREATE TABLE reports (
+      CREATE TABLE IF NOT EXISTS reports (
         id INT AUTO_INCREMENT PRIMARY KEY,
         user_id INT,
         fire_latitude DECIMAL(10, 8) NOT NULL,
@@ -150,7 +135,7 @@ async function setup() {
 
     // Create otp_attempts table (for email OTP)
     await db.execute(`
-      CREATE TABLE otp_attempts (
+      CREATE TABLE IF NOT EXISTS otp_attempts (
         id INT AUTO_INCREMENT PRIMARY KEY,
         email VARCHAR(100) NOT NULL,
         otp_hash VARCHAR(255) NOT NULL,
@@ -164,7 +149,7 @@ async function setup() {
 
     // Create articles table
     await db.execute(`
-      CREATE TABLE articles (
+      CREATE TABLE IF NOT EXISTS articles (
         id INT AUTO_INCREMENT PRIMARY KEY,
         title VARCHAR(255) NOT NULL,
         slug VARCHAR(255) NOT NULL UNIQUE,
@@ -183,7 +168,7 @@ async function setup() {
 
     // Create notifications table
     await db.execute(`
-      CREATE TABLE notifications (
+      CREATE TABLE IF NOT EXISTS notifications (
         id INT AUTO_INCREMENT PRIMARY KEY,
         user_id INT NOT NULL,
         title VARCHAR(255) NOT NULL,
@@ -201,7 +186,7 @@ async function setup() {
 
     // Create device_tokens table
     await db.execute(`
-      CREATE TABLE device_tokens (
+      CREATE TABLE IF NOT EXISTS device_tokens (
         id            INT AUTO_INCREMENT PRIMARY KEY,
         user_id       INT NOT NULL,
         device_token  VARCHAR(500) NOT NULL,
@@ -219,7 +204,7 @@ async function setup() {
 
     // Create notification_preferences table
     await db.execute(`
-      CREATE TABLE notification_preferences (
+      CREATE TABLE IF NOT EXISTS notification_preferences (
         id           INT AUTO_INCREMENT PRIMARY KEY,
         user_id      INT NOT NULL UNIQUE,
         approved     BOOLEAN NOT NULL DEFAULT TRUE,
@@ -236,7 +221,7 @@ async function setup() {
 
     // Create notification_logs table
     await db.execute(`
-      CREATE TABLE notification_logs (
+      CREATE TABLE IF NOT EXISTS notification_logs (
         id              INT AUTO_INCREMENT PRIMARY KEY,
         report_id       INT NOT NULL,
         user_id         INT NOT NULL,
@@ -257,7 +242,7 @@ async function setup() {
 
     // Create broadcast_logs table
     await db.execute(`
-      CREATE TABLE broadcast_logs (
+      CREATE TABLE IF NOT EXISTS broadcast_logs (
         id            INT AUTO_INCREMENT PRIMARY KEY,
         operator_id   INT NOT NULL,
         title         VARCHAR(255) NOT NULL,
@@ -274,7 +259,7 @@ async function setup() {
 
     // Create fire_stations table
     await db.execute(`
-      CREATE TABLE fire_stations (
+      CREATE TABLE IF NOT EXISTS fire_stations (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(100) NOT NULL,
         address TEXT,
@@ -332,7 +317,7 @@ async function setup() {
     ];
     for (const kel of kelurahanPlaju) {
       await db.execute(
-        'INSERT INTO kelurahan (name, kode_pos, kecamatan, kota, description) VALUES (?, ?, ?, ?, ?)', 
+        'INSERT IGNORE INTO kelurahan (name, kode_pos, kecamatan, kota, description) VALUES (?, ?, ?, ?, ?)', 
         [kel.name, kel.kode_pos, 'Plaju', 'Plaju, Palembang', kel.description]
       );
       console.log(`  ✓ Added kelurahan: ${kel.name} (${kel.kode_pos})`);
@@ -348,14 +333,14 @@ async function setup() {
       { name: 'Pencemaran & sampah berisiko', icon: '☣️', color: '#10B981', description: 'Pencemaran lingkungan dan penumpukan sampah berbahaya' },
     ];
     for (const cat of categories) {
-      await db.execute('INSERT INTO disaster_categories (name, icon, color, description) VALUES (?, ?, ?, ?)', [cat.name, cat.icon, cat.color, cat.description]);
+      await db.execute('INSERT IGNORE INTO disaster_categories (name, icon, color, description) VALUES (?, ?, ?, ?)', [cat.name, cat.icon, cat.color, cat.description]);
       console.log(`  ✓ Added category: ${cat.icon} ${cat.name}`);
     }
 
     // Create default operator
     console.log('\n👤 Creating default operator...');
     const hashedPassword = await bcrypt.hash('operator123', SALT_ROUNDS);
-    await db.execute('INSERT INTO operators (username, password_hash) VALUES (?, ?)', ['operator', hashedPassword]);
+    await db.execute('INSERT IGNORE INTO operators (username, password_hash) VALUES (?, ?)', ['operator', hashedPassword]);
     console.log('  ✓ Default operator created');
     console.log('    Username: operator');
     console.log('    Password: operator123');

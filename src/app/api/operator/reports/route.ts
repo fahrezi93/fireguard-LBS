@@ -9,12 +9,12 @@ export async function GET(request: NextRequest) {
 
     const reports = await queryRows(
       `SELECT r.id, r.user_id, r.fire_latitude, r.fire_longitude, r.reporter_latitude, r.reporter_longitude, 
-              r.status, r.created_at, r.media_url, r.notes, r.contact, r.description,
-              r.guest_name,
+              r.status, r.created_at, r.media_url, r.notes, r.contact, r.description, r.address,
+              r.guest_name, r.admin_notes, r.petugas_notes,
               r.assigned_petugas_id, r.dispatched_at, r.accepted_at, r.arrived_at, r.completed_at, 
               r.status_petugas, r.completion_photo_url, r.response_time_seconds, r.needs_backup,
               p.name as assigned_petugas_name,
-              u.name as user_name, u.phone_number, 
+              u.name as user_name, u.phone_number, u.email as user_email,
               c.id as category_id, c.name as category_name, c.icon as category_icon, c.color as category_color,
               k.id as kelurahan_id, k.name as kelurahan_name, k.kecamatan, k.kota
        FROM reports r 

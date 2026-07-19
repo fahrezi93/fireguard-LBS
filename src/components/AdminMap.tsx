@@ -50,6 +50,7 @@ interface Report {
   status: string;
   created_at: string;
   media_url: string;
+  assigned_petugas_id?: number | null;
   notes?: string;
   contact?: string;
   acknowledged?: boolean;
@@ -361,14 +362,34 @@ export default function AdminMap({ reports, onReportClick, selectedReport }: Adm
         </Marker>
       ))}
 
-      {/* Rute dari pos damkar terdekat ke lokasi kebakaran */}
-      {showRoute && nearestStation && selectedReport && (
-        <RoutingMachine
-          key={`route-${selectedReport.id}-${nearestStation.name}`}
-          start={[nearestStation.latitude, nearestStation.longitude]}
-          end={[Number(selectedReport.fire_latitude), Number(selectedReport.fire_longitude)]}
-        />
-      )}
+      {/* Rute dari petugas (jika sudah di-assign) atau pos damkar terdekat ke lokasi kebakaran */}
+      {showRoute && selectedReport && (() => {
+        let routeStart: [number, number] | null = null;
+        let routeKey = '';
+
+        if (selectedReport.assigned_petugas_id) {
+          const petugas = petugasLocations.find(p => p.id === selectedReport.assigned_petugas_id);
+          if (petugas) {
+            routeStart = [Number(petugas.last_latitude), Number(petugas.last_longitude)];
+            routeKey = `route-petugas-${petugas.id}-${selectedReport.id}`;
+          }
+        }
+
+        if (!routeStart && nearestStation) {
+           routeStart = [nearestStation.latitude, nearestStation.longitude];
+           routeKey = `route-station-${nearestStation.name}-${selectedReport.id}`;
+        }
+
+        if (!routeStart) return null;
+
+        return (
+          <RoutingMachine
+            key={routeKey}
+            start={routeStart}
+            end={[Number(selectedReport.fire_latitude), Number(selectedReport.fire_longitude)]}
+          />
+        );
+      })()}
     </MapContainer>
   );
 }

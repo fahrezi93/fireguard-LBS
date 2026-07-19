@@ -209,6 +209,7 @@ export default function ReportDetailModal({
       submitted: { text: "Baru", color: "text-red-600", bgColor: "bg-red-50 border-red-200" },
       verified: { text: "Diverifikasi", color: "text-yellow-600", bgColor: "bg-yellow-50 border-yellow-200" },
       diproses: { text: "Sedang Diproses", color: "text-blue-600", bgColor: "bg-blue-50 border-blue-200" },
+      in_progress: { text: "Sedang Ditangani", color: "text-cyan-600", bgColor: "bg-cyan-50 border-cyan-200" },
       dispatched: { text: "Dikirim", color: "text-blue-600", bgColor: "bg-blue-50 border-blue-200" },
       dikirim: { text: "Tim Dikirim", color: "text-purple-600", bgColor: "bg-purple-50 border-purple-200" },
       arrived: { text: "Tiba", color: "text-indigo-600", bgColor: "bg-indigo-50 border-indigo-200" },
