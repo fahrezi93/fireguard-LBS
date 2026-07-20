@@ -30,4 +30,6 @@ jobs:
             npm install
             npm run build
             
-            # (Perlu direstart manual via aaPanel GUI setelah proses ini selesai)
+            # Restart menggunakan script rahasia bawaan aaPanel agar tersinkronisasi dengan GUI
+            pkill -u www -f "node server.js" || true
+            sudo -u www bash /www/server/nodejs/vhost/scripts/siagabencana.sh
