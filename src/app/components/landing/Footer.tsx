@@ -78,7 +78,7 @@ const Footer = ({ isLight = false }: { isLight?: boolean }) => (
 
       <div className={`pt-8 border-t flex flex-col md:flex-row items-center justify-between gap-4 ${isLight ? 'border-black/5' : 'border-white/10'}`}>
         <p className={`text-xs font-light ${isLight ? 'text-gray-400' : 'text-gray-600'}`}>
-          &copy; {new Date().getFullYear()} SiagaBencana. Mengabdi untuk publik. Hak Cipta Dilindungi.
+          &copy; {new Date().getFullYear()} SiagaBencana. All Rights Reserved.
         </p>
         <div className="flex items-center gap-2 text-xs text-gray-600 font-light">
         </div>
