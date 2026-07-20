@@ -30,5 +30,4 @@ jobs:
             npm install
             npm run build
             
-            # Kill node process milik user www agar aaPanel otomatis me-restartnya
-            pkill -u www -f "node server.js" || true
+            # (Perlu direstart manual via aaPanel GUI setelah proses ini selesai)
