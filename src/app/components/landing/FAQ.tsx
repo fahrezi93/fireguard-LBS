@@ -11,7 +11,7 @@ const faqs = [
     },
     {
         question: "Apakah bisa melapor tanpa koneksi internet yang stabil?",
-        answer: "Aplikasi ini didesain sangat ringan (PWA). Namun jika koneksi Anda benar-benar terputus, sistem akan mengarahkan Anda ke tombol Darurat Seluler (113) yang akan menelepon pos pemadam secara langsung menggunakan jaringan seluler biasa."
+        answer: "Aplikasi ini didesain berbasis flutter yang sangat ringan. Namun jika koneksi Anda benar-benar terputus, sistem akan mengarahkan Anda ke tombol Darurat Seluler (113) yang akan menelepon pos pemadam secara langsung menggunakan jaringan seluler biasa."
     },
     {
         question: "Wilayah mana saja yang dicakup oleh aplikasi ini?",
