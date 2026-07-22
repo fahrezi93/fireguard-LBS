@@ -14,7 +14,7 @@ const Footer = ({ isLight = true }: { isLight?: boolean }) => (
           <h3 className={`text-xl md:text-2xl font-bold mb-1 tracking-tight ${isLight ? 'text-slate-900' : 'text-white'}`}>Siap melindungi wilayah Anda?</h3>
           <p className={`${isLight ? 'text-slate-500' : 'text-slate-400'} text-xs sm:text-sm font-normal`}>Bergabunglah dengan ekosistem pelaporan kebakaran paling terpadu di Palembang.</p>
         </div>
-        <Link href="#how-it-works" className={`shrink-0 ${isLight ? 'bg-slate-900 text-white hover:bg-black' : 'bg-white text-black hover:bg-slate-100'} px-5 py-2.5 rounded-full text-xs font-bold transition-all flex items-center gap-2 group shadow-2xs`}>
+        <Link href="/#how-it-works" className={`shrink-0 ${isLight ? 'bg-slate-900 text-white hover:bg-black' : 'bg-white text-black hover:bg-slate-100'} px-5 py-2.5 rounded-full text-xs font-bold transition-all flex items-center gap-2 group shadow-2xs`}>
           Pelajari Sistem Kami <FaArrowRight className="text-xs group-hover:translate-x-1 transition-transform" />
         </Link>
       </div>
@@ -50,10 +50,10 @@ const Footer = ({ isLight = true }: { isLight?: boolean }) => (
         <div className="md:col-span-3 lg:col-span-2 lg:col-start-7">
           <h4 className={`text-xs font-bold uppercase tracking-wider mb-3 ${isLight ? 'text-slate-900' : 'text-white'}`}>Navigasi</h4>
           <ul className="space-y-2.5">
-            <li><Link href="#how-it-works" className={`text-xs transition-colors ${isLight ? 'text-slate-500 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}>Cara Kerja</Link></li>
-            <li><Link href="#features" className={`text-xs transition-colors ${isLight ? 'text-slate-500 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}>Fitur Unggulan</Link></li>
-            <li><Link href="#stations" className={`text-xs transition-colors ${isLight ? 'text-slate-500 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}>Peta Pos Damkar</Link></li>
-            <li><Link href="#faq" className={`text-xs transition-colors ${isLight ? 'text-slate-500 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}>Tanya Jawab</Link></li>
+            <li><Link href="/#how-it-works" className={`text-xs transition-colors ${isLight ? 'text-slate-500 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}>Cara Kerja</Link></li>
+            <li><Link href="/#features" className={`text-xs transition-colors ${isLight ? 'text-slate-500 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}>Fitur Unggulan</Link></li>
+            <li><Link href="/#stations" className={`text-xs transition-colors ${isLight ? 'text-slate-500 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}>Peta Pos Damkar</Link></li>
+            <li><Link href="/#faq" className={`text-xs transition-colors ${isLight ? 'text-slate-500 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}>Tanya Jawab</Link></li>
           </ul>
         </div>
 
@@ -61,7 +61,7 @@ const Footer = ({ isLight = true }: { isLight?: boolean }) => (
         <div className="md:col-span-4 lg:col-span-3">
           <h4 className={`text-xs font-bold uppercase tracking-wider mb-3 ${isLight ? 'text-slate-900' : 'text-white'}`}>Bantuan & Legal</h4>
           <ul className="space-y-2.5">
-            <li><Link href="#contact" className={`text-xs transition-colors ${isLight ? 'text-slate-500 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}>Kontak Darurat</Link></li>
+            <li><Link href="/#contact" className={`text-xs transition-colors ${isLight ? 'text-slate-500 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}>Kontak Darurat</Link></li>
             <li><Link href="/operator/login" className={`text-xs transition-colors ${isLight ? 'text-slate-500 hover:text-red-600' : 'text-slate-400 hover:text-red-400'}`}>Portal Operator Terpadu</Link></li>
             <li><Link href="/terms" className={`text-xs transition-colors ${isLight ? 'text-slate-500 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}>Syarat & Ketentuan</Link></li>
             <li><Link href="/privacy" className={`text-xs transition-colors ${isLight ? 'text-slate-500 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}>Kebijakan Privasi</Link></li>

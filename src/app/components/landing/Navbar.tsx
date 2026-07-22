@@ -94,11 +94,11 @@ const Navbar = ({ isLight = true }: { isLight?: boolean }) => {
 
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
-          <Link href="#features" className={`text-sm font-medium transition-colors duration-300 ${isLight || scrolled ? 'text-neutral-600 hover:text-black' : 'text-white/80 hover:text-white'}`}>Fitur</Link>
-          <Link href="#stations" className={`text-sm font-medium transition-colors duration-300 ${isLight || scrolled ? 'text-neutral-600 hover:text-black' : 'text-white/80 hover:text-white'}`}>Lokasi Pos</Link>
+          <Link href="/#features" className={`text-sm font-medium transition-colors duration-300 ${isLight || scrolled ? 'text-neutral-600 hover:text-black' : 'text-white/80 hover:text-white'}`}>Fitur</Link>
+          <Link href="/#stations" className={`text-sm font-medium transition-colors duration-300 ${isLight || scrolled ? 'text-neutral-600 hover:text-black' : 'text-white/80 hover:text-white'}`}>Lokasi Pos</Link>
           <Link href="/edukasi" className={`text-sm font-medium transition-colors duration-300 ${isLight || scrolled ? 'text-neutral-600 hover:text-black' : 'text-white/80 hover:text-white'}`}>Berita</Link>
           <Link href="/download" className={`text-sm font-medium transition-colors duration-300 ${isLight || scrolled ? 'text-neutral-600 hover:text-black' : 'text-white/80 hover:text-white'}`}>Download App</Link>
-          <Link href="#contact" className={`text-sm font-medium transition-colors duration-300 ${isLight || scrolled ? 'text-neutral-600 hover:text-black' : 'text-white/80 hover:text-white'}`}>Kontak</Link>
+          <Link href="/#contact" className={`text-sm font-medium transition-colors duration-300 ${isLight || scrolled ? 'text-neutral-600 hover:text-black' : 'text-white/80 hover:text-white'}`}>Kontak</Link>
         </div>
 
         <div className="hidden md:flex items-center gap-4 z-50">
@@ -167,15 +167,15 @@ const Navbar = ({ isLight = true }: { isLight?: boolean }) => {
 
         <div className="flex h-full flex-col justify-center gap-y-8 overflow-y-auto px-8 pb-10 pt-28">
           <div className="flex flex-col gap-y-6 text-center">
-            <Link href="#features" onClick={() => setMobileMenuOpen(false)} className={`text-3xl font-bold transition-colors ${isLight ? 'text-neutral-400 hover:text-black' : 'text-neutral-400 hover:text-white'}`}>Fitur
+            <Link href="/#features" onClick={() => setMobileMenuOpen(false)} className={`text-3xl font-bold transition-colors ${isLight ? 'text-neutral-400 hover:text-black' : 'text-neutral-400 hover:text-white'}`}>Fitur
             </Link>
-            <Link href="#stations" onClick={() => setMobileMenuOpen(false)} className={`text-3xl font-bold transition-colors ${isLight ? 'text-neutral-400 hover:text-black' : 'text-neutral-400 hover:text-white'}`}>Lokasi Pos
+            <Link href="/#stations" onClick={() => setMobileMenuOpen(false)} className={`text-3xl font-bold transition-colors ${isLight ? 'text-neutral-400 hover:text-black' : 'text-neutral-400 hover:text-white'}`}>Lokasi Pos
             </Link>
             <Link href="/edukasi" onClick={() => setMobileMenuOpen(false)} className={`text-3xl font-bold transition-colors ${isLight ? 'text-neutral-400 hover:text-black' : 'text-neutral-400 hover:text-white'}`}>Berita
             </Link>
             <Link href="/download" onClick={() => setMobileMenuOpen(false)} className={`text-3xl font-bold transition-colors ${isLight ? 'text-neutral-400 hover:text-black' : 'text-neutral-400 hover:text-white'}`}>Download App
             </Link>
-            <Link href="#contact" onClick={() => setMobileMenuOpen(false)} className={`text-3xl font-bold transition-colors ${isLight ? 'text-neutral-400 hover:text-black' : 'text-neutral-400 hover:text-white'}`}>Kontak
+            <Link href="/#contact" onClick={() => setMobileMenuOpen(false)} className={`text-3xl font-bold transition-colors ${isLight ? 'text-neutral-400 hover:text-black' : 'text-neutral-400 hover:text-white'}`}>Kontak
             </Link>
           </div>
 

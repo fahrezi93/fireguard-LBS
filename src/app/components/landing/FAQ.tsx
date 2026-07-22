@@ -58,7 +58,7 @@ const FAQ = () => {
 
                             <div className="p-4 bg-slate-50 rounded-xl border border-slate-100/80">
                                 <p className="text-xs text-slate-600 font-medium mb-1">Masih punya pertanyaan spesifik?</p>
-                                <a href="#contact" className="text-red-600 font-bold text-xs tracking-wide hover:underline underline-offset-4 decoration-red-200 transition-all">
+                                <a href="/#contact" className="text-red-600 font-bold text-xs tracking-wide hover:underline underline-offset-4 decoration-red-200 transition-all">
                                     Hubungi Tim Dukungan &rarr;
                                 </a>
                             </div>
