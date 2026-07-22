@@ -36,7 +36,7 @@ const Features = () => {
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
               className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 border border-red-100/50 mb-3 shadow-2xs"
             >
               <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
@@ -47,7 +47,7 @@ const Features = () => {
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
               className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight leading-snug"
             >
               Teknologi Canggih <br className="hidden sm:block" />
@@ -61,7 +61,7 @@ const Features = () => {
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
             className="text-xs sm:text-sm md:text-base text-slate-600 max-w-md leading-relaxed font-normal"
           >
             Sistem terintegrasi kami dirancang untuk memotong birokrasi, memberikan respons ultra-cepat langsung dari sentuhan jari Anda.
@@ -75,22 +75,24 @@ const Features = () => {
               key={idx}
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.5, delay: idx * 0.08, ease: [0.16, 1, 0.3, 1] }}
-              className="group bg-slate-50/70 p-6 rounded-2xl border border-slate-100 hover:border-slate-200 hover:bg-white hover:shadow-md transition-all duration-200 flex flex-col justify-between"
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: idx * 0.06, ease: "easeOut" }}
+              className="h-full"
             >
-              <div>
-                <div className="w-11 h-11 rounded-xl bg-white border border-slate-200/60 text-red-600 flex items-center justify-center mb-4 shadow-2xs group-hover:scale-105 transition-transform">
-                  {feature.icon}
+              <div className="group h-full bg-slate-50/70 p-6 rounded-2xl border border-slate-100 hover:border-slate-200 hover:bg-white hover:shadow-md transition-all duration-300 flex flex-col justify-between">
+                <div>
+                  <div className="w-11 h-11 rounded-xl bg-white border border-slate-200/60 text-red-600 flex items-center justify-center mb-4 shadow-2xs group-hover:scale-105 transition-transform duration-300">
+                    {feature.icon}
+                  </div>
+
+                  <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-2 tracking-tight">
+                    {feature.title}
+                  </h3>
+
+                  <p className="text-xs sm:text-sm text-slate-500 leading-relaxed font-normal">
+                    {feature.description}
+                  </p>
                 </div>
-
-                <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-2 tracking-tight">
-                  {feature.title}
-                </h3>
-
-                <p className="text-xs sm:text-sm text-slate-500 leading-relaxed font-normal">
-                  {feature.description}
-                </p>
               </div>
             </motion.div>
           ))}

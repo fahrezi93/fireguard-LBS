@@ -161,7 +161,7 @@ export default function DashboardPage() {
                 r.id === reportId ? { ...r, status: newStatus } : r
               )
             );
-            setSelectedReport((prev) => 
+            setSelectedReport((prev) =>
               prev && prev.id === reportId ? { ...prev, status: newStatus } : prev
             );
           }
@@ -363,7 +363,7 @@ export default function DashboardPage() {
             {/* Stats Grid - Standard proportions */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 mb-10">
               <StatCard
-                title="Semua Lap." value={reports.length} icon={FaFileAlt}
+                title="Semua Laporan" value={reports.length} icon={FaFileAlt}
                 theme={{ blur: "text-blue-500", iconBg: "bg-blue-50/50 text-blue-600", iconColor: "text-blue-600" }}
               />
               <StatCard
@@ -371,7 +371,7 @@ export default function DashboardPage() {
                 theme={{ blur: "text-amber-500", iconBg: "bg-amber-50/50 text-amber-600", iconColor: "text-amber-500" }}
               />
               <StatCard
-                title="Dlm Proses" value={reports.filter((r) => ["verified", "dispatched", "arrived", "diproses", "dikirim", "ditangani"].includes(r.status)).length} icon={FaTruck}
+                title="Dalam Proses" value={reports.filter((r) => ["verified", "dispatched", "arrived", "diproses", "dikirim", "ditangani"].includes(r.status)).length} icon={FaTruck}
                 theme={{ blur: "text-indigo-500", iconBg: "bg-indigo-50/50 text-indigo-600", iconColor: "text-indigo-500" }}
               />
               <StatCard

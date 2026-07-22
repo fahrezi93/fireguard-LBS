@@ -41,7 +41,7 @@ const FAQ = () => {
                             initial={{ opacity: 0, y: 16 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            transition={{ duration: 0.5 }}
+                            transition={{ duration: 0.4, ease: "easeOut" }}
                         >
                             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-red-600 text-xs font-semibold tracking-wider uppercase mb-3 border border-red-100/50 shadow-2xs">
                                 Pertanyaan Umum
@@ -73,10 +73,10 @@ const FAQ = () => {
                                 return (
                                     <motion.div
                                         key={idx}
-                                        initial={{ opacity: 0 }}
-                                        whileInView={{ opacity: 1 }}
+                                        initial={{ opacity: 0, y: 10 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
                                         viewport={{ once: true }}
-                                        transition={{ duration: 0.4 }}
+                                        transition={{ duration: 0.35, delay: idx * 0.04, ease: "easeOut" }}
                                         className="border-b border-slate-200/70 group"
                                     >
                                         <button

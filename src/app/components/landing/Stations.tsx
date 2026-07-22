@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
-import { FaMapMarkerAlt, FaPhone, FaFire, FaMap, FaExclamationCircle } from 'react-icons/fa';
+import { FaPhone, FaFire, FaMap, FaExclamationCircle } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 
 // Dynamic import untuk map
@@ -28,39 +28,41 @@ const Stations = () => {
 
         {/* Header */}
         <div className="mb-8 md:mb-10 flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-          <div>
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 border border-red-100/50 mb-3 shadow-2xs">
-                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                <span className="text-[11px] font-bold text-red-600 tracking-wider uppercase">Infrastruktur Wilayah</span>
-              </div>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight leading-snug">
-                Jaringan Pos Pemadam <br className="hidden md:block" />
-                <span className="text-slate-400 font-normal">Plaju, Palembang.</span>
-              </h2>
-            </motion.div>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+          >
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 border border-red-100/50 mb-3 shadow-2xs">
+              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+              <span className="text-[11px] font-bold text-red-600 tracking-wider uppercase">Infrastruktur Wilayah</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight leading-snug">
+              Jaringan Pos Pemadam <br className="hidden md:block" />
+              <span className="text-slate-400 font-normal">Plaju, Palembang.</span>
+            </h2>
+          </motion.div>
 
-          <div>
-            <motion.p
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.5, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
-              className="text-xs sm:text-sm md:text-base text-slate-600 max-w-md leading-relaxed font-normal"
-            >
-              Mengintegrasikan <strong className="text-slate-900 font-semibold">{fireStations.length} titik pos strategis</strong> ke dalam satu sistem pemantauan real-time untuk respons cepat 24/7 di seluruh area operasi.
-            </motion.p>
-          </div>
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.06, ease: "easeOut" }}
+            className="text-xs sm:text-sm md:text-base text-slate-600 max-w-md leading-relaxed font-normal"
+          >
+            Mengintegrasikan <strong className="text-slate-900 font-semibold">{fireStations.length} titik pos strategis</strong> ke dalam satu sistem pemantauan real-time untuk respons cepat 24/7 di seluruh area operasi.
+          </motion.p>
         </div>
 
         {/* Map & Directory Interface */}
-        <div className="bg-slate-50/70 border border-slate-200/80 rounded-2xl p-3 md:p-4 shadow-xs">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4, delay: 0.1, ease: "easeOut" }}
+          className="bg-slate-50/70 border border-slate-200/80 rounded-2xl p-3 md:p-4 shadow-xs"
+        >
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:h-[540px]">
 
             {/* Sidebar Directory */}
@@ -80,34 +82,37 @@ const Stations = () => {
                 {fireStations.map((station, index) => {
                   const isSelected = selectedStation?.name === station.name;
                   return (
-                    <motion.button
+                    <motion.div
                       key={station.name}
-                      initial={{ opacity: 0, x: -16 }}
+                      initial={{ opacity: 0, x: -12 }}
                       whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true, margin: "-20px" }}
-                      transition={{ duration: 0.4, delay: index * 0.04, ease: [0.16, 1, 0.3, 1] }}
-                      onClick={() => setSelectedStation(station)}
-                      className={`w-full text-left p-3 rounded-xl transition-all duration-200 border focus:outline-none ${isSelected ? 'bg-red-50/60 border-red-200 shadow-2xs' : 'bg-transparent border-transparent hover:bg-slate-50'}`}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.35, delay: index * 0.04, ease: "easeOut" }}
                     >
-                      <div className="flex gap-3">
-                        <div className={`w-10 h-10 shrink-0 rounded-lg flex items-center justify-center transition-colors duration-200 ${isSelected ? 'bg-red-600 text-white shadow-2xs' : 'bg-slate-100 text-slate-400'}`}>
-                          <FaFire className="text-sm" />
+                      <button
+                        onClick={() => setSelectedStation(station)}
+                        className={`w-full text-left p-3 rounded-xl transition-all duration-200 border focus:outline-none ${isSelected ? 'bg-red-50/60 border-red-200 shadow-2xs' : 'bg-transparent border-transparent hover:bg-slate-50'}`}
+                      >
+                        <div className="flex gap-3">
+                          <div className={`w-10 h-10 shrink-0 rounded-lg flex items-center justify-center transition-colors duration-200 ${isSelected ? 'bg-red-600 text-white shadow-2xs' : 'bg-slate-100 text-slate-400'}`}>
+                            <FaFire className="text-sm" />
+                          </div>
+                          <div className="min-w-0">
+                            <h4 className={`text-xs sm:text-sm font-bold mb-0.5 transition-colors truncate ${isSelected ? 'text-red-600' : 'text-slate-900'}`}>
+                              {station.name}
+                            </h4>
+                            <p className="text-[11px] text-slate-500 leading-normal mb-1.5 line-clamp-2 font-normal">
+                              {station.address}
+                            </p>
+                            {station.phone && (
+                              <div className="flex items-center gap-1.5 text-[11px] font-medium text-slate-400">
+                                <FaPhone className="w-2.5 h-2.5" /> {station.phone}
+                              </div>
+                            )}
+                          </div>
                         </div>
-                        <div className="min-w-0">
-                          <h4 className={`text-xs sm:text-sm font-bold mb-0.5 transition-colors truncate ${isSelected ? 'text-red-600' : 'text-slate-900'}`}>
-                            {station.name}
-                          </h4>
-                          <p className="text-[11px] text-slate-500 leading-normal mb-1.5 line-clamp-2 font-normal">
-                            {station.address}
-                          </p>
-                          {station.phone && (
-                            <div className="flex items-center gap-1.5 text-[11px] font-medium text-slate-400">
-                              <FaPhone className="w-2.5 h-2.5" /> {station.phone}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </motion.button>
+                      </button>
+                    </motion.div>
                   );
                 })}
               </div>
@@ -139,7 +144,7 @@ const Stations = () => {
             </div>
 
           </div>
-        </div>
+        </motion.div>
 
       </div>
     </section>

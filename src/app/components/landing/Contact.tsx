@@ -15,7 +15,7 @@ const Contact = () => {
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
             >
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-red-600 text-xs font-semibold tracking-wider uppercase mb-3 border border-red-100/50 shadow-2xs">
                 Pusat Bantuan
@@ -38,28 +38,30 @@ const Contact = () => {
                 initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-                className="sm:col-span-2 group relative bg-red-600 rounded-2xl p-6 md:p-7 overflow-hidden shadow-xs hover:shadow-md transition-all duration-300"
+                transition={{ duration: 0.4, ease: "easeOut" }}
+                className="sm:col-span-2"
               >
-                <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-5 text-center sm:text-left">
-                  <div>
-                    <div className="inline-flex items-center gap-2 px-2.5 py-0.5 bg-black/20 rounded-full text-white backdrop-blur-xs mb-2">
-                      <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
-                      <span className="text-[10px] font-bold tracking-wider uppercase">Hotline Siaga</span>
+                <div className="group relative bg-red-600 rounded-2xl p-6 md:p-7 overflow-hidden shadow-xs hover:shadow-md transition-all duration-300">
+                  <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-5 text-center sm:text-left">
+                    <div>
+                      <div className="inline-flex items-center gap-2 px-2.5 py-0.5 bg-black/20 rounded-full text-white backdrop-blur-xs mb-2">
+                        <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
+                        <span className="text-[10px] font-bold tracking-wider uppercase">Hotline Siaga</span>
+                      </div>
+                      <div className="flex items-center justify-center sm:justify-start gap-3">
+                        <FaPhoneAlt className="text-2xl md:text-3xl text-white/70" />
+                        <h3 className="text-4xl md:text-5xl font-black text-white tracking-tight">113</h3>
+                      </div>
                     </div>
-                    <div className="flex items-center justify-center sm:justify-start gap-3">
-                      <FaPhoneAlt className="text-2xl md:text-3xl text-white/70" />
-                      <h3 className="text-4xl md:text-5xl font-black text-white tracking-tight">113</h3>
-                    </div>
-                  </div>
 
-                  <a
-                    href="tel:113"
-                    className="w-full sm:w-auto bg-white text-red-600 px-5 py-3 rounded-xl font-bold text-xs sm:text-sm hover:bg-slate-50 transition-all shadow-2xs flex items-center justify-center gap-2 group/btn"
-                  >
-                    Panggil Sekarang
-                    <FaArrowRight className="text-xs group-hover/btn:translate-x-1 transition-transform" />
-                  </a>
+                    <a
+                      href="tel:113"
+                      className="w-full sm:w-auto bg-white text-red-600 px-5 py-3 rounded-xl font-bold text-xs sm:text-sm hover:bg-slate-50 transition-all shadow-2xs flex items-center justify-center gap-2 group/btn"
+                    >
+                      Panggil Sekarang
+                      <FaArrowRight className="text-xs group-hover/btn:translate-x-1 transition-transform" />
+                    </a>
+                  </div>
                 </div>
               </motion.div>
 
@@ -68,14 +70,16 @@ const Contact = () => {
                 initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.08 }}
-                className="bg-slate-50/70 p-5 rounded-2xl border border-slate-100 shadow-2xs hover:bg-white hover:border-slate-200 transition-all duration-200 group"
+                transition={{ duration: 0.4, delay: 0.06, ease: "easeOut" }}
+                className="h-full"
               >
-                <div className="w-10 h-10 bg-white border border-slate-200/60 text-slate-700 rounded-xl flex items-center justify-center mb-3 group-hover:text-red-600 transition-colors">
-                  <FaEnvelope className="w-4 h-4" />
+                <div className="h-full bg-slate-50/70 p-5 rounded-2xl border border-slate-100 shadow-2xs hover:bg-white hover:border-slate-200 transition-all duration-300 group">
+                  <div className="w-10 h-10 bg-white border border-slate-200/60 text-slate-700 rounded-xl flex items-center justify-center mb-3 group-hover:text-red-600 transition-colors">
+                    <FaEnvelope className="w-4 h-4" />
+                  </div>
+                  <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Email Resmi</h4>
+                  <p className="text-slate-900 font-bold text-xs sm:text-sm break-all">damkar@palembang.go.id</p>
                 </div>
-                <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Email Resmi</h4>
-                <p className="text-slate-900 font-bold text-xs sm:text-sm break-all">damkar@palembang.go.id</p>
               </motion.div>
 
               {/* Location Card */}
@@ -83,14 +87,16 @@ const Contact = () => {
                 initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.12 }}
-                className="bg-slate-50/70 p-5 rounded-2xl border border-slate-100 shadow-2xs hover:bg-white hover:border-slate-200 transition-all duration-200 group"
+                transition={{ duration: 0.4, delay: 0.12, ease: "easeOut" }}
+                className="h-full"
               >
-                <div className="w-10 h-10 bg-white border border-slate-200/60 text-slate-700 rounded-xl flex items-center justify-center mb-3 group-hover:text-red-600 transition-colors">
-                  <FaMapMarkerAlt className="w-4 h-4" />
+                <div className="h-full bg-slate-50/70 p-5 rounded-2xl border border-slate-100 shadow-2xs hover:bg-white hover:border-slate-200 transition-all duration-300 group">
+                  <div className="w-10 h-10 bg-white border border-slate-200/60 text-slate-700 rounded-xl flex items-center justify-center mb-3 group-hover:text-red-600 transition-colors">
+                    <FaMapMarkerAlt className="w-4 h-4" />
+                  </div>
+                  <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Markas Pusat</h4>
+                  <p className="text-slate-900 font-bold text-xs sm:text-sm leading-normal">Jl. Merdeka No.1, Plaju, Palembang</p>
                 </div>
-                <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Markas Pusat</h4>
-                <p className="text-slate-900 font-bold text-xs sm:text-sm leading-normal">Jl. Merdeka No.1, Plaju, Palembang</p>
               </motion.div>
 
             </div>

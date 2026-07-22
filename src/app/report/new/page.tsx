@@ -78,7 +78,7 @@ function NearestStationInfoBox({ info }: { info: NearestStationInfo }) {
   return (
     <div className="mt-4 rounded-2xl bg-white border border-red-100 p-5 shadow-sm relative overflow-hidden">
       <div className="absolute top-0 right-0 w-32 h-32 bg-red-50 blur-[40px] pointer-events-none rounded-full"></div>
-      
+
       <div className="flex items-center gap-3 mb-4 relative z-10">
         <div className="p-2 bg-red-50 text-red-600 rounded-xl">
           <FaFireExtinguisher className="text-base" />
@@ -88,14 +88,14 @@ function NearestStationInfoBox({ info }: { info: NearestStationInfo }) {
           <p className="text-sm font-bold text-gray-900 leading-tight">{info.name}</p>
         </div>
       </div>
-      
+
       <div className="grid grid-cols-2 gap-3 relative z-10">
         <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
-          <p className="text-[10px] uppercase font-bold text-gray-400 mb-1 flex items-center gap-1.5"><FaRoad className="text-gray-400"/> Jarak</p>
+          <p className="text-[10px] uppercase font-bold text-gray-400 mb-1 flex items-center gap-1.5"><FaRoad className="text-gray-400" /> Jarak</p>
           <p className="text-base font-bold text-gray-900 tracking-tight">{distanceInKm} km</p>
         </div>
         <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
-          <p className="text-[10px] uppercase font-bold text-gray-400 mb-1 flex items-center gap-1.5"><FaClock className="text-gray-400"/> Estimasi</p>
+          <p className="text-[10px] uppercase font-bold text-gray-400 mb-1 flex items-center gap-1.5"><FaClock className="text-gray-400" /> Estimasi</p>
           <p className="text-base font-bold text-gray-900 tracking-tight">~{timeInMinutes} Min</p>
         </div>
       </div>
@@ -149,7 +149,7 @@ export default function NewReportPage() {
           const data = await response.json();
           if (data.success) setCategories(data.data);
         }
-      } catch {}
+      } catch { }
     };
     fetchCategories();
   }, []);
@@ -166,7 +166,7 @@ export default function NewReportPage() {
             if (plajuDarat) setKelurahanId((prev) => (prev === null ? plajuDarat.id : prev));
           }
         }
-      } catch {}
+      } catch { }
     };
     fetchKelurahan();
   }, []);
@@ -299,7 +299,7 @@ export default function NewReportPage() {
         }
         throw new Error(data.message || "Gagal mengirim laporan.");
       }
-      
+
       // Langsung dialihkan (redirect) ke dashboard
       router.push("/dashboard");
     } catch (err: any) {
@@ -324,19 +324,16 @@ export default function NewReportPage() {
           <FaArrowLeft className="text-sm" /> <span>Kembali</span>
         </button>
         <div className="flex items-center gap-3">
-            <div className="bg-red-500 p-2.5 rounded-xl shadow-sm text-white">
-              <FaFireExtinguisher className="text-lg" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold tracking-tight text-gray-900 leading-none">Laporan Baru.</h1>
-            </div>
+          <div>
+            <h1 className="text-xl font-bold tracking-tight text-gray-900 leading-none">Laporan Baru.</h1>
+          </div>
         </div>
         <div className="w-[88px] invisible"></div>
       </header>
 
       <main className="max-w-6xl mx-auto px-6 py-8">
         <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
-          
+
           {/* Lokasi Peta (Kiri) */}
           <div className="lg:col-span-7 space-y-6">
             <div>
@@ -345,36 +342,36 @@ export default function NewReportPage() {
             </div>
 
             <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-2 relative">
-                <div className="h-[460px] w-full rounded-[1.5rem] overflow-hidden bg-gray-50 relative z-0">
-                  <MapWithNoSSR
-                    firePosition={firePosition}
-                    setFirePosition={setFirePosition}
-                    reporterPosition={reporterPosition}
-                    setReporterPosition={setReporterPosition}
-                    onNearestStationFound={setNearestStation}
-                    categoryId={categoryId}
-                    categoryIcon={categories.find((c) => c.id === categoryId)?.icon}
-                  />
-                </div>
+              <div className="h-[460px] w-full rounded-[1.5rem] overflow-hidden bg-gray-50 relative z-0">
+                <MapWithNoSSR
+                  firePosition={firePosition}
+                  setFirePosition={setFirePosition}
+                  reporterPosition={reporterPosition}
+                  setReporterPosition={setReporterPosition}
+                  onNearestStationFound={setNearestStation}
+                  categoryId={categoryId}
+                  categoryIcon={categories.find((c) => c.id === categoryId)?.icon}
+                />
+              </div>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3">
-                <button
-                  type="button"
-                  onClick={() => requestLocation(setFirePosition, setIsGettingFireLocation)}
-                  disabled={isGettingFireLocation || isGettingMyLocation}
-                  className="flex-1 flex max-w-sm items-center justify-center gap-2.5 px-6 py-3.5 text-sm font-bold tracking-wide uppercase text-white bg-gray-900 hover:bg-black rounded-2xl transition-all shadow-sm active:scale-95 disabled:opacity-50"
-                >
-                  {isGettingFireLocation ? <FaSpinner className="animate-spin text-lg" /> : <><FaCrosshairs className="text-lg text-gray-400" /> Set Lokasi GPS</>}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => requestLocation(setReporterPosition, setIsGettingMyLocation)}
-                  disabled={isGettingMyLocation || isGettingFireLocation}
-                  className="flex-1 flex max-w-sm items-center justify-center gap-2.5 px-6 py-3.5 text-sm font-bold tracking-wide uppercase text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 rounded-2xl transition-all active:scale-95 disabled:opacity-50"
-                >
-                  {isGettingMyLocation ? <FaSpinner className="animate-spin text-lg" /> : <><FaUser className="text-lg text-gray-400" /> Posisi Saya</>}
-                </button>
+              <button
+                type="button"
+                onClick={() => requestLocation(setFirePosition, setIsGettingFireLocation)}
+                disabled={isGettingFireLocation || isGettingMyLocation}
+                className="flex-1 flex max-w-sm items-center justify-center gap-2.5 px-6 py-3.5 text-sm font-bold tracking-wide uppercase text-white bg-gray-900 hover:bg-black rounded-2xl transition-all shadow-sm active:scale-95 disabled:opacity-50"
+              >
+                {isGettingFireLocation ? <FaSpinner className="animate-spin text-lg" /> : <><FaCrosshairs className="text-lg text-gray-400" /> Set Lokasi GPS</>}
+              </button>
+              <button
+                type="button"
+                onClick={() => requestLocation(setReporterPosition, setIsGettingMyLocation)}
+                disabled={isGettingMyLocation || isGettingFireLocation}
+                className="flex-1 flex max-w-sm items-center justify-center gap-2.5 px-6 py-3.5 text-sm font-bold tracking-wide uppercase text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 rounded-2xl transition-all active:scale-95 disabled:opacity-50"
+              >
+                {isGettingMyLocation ? <FaSpinner className="animate-spin text-lg" /> : <><FaUser className="text-lg text-gray-400" /> Posisi Saya</>}
+              </button>
             </div>
 
             <p className="text-xs font-semibold text-gray-500">
@@ -389,18 +386,18 @@ export default function NewReportPage() {
 
             {/* Koordinat Indicators */}
             <div className="flex flex-col gap-2">
-                {firePosition && (
-                  <div className="flex items-center gap-3 px-5 py-3 bg-gray-900 text-white rounded-2xl">
-                    <FaCheckCircle className="text-green-500 shrink-0" />
-                    <span className="text-xs font-mono tracking-wider opacity-90 truncate">Koor Darurat: {firePosition[0].toFixed(5)}, {firePosition[1].toFixed(5)}</span>
-                  </div>
-                )}
-                {reporterPosition && (
-                  <div className="flex items-center gap-3 px-5 py-3 bg-white border border-gray-200 text-gray-700 rounded-2xl">
-                    <FaCheckCircle className="text-blue-500 shrink-0" />
-                    <span className="text-xs font-mono tracking-wider truncate">Koor Pelapor: {reporterPosition[0].toFixed(5)}, {reporterPosition[1].toFixed(5)}</span>
-                  </div>
-                )}
+              {firePosition && (
+                <div className="flex items-center gap-3 px-5 py-3 bg-gray-900 text-white rounded-2xl">
+                  <FaCheckCircle className="text-green-500 shrink-0" />
+                  <span className="text-xs font-mono tracking-wider opacity-90 truncate">Koor Darurat: {firePosition[0].toFixed(5)}, {firePosition[1].toFixed(5)}</span>
+                </div>
+              )}
+              {reporterPosition && (
+                <div className="flex items-center gap-3 px-5 py-3 bg-white border border-gray-200 text-gray-700 rounded-2xl">
+                  <FaCheckCircle className="text-blue-500 shrink-0" />
+                  <span className="text-xs font-mono tracking-wider truncate">Koor Pelapor: {reporterPosition[0].toFixed(5)}, {reporterPosition[1].toFixed(5)}</span>
+                </div>
+              )}
             </div>
 
             <MapInstructions />
@@ -415,7 +412,7 @@ export default function NewReportPage() {
             </div>
 
             <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8 space-y-6">
-              
+
               {/* Field: Kategori */}
               <div>
                 <label htmlFor="category" className="block text-[11px] uppercase tracking-widest font-bold text-gray-400 mb-2">Jenis Insiden <span className="text-red-500">*</span></label>
@@ -441,8 +438,8 @@ export default function NewReportPage() {
                 </div>
               </div>
 
-               {/* Field: Kelurahan */}
-               <div>
+              {/* Field: Kelurahan */}
+              <div>
                 <label htmlFor="kelurahan" className="block text-[11px] uppercase tracking-widest font-bold text-gray-400 mb-2">Wilayah / Kelurahan <span className="text-red-500">*</span></label>
                 <div className="relative">
                   <select
@@ -516,13 +513,13 @@ export default function NewReportPage() {
               </div>
             </div>
 
-             {/* Error Message */}
-             {error && (
-                <div className="px-5 py-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-sm font-semibold text-center flex items-center justify-center gap-2">
-                  <FaExclamationTriangle className="text-red-500 shrink-0" />
-                  {error}
-                </div>
-              )}
+            {/* Error Message */}
+            {error && (
+              <div className="px-5 py-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-sm font-semibold text-center flex items-center justify-center gap-2">
+                <FaExclamationTriangle className="text-red-500 shrink-0" />
+                {error}
+              </div>
+            )}
 
             {/* Submit Button */}
             <div className="pt-2">
