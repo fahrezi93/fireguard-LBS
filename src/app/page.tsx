@@ -13,7 +13,7 @@ export default function LandingPage() {
   return (
     <div className="bg-white">
       <StructuredData />
-      <Navbar />
+      <Navbar isLight={false} />
       <main>
         <Hero />
         <HowItWorks />
@@ -23,7 +23,7 @@ export default function LandingPage() {
         <FAQ />
         <Contact />
       </main>
-      <Footer />
+      <Footer isLight={true} />
     </div>
   );
 }

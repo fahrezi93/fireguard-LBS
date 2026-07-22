@@ -5,104 +5,92 @@ import { motion } from 'framer-motion';
 
 const Contact = () => {
   return (
-    <section id="contact" className="py-16 lg:py-24 bg-[#FAFAFA] relative overflow-hidden">
-      {/* Abstract Background Shapes */}
-      <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-red-50 to-transparent pointer-events-none" />
-      <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-orange-100 rounded-full blur-[100px] pointer-events-none opacity-60" />
+    <section id="contact" className="py-12 md:py-16 bg-white relative overflow-hidden border-b border-slate-100">
+      <div className="max-w-6xl mx-auto px-6 relative z-10">
 
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           {/* Left Text Content */}
-          <div className="lg:col-span-5 lg:pr-8 text-center lg:text-left">
+          <div className="lg:col-span-5 text-center lg:text-left">
             <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.5 }}
             >
-              <div className="inline-flex items-center justify-center lg:justify-start gap-3 mb-6">
-                <span className="w-8 h-px bg-red-500"></span>
-                <span className="text-xs font-bold text-red-500 uppercase tracking-[0.2em]">Pusat Bantuan</span>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-red-600 text-xs font-semibold tracking-wider uppercase mb-3 border border-red-100/50 shadow-2xs">
+                Pusat Bantuan
               </div>
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 tracking-tight leading-[1.1] mb-4">
-                Keadaan <br className="hidden lg:block" />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-orange-500">
-                  Darurat?
-                </span>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight leading-snug mb-3">
+                Keadaan <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-orange-500">Darurat?</span>
               </h2>
-              <p className="text-gray-500 text-base leading-relaxed font-light mb-6 max-w-lg mx-auto lg:mx-0">
-                Layanan tanggap darurat kami aktif 24 jam nonstop untuk seluruh warga Plaju, Palembang. Jangan ragu, waktu adalah nyawa.
+              <p className="text-xs sm:text-sm md:text-base text-slate-600 leading-relaxed font-normal max-w-sm mx-auto lg:mx-0">
+                Layanan tanggap darurat kami aktif 24 jam nonstop untuk seluruh warga Plaju, Palembang.
               </p>
             </motion.div>
           </div>
 
           {/* Right Cards Content */}
           <div className="lg:col-span-7">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
               {/* Main Emergency CTA - Spans Full Width */}
               <motion.div
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.3 }}
-                className="md:col-span-2 group relative bg-red-600 rounded-3xl p-6 lg:p-10 overflow-hidden hover:shadow-[0_20px_40px_rgba(220,38,38,0.2)] transition-shadow duration-500"
+                transition={{ duration: 0.5 }}
+                className="sm:col-span-2 group relative bg-red-600 rounded-2xl p-6 md:p-7 overflow-hidden shadow-xs hover:shadow-md transition-all duration-300"
               >
-                {/* Cinematic Red Glow Inside */}
-                <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.2)_0%,transparent_70%)] pointer-events-none" />
-                <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-orange-500 rounded-full blur-[80px] pointer-events-none opacity-50 group-hover:scale-110 transition-transform duration-700" />
-
-                <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+                <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-5 text-center sm:text-left">
                   <div>
-                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-black/20 rounded-full text-white backdrop-blur-sm mb-4">
+                    <div className="inline-flex items-center gap-2 px-2.5 py-0.5 bg-black/20 rounded-full text-white backdrop-blur-xs mb-2">
                       <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
-                      <span className="text-[10px] font-semibold tracking-wider uppercase">Hotline Siaga</span>
+                      <span className="text-[10px] font-bold tracking-wider uppercase">Hotline Siaga</span>
                     </div>
-                    <div className="flex items-center justify-center md:justify-start gap-4">
-                      <FaPhoneAlt className="text-3xl md:text-4xl text-white/50" />
-                      <h3 className="text-5xl md:text-6xl font-black text-white tracking-tighter drop-shadow-sm">113</h3>
+                    <div className="flex items-center justify-center sm:justify-start gap-3">
+                      <FaPhoneAlt className="text-2xl md:text-3xl text-white/70" />
+                      <h3 className="text-4xl md:text-5xl font-black text-white tracking-tight">113</h3>
                     </div>
                   </div>
 
                   <a
                     href="tel:113"
-                    className="flex-shrink-0 w-full md:w-auto bg-white text-red-600 px-6 py-4 rounded-2xl font-bold text-base hover:bg-gray-50 hover:-translate-y-1 transition-all shadow-xl flex items-center justify-center md:justify-between gap-3 group/btn"
+                    className="w-full sm:w-auto bg-white text-red-600 px-5 py-3 rounded-xl font-bold text-xs sm:text-sm hover:bg-slate-50 transition-all shadow-2xs flex items-center justify-center gap-2 group/btn"
                   >
                     Panggil Sekarang
-                    <FaArrowRight className="group-hover/btn:translate-x-1 transition-transform" />
+                    <FaArrowRight className="text-xs group-hover/btn:translate-x-1 transition-transform" />
                   </a>
                 </div>
               </motion.div>
 
               {/* Email Card */}
               <motion.div
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.3 }}
-                className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group"
+                transition={{ duration: 0.5, delay: 0.08 }}
+                className="bg-slate-50/70 p-5 rounded-2xl border border-slate-100 shadow-2xs hover:bg-white hover:border-slate-200 transition-all duration-200 group"
               >
-                <div className="w-12 h-12 bg-gray-50 text-gray-900 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-red-50 group-hover:text-red-600 transition-colors duration-300">
-                  <FaEnvelope className="w-5 h-5" />
+                <div className="w-10 h-10 bg-white border border-slate-200/60 text-slate-700 rounded-xl flex items-center justify-center mb-3 group-hover:text-red-600 transition-colors">
+                  <FaEnvelope className="w-4 h-4" />
                 </div>
-                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Email Resmi</h4>
-                <p className="text-gray-900 font-semibold text-base break-all">damkar<br />@palembang.go.id</p>
+                <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Email Resmi</h4>
+                <p className="text-slate-900 font-bold text-xs sm:text-sm break-all">damkar@palembang.go.id</p>
               </motion.div>
 
               {/* Location Card */}
               <motion.div
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.3 }}
-                className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group"
+                transition={{ duration: 0.5, delay: 0.12 }}
+                className="bg-slate-50/70 p-5 rounded-2xl border border-slate-100 shadow-2xs hover:bg-white hover:border-slate-200 transition-all duration-200 group"
               >
-                <div className="w-12 h-12 bg-gray-50 text-gray-900 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-red-50 group-hover:text-red-600 transition-colors duration-300">
-                  <FaMapMarkerAlt className="w-5 h-5" />
+                <div className="w-10 h-10 bg-white border border-slate-200/60 text-slate-700 rounded-xl flex items-center justify-center mb-3 group-hover:text-red-600 transition-colors">
+                  <FaMapMarkerAlt className="w-4 h-4" />
                 </div>
-                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Markas Pusat</h4>
-                <p className="text-gray-900 font-semibold text-sm leading-relaxed">Jl. Merdeka No.1, Plaju,<br />Palembang, Sumsel</p>
+                <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Markas Pusat</h4>
+                <p className="text-slate-900 font-bold text-xs sm:text-sm leading-normal">Jl. Merdeka No.1, Plaju, Palembang</p>
               </motion.div>
 
             </div>

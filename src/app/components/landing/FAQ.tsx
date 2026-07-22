@@ -31,38 +31,34 @@ const FAQ = () => {
     };
 
     return (
-        <section id="faq" className="py-16 lg:py-24 bg-white relative overflow-hidden border-t border-gray-100">
-            {/* Subtle Gradient Backdrop */}
-            <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-gradient-to-bl from-gray-50 to-transparent rounded-full opacity-60 pointer-events-none -translate-y-1/2 translate-x-1/3" />
-
-            <div className="max-w-7xl mx-auto px-6 relative z-10">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24 items-start">
+        <section id="faq" className="py-12 md:py-16 bg-white relative overflow-hidden border-b border-slate-100">
+            <div className="max-w-6xl mx-auto px-6 relative z-10">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
 
                     {/* Typography & Header - Sticky on Desktop */}
-                    <div className="lg:col-span-5 lg:sticky lg:top-32">
+                    <div className="lg:col-span-5 lg:sticky lg:top-28">
                         <motion.div
-                            initial={{ opacity: 0 }}
-                            whileInView={{ opacity: 1 }}
+                            initial={{ opacity: 0, y: 16 }}
+                            whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            transition={{ duration: 0.3 }}
+                            transition={{ duration: 0.5 }}
                         >
-                            <div className="inline-flex items-center gap-3 mb-6">
-                                <span className="w-8 h-px bg-red-500"></span>
-                                <span className="text-xs font-bold text-red-500 uppercase tracking-[0.2em]">Pertanyaan Umum</span>
+                            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-red-600 text-xs font-semibold tracking-wider uppercase mb-3 border border-red-100/50 shadow-2xs">
+                                Pertanyaan Umum
                             </div>
 
-                            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight leading-[1.1] mb-6">
-                                Sering <br className="hidden lg:block" /> Miskomunikasi? <br />
-                                <span className="text-gray-400 font-light">Kami Jelaskan.</span>
+                            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight leading-snug mb-3">
+                                Sering Miskomunikasi? <br />
+                                <span className="text-slate-400 font-normal">Kami Jelaskan.</span>
                             </h2>
 
-                            <p className="text-gray-500 leading-relaxed font-light text-base max-w-md">
+                            <p className="text-xs sm:text-sm md:text-base text-slate-600 leading-relaxed font-normal max-w-sm mb-6">
                                 Jawaban transparan seputar privasi, jangkauan, dan teknis operasional aplikasi perlindungan kebakaran Anda.
                             </p>
 
-                            <div className="mt-10 p-6 bg-gray-50 rounded-2xl border border-gray-100">
-                                <p className="text-sm text-gray-600 font-medium mb-1">Masih punya pertanyaan spesifik?</p>
-                                <a href="#contact" className="text-red-600 font-bold text-sm tracking-wide hover:underline underline-offset-4 decoration-red-200 transition-all">
+                            <div className="p-4 bg-slate-50 rounded-xl border border-slate-100/80">
+                                <p className="text-xs text-slate-600 font-medium mb-1">Masih punya pertanyaan spesifik?</p>
+                                <a href="#contact" className="text-red-600 font-bold text-xs tracking-wide hover:underline underline-offset-4 decoration-red-200 transition-all">
                                     Hubungi Tim Dukungan &rarr;
                                 </a>
                             </div>
@@ -71,7 +67,7 @@ const FAQ = () => {
 
                     {/* Accordion List */}
                     <div className="lg:col-span-7">
-                        <div className="border-t border-gray-200">
+                        <div className="border-t border-slate-200/70">
                             {faqs.map((faq, idx) => {
                                 const isActive = activeIndex === idx;
                                 return (
@@ -80,24 +76,24 @@ const FAQ = () => {
                                         initial={{ opacity: 0 }}
                                         whileInView={{ opacity: 1 }}
                                         viewport={{ once: true }}
-                                        transition={{ duration: 0.3 }}
-                                        className="border-b border-gray-200 group"
+                                        transition={{ duration: 0.4 }}
+                                        className="border-b border-slate-200/70 group"
                                     >
                                         <button
                                             onClick={() => toggleAccordion(idx)}
-                                            className="w-full flex items-center justify-between py-5 md:py-6 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-red-100 rounded-lg"
+                                            className="w-full flex items-center justify-between py-4 sm:py-5 text-left focus:outline-none"
                                         >
-                                            <span className={`text-base md:text-lg lg:text-xl font-semibold tracking-tight transition-colors duration-300 pr-8 ${isActive ? 'text-red-600' : 'text-gray-900 group-hover:text-red-500'}`}>
+                                            <span className={`text-sm sm:text-base md:text-lg font-bold tracking-tight transition-colors duration-200 pr-6 ${isActive ? 'text-red-600' : 'text-slate-900 group-hover:text-red-600'}`}>
                                                 {faq.question}
                                             </span>
 
-                                            <div className="shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-gray-50 group-hover:bg-red-50 transition-colors duration-300">
+                                            <div className="shrink-0 flex items-center justify-center w-7 h-7 rounded-full bg-slate-50 group-hover:bg-red-50 transition-colors duration-200">
                                                 <motion.div
                                                     animate={{ rotate: isActive ? 45 : 0 }}
-                                                    transition={{ duration: 0.3, ease: "easeInOut" }}
-                                                    className={`${isActive ? 'text-red-600' : 'text-gray-400 group-hover:text-red-500'}`}
+                                                    transition={{ duration: 0.25, ease: "easeInOut" }}
+                                                    className={`${isActive ? 'text-red-600' : 'text-slate-400 group-hover:text-red-600'}`}
                                                 >
-                                                    <FaPlus className="text-sm" />
+                                                    <FaPlus className="text-xs" />
                                                 </motion.div>
                                             </div>
                                         </button>
@@ -108,10 +104,10 @@ const FAQ = () => {
                                                     initial={{ height: 0, opacity: 0 }}
                                                     animate={{ height: "auto", opacity: 1 }}
                                                     exit={{ height: 0, opacity: 0 }}
-                                                    transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }} /* Custom spring ease */
+                                                    transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                                                     className="overflow-hidden"
                                                 >
-                                                    <div className="pb-6 pr-12 text-gray-500 font-light leading-relaxed text-sm md:text-base">
+                                                    <div className="pb-5 pr-8 text-xs sm:text-sm text-slate-500 font-normal leading-relaxed">
                                                         {faq.answer}
                                                     </div>
                                                 </motion.div>

@@ -5,8 +5,8 @@ const StructuredData = () => {
         "@context": "https://schema.org",
         "@type": "Organization",
         "name": "SiagaBencana Plaju Darat",
-        "url": "https://www.siagabencana-palembang.my.id",
-        "logo": "https://www.siagabencana-palembang.my.id/favicon.png",
+        "url": "https://www.siagabencana.cloud",
+        "logo": "https://www.siagabencana.cloud/favicon.png",
         "contactPoint": {
             "@type": "ContactPoint",
             "telephone": "113",
