@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import crypto from "crypto";
 import { queryRow, execute, formatDateForMySQL } from "@/lib/db";
 import { hashOtp } from "@/lib/auth";
 import { sendWhatsAppOTP } from "@/lib/whatsapp";

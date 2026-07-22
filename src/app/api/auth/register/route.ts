@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import crypto from "crypto";
 import { execute, queryRow, formatDateForMySQL } from "@/lib/db";
 import { hashOtp } from "@/lib/auth";
 import { sendWhatsAppOTP } from "@/lib/whatsapp";
@@ -7,7 +8,7 @@ import { enforceRateLimit } from "@/lib/rate-limit";
 import { ensureNotificationTables } from "@/lib/db-init";
 
 function generateOtp(): string {
-    return Math.floor(100000 + Math.random() * 900000).toString();
+    return crypto.randomInt(100000, 1000000).toString();
 }
 
 export async function OPTIONS() {

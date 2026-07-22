@@ -8,7 +8,7 @@ export async function middleware(request: NextRequest) {
   const token = request.cookies.get(COOKIE_NAME)?.value;
 
   const publicPaths = ["/", "/onboarding", "/terms", "/privacy", "/lapor-cepat", "/api/reports/guest", "/download"];
-  const authPaths = ["/login", "/register", "/operator/login", "/onboarding"];
+  const authPaths = ["/login", "/register", "/operator/login", "/onboarding", "/reset-password"];
 
   // Izinkan akses ke API, file Next.js, dan static files
   if (

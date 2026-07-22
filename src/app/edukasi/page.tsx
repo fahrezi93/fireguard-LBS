@@ -95,6 +95,9 @@ export default function EdukasiPage() {
                       <img 
                         src={imageUrl} 
                         alt={article.title}
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1542382257-80dedb725088?auto=format&fit=crop&w=1200&q=80";
+                        }}
                         className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                       />
                     ) : (

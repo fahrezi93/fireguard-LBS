@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { FaBookOpen, FaCalendarAlt, FaArrowRight } from 'react-icons/fa';
 import { queryRows } from '@/lib/db';
+import ArticleImage from './ArticleImage';
 
 export default async function ArticlesSection() {
   let articles: any[] = [];
@@ -10,7 +11,7 @@ export default async function ArticlesSection() {
        FROM articles a
        LEFT JOIN disaster_categories c ON a.category_id = c.id
        WHERE a.status = 'published'
-       ORDER BY a.created_at DESC LIMIT 3`
+       ORDER BY a.created_at DESC LIMIT 6`
     );
   } catch (err) {
     console.error("Failed to fetch articles for landing page:", err);
@@ -48,17 +49,7 @@ export default async function ArticlesSection() {
                 className="group flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-xs hover:shadow-md hover:-translate-y-1 transition-all duration-200 ease-out"
               >
                 <div className="relative h-44 sm:h-48 w-full bg-slate-100 overflow-hidden">
-                  {imageUrl ? (
-                    <img 
-                      src={imageUrl} 
-                      alt={article.title}
-                      className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-red-50 to-orange-50">
-                      <FaBookOpen className="text-4xl text-red-200/60" />
-                    </div>
-                  )}
+                  <ArticleImage src={imageUrl} alt={article.title} />
                   <div className="absolute inset-0 bg-gradient-to-t from-gray-900/60 via-transparent to-transparent opacity-80 mix-blend-multiply"></div>
                   {article.category_name && (
                     <div className="absolute bottom-3 left-3 z-10">

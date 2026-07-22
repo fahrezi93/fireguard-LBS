@@ -25,73 +25,77 @@ export default function ArticleContent({ article }: ArticleContentProps) {
     : null;
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
-      <Navbar isLight={true} />
+    <div className="min-h-screen bg-slate-50 flex flex-col">
+      {/* Navbar set to isLight={false} so text is crisp white on dark hero header */}
+      <Navbar isLight={false} />
 
-      {/* Full-bleed Hero - padding-top accounts for fixed Navbar height */}
-      <section
-        className="relative w-full bg-gray-900 pt-20"
-        style={{ height: "calc(70vh + 80px)", minHeight: "560px" }}
-      >
+      {/* Sleek Hero Header Section */}
+      <section className="relative w-full bg-slate-950 pt-28 pb-16 md:pt-32 md:pb-20 overflow-hidden">
         {imageUrl ? (
           <img
             src={imageUrl}
             alt={article.title}
-            className="absolute inset-0 w-full h-full object-cover"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1542382257-80dedb725088?auto=format&fit=crop&w=1200&q=80";
+            }}
+            className="absolute inset-0 w-full h-full object-cover opacity-45"
           />
         ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-red-900 via-gray-900 to-gray-950 flex items-center justify-center">
-            <FaTag className="text-[10rem] text-white/5" />
+          <div className="absolute inset-0 bg-gradient-to-br from-red-950 via-slate-950 to-slate-900 flex items-center justify-center">
+            <FaTag className="text-8xl text-white/5" />
           </div>
         )}
 
-        {/* Layered gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-900/50 to-black/20" />
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/75 to-slate-900/40" />
 
-        {/* Content sits at the bottom of the hero */}
-        <div className="absolute inset-x-0 bottom-0">
-          <div className="max-w-4xl mx-auto px-6 pb-12 md:pb-20">
-            <Link
-              href="/edukasi"
-              className="inline-flex items-center gap-2 text-white/60 hover:text-white font-medium mb-8 transition-colors text-sm group"
-            >
-              <FaArrowLeft className="group-hover:-translate-x-1 transition-transform" />
-              Kembali ke Literasi Bencana
-            </Link>
+        {/* Header Content Container */}
+        <div className="relative z-10 w-full max-w-4xl mx-auto px-6">
+          <Link
+            href="/edukasi"
+            className="inline-flex items-center gap-2 text-white/80 hover:text-white font-medium mb-4 transition-colors text-xs sm:text-sm group"
+          >
+            <FaArrowLeft className="text-xs group-hover:-translate-x-1 transition-transform" />
+            Kembali ke Literasi Bencana
+          </Link>
 
-            <div className="flex flex-wrap items-center gap-3 mb-5">
-              {article.category_name && (
-                <span className="bg-red-600 text-white px-3.5 py-1.5 rounded-lg uppercase tracking-widest text-xs font-bold">
-                  {article.category_name}
-                </span>
-              )}
-              <span className="flex items-center gap-1.5 text-sm text-white/70">
-                <FaCalendarAlt className="text-white/40" />
-                {new Date(article.created_at).toLocaleDateString("id-ID", {
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                })}
+          <div className="flex flex-wrap items-center gap-3 mb-3">
+            {article.category_name && (
+              <span className="bg-red-600 text-white px-3 py-1 rounded-md uppercase tracking-wider text-[11px] font-extrabold shadow-sm">
+                {article.category_name}
               </span>
-              <span className="flex items-center gap-1.5 text-sm text-white/70">
-                <FaUser className="text-white/40" />
+            )}
+            <span className="flex items-center gap-1.5 text-xs sm:text-sm text-white/80">
+              <FaCalendarAlt className="text-white/60 text-xs" />
+              {new Date(article.created_at).toLocaleDateString("id-ID", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              })}
+            </span>
+            {article.author_name && (
+              <span className="flex items-center gap-1.5 text-xs sm:text-sm text-white/80">
+                <FaUser className="text-white/60 text-xs" />
                 {article.author_name}
               </span>
-            </div>
-
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-white leading-[1.2] tracking-tight">
-              {article.title}
-            </h1>
+            )}
           </div>
+
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white leading-snug tracking-tight max-w-3xl">
+            {article.title}
+          </h1>
         </div>
       </section>
 
-      {/* Article Body */}
-      <main className="max-w-3xl mx-auto px-6 py-16 md:py-24">
-        <article className="prose prose-lg md:prose-xl prose-gray max-w-none prose-headings:font-extrabold prose-headings:text-gray-900 prose-headings:tracking-tight prose-p:text-gray-700 prose-p:leading-8 prose-a:text-red-600 prose-a:no-underline hover:prose-a:underline prose-strong:text-gray-900 prose-img:rounded-2xl prose-img:shadow-lg prose-li:text-gray-700 prose-li:leading-8">
-          <ReactMarkdown>{article.content}</ReactMarkdown>
-        </article>
+      {/* Main Article Body Container */}
+      <main className="flex-1 w-full max-w-4xl mx-auto px-4 sm:px-6 py-8 md:py-12 -mt-6 sm:-mt-8 relative z-20">
+        <div className="bg-white rounded-2xl p-6 sm:p-10 border border-slate-200/80 shadow-md">
+          <article className="prose prose-slate prose-base sm:prose-lg max-w-none prose-headings:font-extrabold prose-headings:text-slate-900 prose-headings:tracking-tight prose-p:text-slate-700 prose-p:leading-relaxed prose-a:text-red-600 prose-a:font-semibold prose-a:no-underline hover:prose-a:underline prose-strong:text-slate-900 prose-img:rounded-xl prose-img:shadow-md prose-li:text-slate-700 prose-blockquote:border-l-red-500 prose-blockquote:bg-red-50/50 prose-blockquote:py-3 prose-blockquote:px-5 prose-blockquote:rounded-r-lg prose-blockquote:text-slate-700">
+            <ReactMarkdown>{article.content}</ReactMarkdown>
+          </article>
+        </div>
       </main>
+
       <Footer isLight={true} />
     </div>
   );

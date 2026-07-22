@@ -98,12 +98,17 @@ export async function ensureNotificationTables(): Promise<void> {
         id INT AUTO_INCREMENT PRIMARY KEY,
         email VARCHAR(100) NOT NULL,
         otp_hash VARCHAR(255) NOT NULL,
-        type ENUM('register', 'login') NOT NULL DEFAULT 'login',
+        type ENUM('register', 'login', 'reset') NOT NULL DEFAULT 'login',
         expires_at TIMESTAMP NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         INDEX idx_email (email)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     `);
+
+    // Pastikan ENUM pada tabel yang sudah ada mendukung 'reset'
+    await execute(`
+      ALTER TABLE otp_attempts MODIFY COLUMN type ENUM('register', 'login', 'reset') NOT NULL DEFAULT 'login'
+    `).catch(() => {});
 
     tablesInitialized = true;
     console.log('[DB-Init] Notification and OTP tables verified/created ✓');

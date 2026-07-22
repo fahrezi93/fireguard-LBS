@@ -1,4 +1,8 @@
 import { Resend } from 'resend';
+import dns from 'dns';
+
+// Fix for Node.js 18+ Windows IPv6 DNS timeout bug with api.resend.com (Unable to fetch data)
+dns.setDefaultResultOrder('ipv4first');
 
 /**
  * Email Service — menggunakan Resend API
@@ -90,20 +94,24 @@ function buildEmailWrapper(content: string): string {
 export async function sendEmailOTP(
   email: string,
   otp: string,
-  type: 'register' | 'login' = 'login',
+  type: 'register' | 'login' | 'reset' = 'login',
 ): Promise<{ success: boolean; error?: string }> {
   const subject =
     type === 'register'
       ? '🔐 Kode Verifikasi Pendaftaran SiagaBencana'
+      : type === 'reset'
+      ? '🔐 Kode Reset Password SiagaBencana'
       : '🔐 Kode Login SiagaBencana';
 
   const bodyContent = `
     <h2 style="margin:0 0 12px;font-family:'Plus Jakarta Sans',Arial,sans-serif;font-size:20px;font-weight:700;color:#0F172A;letter-spacing:-0.5px;">
-      ${type === 'register' ? 'Verifikasi Pendaftaran' : 'Kode Login Autentikasi'}
+      ${type === 'register' ? 'Verifikasi Pendaftaran' : type === 'reset' ? 'Reset Password Akun' : 'Kode Login Autentikasi'}
     </h2>
     <p style="margin:0 0 32px;font-size:15px;line-height:1.6;color:#475569;">
       ${type === 'register'
         ? 'Gunakan kode OTP berikut untuk menyelesaikan pendaftaran akun SiagaBencana Anda. Kode ini bersifat rahasia.'
+        : type === 'reset'
+        ? 'Gunakan kode OTP berikut untuk mereset kata sandi akun SiagaBencana Anda. Kode ini bersifat rahasia.'
         : 'Gunakan kode OTP berikut untuk masuk ke akun SiagaBencana Anda. Kode ini bersifat rahasia.'}
     </p>
     <!-- OTP Box -->
@@ -134,7 +142,7 @@ export async function sendEmailOTP(
       return { success: false, error: error.message };
     }
 
-    console.log(`✅ [Resend] OTP email sent successfully. ID: ${data?.id}`);
+    console.log(`✅ [Resend] OTP email sent successfully to ${email}. ID: ${data?.id}`);
     return { success: true };
   } catch (err: any) {
     console.error('❌ [Resend] Unexpected error sending OTP email:', err);
