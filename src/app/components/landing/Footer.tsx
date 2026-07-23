@@ -1,8 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { FaBell, FaFacebookF, FaTwitter, FaInstagram, FaGithub, FaArrowRight } from 'react-icons/fa';
-import { motion } from 'framer-motion';
+import { FaBell, FaFacebookF, FaInstagram, FaEnvelope, FaArrowRight } from 'react-icons/fa';
 
 const Footer = ({ isLight = true }: { isLight?: boolean }) => (
   <footer className={`${isLight ? 'bg-slate-50 text-slate-600 border-slate-200/80' : 'bg-[#050505] text-slate-400 border-white/5'} pt-12 pb-8 relative overflow-hidden border-t`}>
@@ -34,14 +33,11 @@ const Footer = ({ isLight = true }: { isLight?: boolean }) => (
             <a href="https://facebook.com/damkarpalembang" className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${isLight ? 'bg-white border border-slate-200/60 text-slate-500 hover:bg-red-600 hover:text-white hover:border-red-600' : 'bg-white/5 border border-white/10 text-slate-400 hover:bg-red-600 hover:text-white'}`}>
               <FaFacebookF className="text-xs" />
             </a>
-            <a href="https://twitter.com/damkarpalembang" className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${isLight ? 'bg-white border border-slate-200/60 text-slate-500 hover:bg-red-600 hover:text-white hover:border-red-600' : 'bg-white/5 border border-white/10 text-slate-400 hover:bg-red-600 hover:text-white'}`}>
-              <FaTwitter className="text-xs" />
-            </a>
-            <a href="https://instagram.com/pemadam_palembang" className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${isLight ? 'bg-white border border-slate-200/60 text-slate-500 hover:bg-orange-500 hover:text-white hover:border-orange-500' : 'bg-white/5 border border-white/10 text-slate-400 hover:bg-orange-500 hover:text-white'}`}>
+            <a href="https://instagram.com/pemadam_palembang" className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${isLight ? 'bg-white border border-slate-200/60 text-slate-500 hover:bg-red-500 hover:text-white hover:border-orange-500' : 'bg-white/5 border border-white/10 text-slate-400 hover:bg-orange-500 hover:text-white'}`}>
               <FaInstagram className="text-xs" />
             </a>
-            <a href="https://github.com" className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${isLight ? 'bg-white border border-slate-200/60 text-slate-500 hover:bg-slate-900 hover:text-white hover:border-slate-900' : 'bg-white/5 border border-white/10 text-slate-400 hover:bg-white hover:text-slate-900'}`}>
-              <FaGithub className="text-xs" />
+            <a href="mailto:lapor@siagabencana.cloud" className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${isLight ? 'bg-white border border-slate-200/60 text-slate-500 hover:bg-red-500 hover:text-white hover:border-orange-500' : 'bg-white/5 border border-white/10 text-slate-400 hover:bg-orange-500 hover:text-white'}`}>
+              <FaEnvelope className="text-xs" />
             </a>
           </div>
         </div>

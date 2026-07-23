@@ -81,6 +81,7 @@ const Navbar = ({ isLight = true }: { isLight?: boolean }) => {
   };
 
   return (
+    <>
     <nav className={`fixed top-0 inset-x-0 w-full z-50 transition-all duration-300 ease-out ${scrolled
         ? 'bg-white/90 shadow-sm backdrop-blur-xl border-b border-black/5 py-3 md:py-3.5'
         : 'bg-transparent border-b border-transparent py-4 md:py-5'
@@ -149,58 +150,59 @@ const Navbar = ({ isLight = true }: { isLight?: boolean }) => {
           <FaBars className="text-lg" />
         </button>
       </div>
+    </nav>
 
-      {/* Mobile Menu Fullscreen Overlay */}
-      <div className={`fixed inset-0 z-[60] transition-all duration-500 md:hidden ${isLight ? 'bg-white/95' : 'bg-[#050505]/95'} backdrop-blur-2xl ${mobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'}`}>
-        <div className="fixed inset-x-0 top-0 z-10 px-8 pt-[max(1.5rem,env(safe-area-inset-top))]">
-          <div className="flex items-center justify-end">
-            <button
-              type="button"
-              onClick={() => setMobileMenuOpen(false)}
-              className={`flex size-10 items-center justify-center rounded-full transition-all active:scale-90 ${isLight ? 'bg-black/5 text-neutral-900 hover:bg-black/10' : 'bg-white/10 text-white hover:bg-white/15'}`}
-              aria-label="Tutup menu"
-            >
-              <FaTimes className="text-lg" />
-            </button>
-          </div>
-        </div>
-
-        <div className="flex h-full flex-col justify-center gap-y-8 overflow-y-auto px-8 pb-10 pt-28">
-          <div className="flex flex-col gap-y-6 text-center">
-            <Link href="/#features" onClick={() => setMobileMenuOpen(false)} className={`text-3xl font-bold transition-colors ${isLight ? 'text-neutral-400 hover:text-black' : 'text-neutral-400 hover:text-white'}`}>Fitur
-            </Link>
-            <Link href="/#stations" onClick={() => setMobileMenuOpen(false)} className={`text-3xl font-bold transition-colors ${isLight ? 'text-neutral-400 hover:text-black' : 'text-neutral-400 hover:text-white'}`}>Lokasi Pos
-            </Link>
-            <Link href="/edukasi" onClick={() => setMobileMenuOpen(false)} className={`text-3xl font-bold transition-colors ${isLight ? 'text-neutral-400 hover:text-black' : 'text-neutral-400 hover:text-white'}`}>Berita
-            </Link>
-            <Link href="/download" onClick={() => setMobileMenuOpen(false)} className={`text-3xl font-bold transition-colors ${isLight ? 'text-neutral-400 hover:text-black' : 'text-neutral-400 hover:text-white'}`}>Download App
-            </Link>
-            <Link href="/#contact" onClick={() => setMobileMenuOpen(false)} className={`text-3xl font-bold transition-colors ${isLight ? 'text-neutral-400 hover:text-black' : 'text-neutral-400 hover:text-white'}`}>Kontak
-            </Link>
-          </div>
-
-          <div className={`pt-8 border-t flex flex-col gap-4 ${isLight ? 'border-black/5' : 'border-white/10'}`}>
-            {isLoggedIn ? (
-              <>
-                <button onClick={() => { setMobileMenuOpen(false); push(user?.isOperator ? '/operator/dashboard' : '/dashboard'); }} className={`w-full py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 ${isLight ? 'bg-black/5 text-black' : 'bg-white/5 text-white'}`}>
-                  {user?.isOperator ? <FaUserShield className="text-neutral-400" /> : <FaUser className="text-neutral-400" />} Dashboard
-                </button>
-                <button onClick={() => { setMobileMenuOpen(false); handleLogout(); }} className="w-full bg-red-500/10 text-red-500 py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-3">
-                  <FaSignOutAlt /> Keluar Akun
-                </button>
-              </>
-            ) : (
-              <button onClick={() => { setMobileMenuOpen(false); push('/login'); }} className={`w-full py-4 rounded-2xl font-bold text-lg border ${isLight ? 'bg-black/5 text-black border-black/5' : 'bg-white/5 text-white border-white/10'}`}>
-                Masuk / Login
-              </button>
-            )}
-            <button onClick={() => { setMobileMenuOpen(false); push('/report/new'); }} className="w-full bg-[#9F1C19] text-white py-4 rounded-2xl font-bold text-lg shadow-[0_0_30px_rgba(159,28,25,0.3)]">
-              Lapor Darurat Sekarang
-            </button>
-          </div>
+    {/* Mobile Menu Fullscreen Overlay */}
+    <div className={`fixed inset-0 z-[60] transition-all duration-500 md:hidden ${isLight ? 'bg-white/95' : 'bg-[#050505]/95'} backdrop-blur-2xl ${mobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'}`}>
+      <div className="fixed inset-x-0 top-0 z-10 px-8 pt-[max(1.5rem,env(safe-area-inset-top))]">
+        <div className="flex items-center justify-end">
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen(false)}
+            className={`flex size-10 items-center justify-center rounded-full transition-all active:scale-90 ${isLight ? 'bg-black/5 text-neutral-900 hover:bg-black/10' : 'bg-white/10 text-white hover:bg-white/15'}`}
+            aria-label="Tutup menu"
+          >
+            <FaTimes className="text-lg" />
+          </button>
         </div>
       </div>
-    </nav>
+
+      <div className="flex h-full flex-col justify-center gap-y-8 overflow-y-auto px-8 pb-10 pt-28">
+        <div className="flex flex-col gap-y-6 text-center">
+          <Link href="/#features" onClick={() => setMobileMenuOpen(false)} className={`text-3xl font-bold transition-colors ${isLight ? 'text-neutral-400 hover:text-black' : 'text-neutral-400 hover:text-white'}`}>Fitur
+          </Link>
+          <Link href="/#stations" onClick={() => setMobileMenuOpen(false)} className={`text-3xl font-bold transition-colors ${isLight ? 'text-neutral-400 hover:text-black' : 'text-neutral-400 hover:text-white'}`}>Lokasi Pos
+          </Link>
+          <Link href="/edukasi" onClick={() => setMobileMenuOpen(false)} className={`text-3xl font-bold transition-colors ${isLight ? 'text-neutral-400 hover:text-black' : 'text-neutral-400 hover:text-white'}`}>Berita
+          </Link>
+          <Link href="/download" onClick={() => setMobileMenuOpen(false)} className={`text-3xl font-bold transition-colors ${isLight ? 'text-neutral-400 hover:text-black' : 'text-neutral-400 hover:text-white'}`}>Download App
+          </Link>
+          <Link href="/#contact" onClick={() => setMobileMenuOpen(false)} className={`text-3xl font-bold transition-colors ${isLight ? 'text-neutral-400 hover:text-black' : 'text-neutral-400 hover:text-white'}`}>Kontak
+          </Link>
+        </div>
+
+        <div className={`pt-8 border-t flex flex-col gap-4 ${isLight ? 'border-black/5' : 'border-white/10'}`}>
+          {isLoggedIn ? (
+            <>
+              <button onClick={() => { setMobileMenuOpen(false); push(user?.isOperator ? '/operator/dashboard' : '/dashboard'); }} className={`w-full py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 ${isLight ? 'bg-black/5 text-black' : 'bg-white/5 text-white'}`}>
+                {user?.isOperator ? <FaUserShield className="text-neutral-400" /> : <FaUser className="text-neutral-400" />} Dashboard
+              </button>
+              <button onClick={() => { setMobileMenuOpen(false); handleLogout(); }} className="w-full bg-red-500/10 text-red-500 py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-3">
+                <FaSignOutAlt /> Keluar Akun
+              </button>
+            </>
+          ) : (
+            <button onClick={() => { setMobileMenuOpen(false); push('/login'); }} className={`w-full py-4 rounded-2xl font-bold text-lg border ${isLight ? 'bg-black/5 text-black border-black/5' : 'bg-white/5 text-white border-white/10'}`}>
+              Masuk / Login
+            </button>
+          )}
+          <button onClick={() => { setMobileMenuOpen(false); push('/report/new'); }} className="w-full bg-[#9F1C19] text-white py-4 rounded-2xl font-bold text-lg shadow-[0_0_30px_rgba(159,28,25,0.3)]">
+            Lapor Darurat Sekarang
+          </button>
+        </div>
+      </div>
+    </div>
+    </>
   );
 };
 

@@ -197,6 +197,13 @@ export async function PATCH(
     if (newStatus) {
       updates.push('status = ?');
       args.push(newStatus);
+
+      // Sinkronisasi status_petugas jika laporan diakhiri oleh operator (selesai/palsu)
+      // agar tugas tidak nyangkut di aplikasi mobile petugas piket
+      if (['completed', 'selesai', 'false_report', 'false', 'dibatalkan'].includes(newStatus)) {
+        updates.push('status_petugas = ?');
+        args.push(newStatus === 'selesai' ? 'completed' : newStatus === 'false' ? 'false_report' : newStatus);
+      }
     }
 
     if (adminNotes !== undefined) {

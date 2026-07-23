@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
        FROM reports r
        LEFT JOIN disaster_categories c ON r.category_id = c.id
        LEFT JOIN users u ON r.user_id = u.id
-       WHERE r.assigned_petugas_id = ? AND r.status_petugas IN ('completed', 'false_report')
+       WHERE r.assigned_petugas_id = ? AND r.status_petugas IN ('completed', 'false_report', 'dibatalkan')
        ORDER BY r.completed_at DESC`,
       [user.id]
     );
