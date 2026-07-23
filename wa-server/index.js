@@ -41,7 +41,9 @@ async function connectToWhatsApp() {
         if (connection === 'close') {
             isConnected = false;
             currentQR = '';
-            const shouldReconnect = lastDisconnect.error?.output?.statusCode !== DisconnectReason.loggedOut;
+            const statusCode = lastDisconnect.error?.output?.statusCode;
+            // 403 = Forbidden (biasanya karena nomor WA diblokir/banned)
+            const shouldReconnect = statusCode !== DisconnectReason.loggedOut && statusCode !== 403;
             console.log('Connection closed due to', lastDisconnect.error?.message, ', reconnecting:', shouldReconnect);
             
             // Reconnect dengan exponential backoff agar tidak infinite loop
@@ -150,16 +152,26 @@ app.post('/send', async (req, res) => {
 
 // 4. Logout API
 app.post('/logout', async (req, res) => {
-    if (sock && isConnected) {
-        try {
+    try {
+        if (sock && isConnected) {
             await sock.logout();
-            res.json({ success: true, message: 'Logged out successfully' });
-        } catch (e) {
-            console.error('Logout error:', e);
-            res.status(500).json({ success: false, error: e.message });
         }
-    } else {
-        res.status(400).json({ success: false, message: 'Not connected' });
+    } catch (e) {
+        console.error('Logout error:', e);
+    } finally {
+        isConnected = false;
+        currentQR = '';
+        console.log('Clearing sessions manually via /logout API...');
+        try {
+            fs.rmSync('sessions', { recursive: true, force: true });
+        } catch (err) {
+            console.error('Failed to clear sessions via /logout API', err);
+        }
+        res.json({ success: true, message: 'Sessions cleared and logged out' });
+        
+        // Restart connection after clearing
+        reconnectAttempts = 0;
+        setTimeout(connectToWhatsApp, 1000);
     }
 });
 
