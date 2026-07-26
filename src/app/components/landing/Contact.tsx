@@ -17,11 +17,8 @@ const Contact = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.4, ease: "easeOut" }}
             >
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-red-600 text-xs font-semibold tracking-wider uppercase mb-3 border border-red-100/50 shadow-2xs">
-                Pusat Bantuan
-              </div>
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight leading-snug mb-3">
-                Keadaan <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-orange-500">Darurat?</span>
+                Keadaan <span className="text-red-600">Darurat?</span>
               </h2>
               <p className="text-xs sm:text-sm md:text-base text-slate-600 leading-relaxed font-normal max-w-sm mx-auto lg:mx-0">
                 Layanan tanggap darurat kami aktif 24 jam nonstop untuk seluruh warga Plaju, Palembang.

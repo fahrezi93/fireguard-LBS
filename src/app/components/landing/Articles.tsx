@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { FaBookOpen, FaArrowRight } from 'react-icons/fa';
+import { FaArrowRight } from 'react-icons/fa';
 import { queryRows } from '@/lib/db';
 import ArticleCardList from './ArticleCardList';
 
@@ -25,11 +25,8 @@ export default async function ArticlesSection() {
     <section id="edukasi" className="py-12 md:py-16 bg-slate-50/70 border-b border-slate-100 relative overflow-hidden">
       <div className="max-w-6xl mx-auto px-6 relative z-10">
         <div className="text-center max-w-2xl mx-auto mb-10 md:mb-12">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-red-600 text-xs font-semibold tracking-wider uppercase mb-3 border border-red-100/50 shadow-2xs">
-            <FaBookOpen className="text-[10px]" /> Literasi Bencana
-          </span>
           <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 mb-3 tracking-tight leading-snug">
-            Pusat Informasi & <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-orange-500">Berita</span>
+            Pusat Informasi & <span className="text-red-600">Berita</span>
           </h3>
           <p className="text-xs sm:text-sm md:text-base text-slate-600 leading-relaxed font-normal">
             Tingkatkan kewaspadaan Anda dengan panduan pencegahan dan berita terkini seputar penanganan bencana di sekitar kita.

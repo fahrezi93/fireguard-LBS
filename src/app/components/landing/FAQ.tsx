@@ -41,12 +41,7 @@ const FAQ = () => {
                             initial={{ opacity: 0, y: 16 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            transition={{ duration: 0.4, ease: "easeOut" }}
                         >
-                            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-red-600 text-xs font-semibold tracking-wider uppercase mb-3 border border-red-100/50 shadow-2xs">
-                                Pertanyaan Umum
-                            </div>
-
                             <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight leading-snug mb-3">
                                 Sering Miskomunikasi? <br />
                                 <span className="text-slate-400 font-normal">Kami Jelaskan.</span>

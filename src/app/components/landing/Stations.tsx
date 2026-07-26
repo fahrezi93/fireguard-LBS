@@ -34,10 +34,6 @@ const Stations = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.4, ease: "easeOut" }}
           >
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 border border-red-100/50 mb-3 shadow-2xs">
-              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-              <span className="text-[11px] font-bold text-red-600 tracking-wider uppercase">Infrastruktur Wilayah</span>
-            </div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight leading-snug">
               Jaringan Pos Pemadam <br className="hidden md:block" />
               <span className="text-slate-400 font-normal">Plaju, Palembang.</span>

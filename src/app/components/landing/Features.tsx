@@ -32,17 +32,6 @@ const Features = () => {
       <div className="max-w-6xl mx-auto px-6 relative z-10">
         <div className="mb-10 md:mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="max-w-xl">
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 border border-red-100/50 mb-3 shadow-2xs"
-            >
-              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-              <span className="text-[11px] font-bold text-red-600 tracking-wider uppercase">Fitur Unggulan</span>
-            </motion.div>
-
             <motion.h2
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -51,7 +40,7 @@ const Features = () => {
               className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight leading-snug"
             >
               Teknologi Canggih <br className="hidden sm:block" />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-orange-500">
+              <span className="text-red-600">
                 Keamanan Maksimal.
               </span>
             </motion.h2>
