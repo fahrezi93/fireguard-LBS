@@ -116,6 +116,7 @@ export default function UserReportDetailModal({ report, onClose }: UserReportDet
             completed: { text: "Selesai", color: "text-emerald-600", bgColor: "bg-emerald-50" },
             selesai: { text: "Selesai", color: "text-emerald-600", bgColor: "bg-emerald-50" },
             dibatalkan: { text: "Dibatalkan", color: "text-red-600", bgColor: "bg-red-50" },
+            in_progress: { text: "Sedang Ditangani", color: "text-indigo-600", bgColor: "bg-indigo-50" },
             false_report: { text: "Laporan Palsu", color: "text-red-600", bgColor: "bg-red-50" },
         };
         return statusMap[status] || { text: status, color: "text-gray-600", bgColor: "bg-gray-50" };

@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
   try {
     const user = await getAuthPayloadFromRequest(request);
 
-    if (user.role !== 'PETUGAS') {
+    if (user.role?.toUpperCase() !== 'PETUGAS') {
       return jsonWithCors({ message: "Hanya petugas yang bisa update status." }, { status: 403, request });
     }
 

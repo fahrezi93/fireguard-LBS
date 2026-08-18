@@ -57,7 +57,7 @@ interface User {
   phone?: string;
 }
 
-type StatusType = "pending" | "submitted" | "verified" | "dispatched" | "arrived" | "completed" | "diproses" | "dikirim" | "ditangani" | "selesai" | "dibatalkan" | "false_report";
+type StatusType = "pending" | "submitted" | "verified" | "dispatched" | "arrived" | "completed" | "diproses" | "dikirim" | "ditangani" | "selesai" | "dibatalkan" | "in_progress" | "false_report";
 
 const statusConfig: Record<StatusType, { label: string; color: string; bgColor: string; icon: any }> = {
   pending: { label: "Menunggu", color: "text-amber-600", bgColor: "bg-amber-50", icon: FaClock },
@@ -71,6 +71,7 @@ const statusConfig: Record<StatusType, { label: string; color: string; bgColor: 
   completed: { label: "Selesai", color: "text-emerald-600", bgColor: "bg-emerald-50", icon: FaCheckCircle },
   selesai: { label: "Selesai", color: "text-emerald-600", bgColor: "bg-emerald-50", icon: FaCheckCircle },
   dibatalkan: { label: "Dibatalkan", color: "text-red-600", bgColor: "bg-red-50", icon: FaTimesCircle },
+  in_progress: { label: "Ditangani", color: "text-indigo-600", bgColor: "bg-indigo-50", icon: FaTruck },
   false_report: { label: "Palsu", color: "text-red-600", bgColor: "bg-red-50", icon: FaTimesCircle },
 };
 

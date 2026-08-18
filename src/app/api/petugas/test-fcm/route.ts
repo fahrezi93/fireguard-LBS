@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     const user = await getAuthPayloadFromRequest(request);
     
     // Pastikan user adalah petugas
-    if (user.role !== 'PETUGAS') {
+    if (user.role?.toUpperCase() !== 'PETUGAS') {
       return jsonWithCors({ message: "Akses ditolak. Hanya untuk petugas." }, { status: 403, request });
     }
 
