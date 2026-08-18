@@ -6,7 +6,7 @@ export async function GET(request: NextRequest) {
   try {
     const user = await getAuthPayloadFromRequest(request);
 
-    if (user.role !== 'operator' && user.role !== 'admin') {
+    if (user.role !== 'operator' && user.role !== 'SUPER_ADMIN') {
       return NextResponse.json({ message: 'Akses ditolak' }, { status: 403 });
     }
 

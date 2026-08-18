@@ -1,14 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { queryRows, execute } from '@/lib/db';
-import { requireOperator } from '@/lib/api-security';
+import { requireAuth, requireOperator } from '@/lib/api-security';
 
 export async function GET(request: NextRequest) {
   try {
-    const auth = await requireOperator(request);
+    const auth = await requireAuth(request);
     if ("response" in auth) return auth.response;
 
-    const reports = await queryRows(
-      `SELECT r.id, r.user_id, r.fire_latitude, r.fire_longitude, r.reporter_latitude, r.reporter_longitude, 
+    const payload = auth.payload;
+    const isOperator = payload.isOperator === true;
+    const role = payload.role;
+    
+    if (!isOperator && role !== 'SUPER_ADMIN' && role !== 'KELURAHAN') {
+      return NextResponse.json({ message: 'Akses ditolak.' }, { status: 403 });
+    }
+
+    let query = `
+       SELECT r.id, r.user_id, r.fire_latitude, r.fire_longitude, r.reporter_latitude, r.reporter_longitude, 
               r.status, r.created_at, r.media_url, r.notes, r.contact, r.description, r.address,
               r.guest_name, r.admin_notes, r.petugas_notes,
               r.assigned_petugas_id, r.dispatched_at, r.accepted_at, r.arrived_at, r.completed_at, 
@@ -22,8 +30,17 @@ export async function GET(request: NextRequest) {
        LEFT JOIN disaster_categories c ON r.category_id = c.id
        LEFT JOIN kelurahan k ON r.kelurahan_id = k.id
        LEFT JOIN users p ON r.assigned_petugas_id = p.id
-       ORDER BY r.created_at DESC`
-    );
+    `;
+
+    const args: any[] = [];
+    if (role === 'KELURAHAN' && payload.kelurahan_id) {
+      query += ` WHERE r.kelurahan_id = ? `;
+      args.push(payload.kelurahan_id);
+    }
+
+    query += ` ORDER BY r.created_at DESC`;
+
+    const reports = await queryRows(query, args);
     return NextResponse.json(reports);
   } catch (error) {
     console.error('[GET /api/operator/reports]', error);

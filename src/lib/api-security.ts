@@ -13,6 +13,8 @@ export type AuthPayload = {
   iss?: string;
   aud?: string | string[];
   jti?: string;
+  role?: string;
+  kelurahan_id?: number | null;
 };
 
 const JWT_ISSUER = process.env.JWT_ISSUER || "siagabencana-web";
@@ -71,8 +73,8 @@ export async function requireOperator(
     return auth;
   }
 
-  if (auth.payload.isOperator !== true) {
-    return { response: forbidden("Akses khusus operator.") };
+  if (auth.payload.isOperator !== true && auth.payload.role !== "SUPER_ADMIN") {
+    return { response: forbidden("Akses khusus operator atau admin.") };
   }
 
   return auth;

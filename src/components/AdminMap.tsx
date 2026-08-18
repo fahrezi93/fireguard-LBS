@@ -163,7 +163,7 @@ function haversineDistance(coords1: [number, number], coords2: [number, number])
 }
 
 export default function AdminMap({ reports, onReportClick, selectedReport }: AdminMapProps) {
-  const defaultPosition: [number, number] = [-2.976, 104.775]; // Plaju, Palembang
+  const defaultPosition: [number, number] = [-3.0073, 104.8156]; // Plaju, Palembang
   const [petugasLocations, setPetugasLocations] = useState<PetugasLocation[]>([]);
 
   // Cek apakah ada laporan aktif yang butuh tracking
@@ -279,7 +279,7 @@ export default function AdminMap({ reports, onReportClick, selectedReport }: Adm
   );
 
   return (
-    <MapContainer center={defaultPosition} zoom={12} style={{ height: '100%', width: '100%', backgroundColor: '#ffffff' }}>
+    <MapContainer center={defaultPosition} zoom={14} style={{ height: '100%', width: '100%', backgroundColor: '#ffffff' }}>
       <MapResizeHandler />
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

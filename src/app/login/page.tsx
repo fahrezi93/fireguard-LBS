@@ -65,7 +65,10 @@ export default function LoginPage() {
         });
         if (response.ok) {
           const data = await response.json();
-          replace(data.isOperator ? "/operator/dashboard" : "/dashboard");
+          if (data.isOperator) replace("/operator/dashboard");
+          else if (data.role === "SUPER_ADMIN") replace("/admin/dashboard");
+          else if (data.role === "KELURAHAN") replace("/kelurahan/dashboard");
+          else replace("/dashboard");
           return;
         }
       } catch {
@@ -101,7 +104,9 @@ export default function LoginPage() {
         const data = await response.json();
 
         if (response.ok) {
-          push("/dashboard");
+          if (data.user?.role === "SUPER_ADMIN") push("/admin/dashboard");
+          else if (data.user?.role === "KELURAHAN") push("/kelurahan/dashboard");
+          else push("/dashboard");
           return;
         }
 
@@ -170,7 +175,9 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (response.ok) {
-        push("/dashboard");
+        if (data.user?.role === "SUPER_ADMIN") push("/admin/dashboard");
+        else if (data.user?.role === "KELURAHAN") push("/kelurahan/dashboard");
+        else push("/dashboard");
         return;
       }
 

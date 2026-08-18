@@ -23,21 +23,21 @@ export async function POST(request: NextRequest) {
     let status: string | null = null;
     let photoUrl: string | null = null;
     let notes: string | null = null;
-    
+
     // Cek apakah request berupa multipart/form-data atau JSON
     const contentType = request.headers.get('content-type') || '';
-    
+
     if (contentType.includes('multipart/form-data')) {
       const formData = await request.formData();
       reportId = formData.get('reportId') as string;
       status = formData.get('status') as string;
       notes = formData.get('notes') as string | null;
-      
+
       const file = formData.get('file') as File | null;
       if (file && file.size > 0) {
         const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
         const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET;
-        
+
         if (cloudName && uploadPreset) {
           const buffer = await file.arrayBuffer();
           const uploadFormData = new FormData();
@@ -45,12 +45,12 @@ export async function POST(request: NextRequest) {
           uploadFormData.append('file', blob, file.name);
           uploadFormData.append('upload_preset', uploadPreset);
           uploadFormData.append('folder', 'siagabencana/completion_photos');
-          
+
           const response = await fetch(
             `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
             { method: 'POST', body: uploadFormData }
           );
-          
+
           if (response.ok) {
             const data = await response.json();
             photoUrl = data.secure_url;
@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
       query += ", arrived_at = NOW(), status = 'arrived'";
     } else if (['completed', 'false_report', 'escalated_to_damkar'].includes(status)) {
       query += ", completed_at = NOW()";
-      
+
       // Calculate response time in query: TIMESTAMPDIFF(SECOND, dispatched_at, NOW())
       if (report.dispatched_at) {
         query += ", response_time_seconds = TIMESTAMPDIFF(SECOND, dispatched_at, NOW())";
@@ -139,8 +139,8 @@ export async function POST(request: NextRequest) {
 
         // Title dan message standar untuk notifikasi
         const notifTitle = canonicalStatus === 'completed' ? 'Laporan Selesai' : 'Laporan Ditolak';
-        let notifMessage = canonicalStatus === 'completed' 
-          ? 'Laporan Anda telah diselesaikan' 
+        let notifMessage = canonicalStatus === 'completed'
+          ? 'Laporan Anda telah diselesaikan'
           : 'Laporan Anda ditandai sebagai laporan palsu';
 
         if (notes) {
@@ -198,18 +198,18 @@ export async function POST(request: NextRequest) {
               notes || undefined
             );
           } else if (!report.user_id) {
-             // Fetch contact directly from db if it wasn't fetched in the previous query
-             const guestReport = await queryRow<any>("SELECT contact FROM reports WHERE id = ?", [reportId]);
-             if (guestReport && guestReport.contact) {
-                sendWhatsAppReportUpdate(
-                  guestReport.contact,
-                  "Pelapor",
-                  Number(reportId),
-                  statusLabel,
-                  address,
-                  notes || undefined
-                );
-             }
+            // Fetch contact directly from db if it wasn't fetched in the previous query
+            const guestReport = await queryRow<any>("SELECT contact FROM reports WHERE id = ?", [reportId]);
+            if (guestReport && guestReport.contact) {
+              sendWhatsAppReportUpdate(
+                guestReport.contact,
+                "Pelapor",
+                Number(reportId),
+                statusLabel,
+                address,
+                notes || undefined
+              );
+            }
           }
         }
       } catch (notifErr) {

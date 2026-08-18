@@ -52,7 +52,7 @@ const groupHotspotsByLocation = (hotspots: Hotspot[]) => {
 };
 
 export default function HotspotMap({ hotspots, year }: HotspotMapProps) {
-    const defaultPosition: [number, number] = [-2.976, 104.775]; // Plaju, Palembang
+    const defaultPosition: [number, number] = [-3.0073, 104.8156]; // Pusat Plaju
 
     // Group hotspots for heatmap-like visualization
     const groupedHotspots = useMemo(() => groupHotspotsByLocation(hotspots), [hotspots]);
@@ -63,7 +63,7 @@ export default function HotspotMap({ hotspots, year }: HotspotMapProps) {
     return (
         <MapContainer
             center={defaultPosition}
-            zoom={12}
+            zoom={14}
             style={{ height: '100%', width: '100%', backgroundColor: '#ffffff' }}
         >
             <TileLayer

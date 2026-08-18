@@ -96,10 +96,10 @@ export async function PATCH(
 
     const user = await getAuthPayloadFromRequest(request);
 
-    // Hanya operator yang boleh update status laporan
-    if (!user.isOperator) {
+    // Hanya operator dan admin yang boleh update status laporan
+    if (!user.isOperator && user.role !== 'SUPER_ADMIN') {
       return jsonWithCors(
-        { message: "Akses ditolak. Hanya operator yang dapat memperbarui status laporan." },
+        { message: "Akses ditolak. Hanya operator dan admin yang dapat memperbarui status laporan." },
         { status: 403, request }
       );
     }

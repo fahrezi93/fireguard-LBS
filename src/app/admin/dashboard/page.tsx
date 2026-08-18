@@ -1,5 +1,5 @@
 import DashboardGlobal from "@/components/DashboardGlobal";
 
-export default function OperatorDashboardPage() {
+export default function AdminDashboardPage() {
   return <DashboardGlobal />;
 }

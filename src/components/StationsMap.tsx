@@ -45,12 +45,12 @@ function MapController({ selectedStation }: { selectedStation: FireStation | nul
 }
 
 export default function StationsMap({ stations, selectedStation, onStationClick }: StationsMapProps) {
-  const defaultPosition: [number, number] = [-2.976, 104.775]; // Plaju, Palembang center
+  const DEFAULT_CENTER: [number, number] = [-3.0073, 104.8156]; // Pusat Plaju
 
   return (
     <MapContainer
-      center={defaultPosition}
-      zoom={12}
+      center={DEFAULT_CENTER}
+      zoom={14}
       style={{ height: '100%', width: '100%' }}
       className="z-0"
     >

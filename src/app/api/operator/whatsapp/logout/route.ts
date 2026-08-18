@@ -4,7 +4,7 @@ import { getAuthPayloadFromRequest } from "@/lib/cors";
 export async function POST(request: NextRequest) {
   try {
     const user = await getAuthPayloadFromRequest(request);
-    if (!user.isOperator) {
+    if (!user.isOperator && user.role !== 'SUPER_ADMIN') {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

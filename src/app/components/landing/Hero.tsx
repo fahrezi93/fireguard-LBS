@@ -63,7 +63,7 @@ const Hero = () => {
           transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
           className="text-sm sm:text-base md:text-lg text-gray-400 font-light max-w-2xl mx-auto px-4 mb-8 leading-relaxed"
         >
-          Sistem pelaporan darurat terpadu untuk wilayah <strong className="text-white font-medium">Plaju, Palembang</strong>. Mendeteksi, merespons, dan mengamankan dengan presisi.
+          Sistem pelaporan darurat terpadu untuk wilayah <strong className="text-white font-medium">Kecamatan Plaju</strong>. Mendeteksi, merespons, dan mengamankan dengan presisi.
         </motion.p>
 
         {/* Action Buttons */}

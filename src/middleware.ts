@@ -25,7 +25,17 @@ export async function middleware(request: NextRequest) {
     try {
       const payload = await verifyAuthToken(token);
       const isOperator = payload.isOperator === true;
-      return NextResponse.redirect(new URL(isOperator ? "/operator/dashboard" : "/dashboard", request.url));
+      const role = payload.role as string | undefined;
+
+      if (isOperator) {
+        return NextResponse.redirect(new URL("/operator/dashboard", request.url));
+      } else if (role === "SUPER_ADMIN") {
+        return NextResponse.redirect(new URL("/admin/dashboard", request.url));
+      } else if (role === "KELURAHAN") {
+        return NextResponse.redirect(new URL("/kelurahan/dashboard", request.url));
+      } else {
+        return NextResponse.redirect(new URL("/dashboard", request.url));
+      }
     } catch {
       const response = NextResponse.next();
       response.cookies.delete(COOKIE_NAME);
@@ -51,23 +61,47 @@ export async function middleware(request: NextRequest) {
   try {
     const payload = await verifyAuthToken(token);
     const isOperator = payload.isOperator === true;
+    const role = payload.role as string | undefined;
 
-    // Jika mencoba mengakses rute operator
-    if (pathname.startsWith("/operator")) {
-      if (isOperator) {
-        return NextResponse.next(); // Akses diizinkan untuk operator
+    // Proteksi rute Admin
+    if (pathname.startsWith("/admin")) {
+      if (role === "SUPER_ADMIN") {
+        return NextResponse.next();
       } else {
-        // Jika pengguna biasa mencoba akses, redirect ke halaman utama mereka
+        return NextResponse.redirect(new URL("/", request.url));
+      }
+    }
+
+    // Proteksi rute Kelurahan
+    // Sesuai Access Matrix: SUPER_ADMIN dan OPERATOR juga bisa lihat Dashboard Kelurahan
+    if (pathname.startsWith("/kelurahan")) {
+      if (role === "KELURAHAN" || role === "SUPER_ADMIN" || isOperator) {
+        return NextResponse.next();
+      } else {
+        return NextResponse.redirect(new URL("/", request.url));
+      }
+    }
+
+    // Proteksi rute Operator
+    if (pathname.startsWith("/operator")) {
+      if (isOperator || role === "SUPER_ADMIN") {
+        return NextResponse.next();
+      } else {
         return NextResponse.redirect(new URL("/", request.url));
       }
     }
 
     // Jika mencoba mengakses rute pengguna biasa
     if (isOperator) {
-      // Jika operator mencoba akses, redirect ke dasbor mereka
       return NextResponse.redirect(new URL("/operator/dashboard", request.url));
+    } else if (role === "SUPER_ADMIN") {
+      if (pathname === "/") return NextResponse.redirect(new URL("/admin/dashboard", request.url));
+      return NextResponse.next();
+    } else if (role === "KELURAHAN") {
+      if (pathname === "/") return NextResponse.redirect(new URL("/kelurahan/dashboard", request.url));
+      return NextResponse.next();
     } else {
-      return NextResponse.next(); // Akses diizinkan untuk pengguna biasa
+      return NextResponse.next();
     }
   } catch (err) {
     // Jika token tidak valid, hapus dan redirect ke login

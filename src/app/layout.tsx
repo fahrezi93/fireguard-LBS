@@ -6,17 +6,17 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.siagabencana.cloud'),
   title: {
-    default: 'SiagaBencana Plaju Darat, Palembang - Sistem Cepat Tanggap Kebakaran',
-    template: '%s | SiagaBencana Palembang'
+    default: 'SiagaBencana Kecamatan Plaju - Sistem Cepat Tanggap Kebakaran',
+    template: '%s | SiagaBencana Plaju'
   },
-  description: 'SiagaBencana adalah sistem peringatan dini dan pelaporan kebakaran real-time untuk wilayah Plaju Darat, Palembang. Lindungi lingkungan Anda dengan respon cepat dan akurat.',
-  applicationName: 'SiagaBencana Palembang',
+  description: 'SiagaBencana adalah sistem peringatan dini dan pelaporan kebakaran real-time untuk wilayah Kecamatan Plaju. Lindungi lingkungan Anda dengan respon cepat dan akurat.',
+  applicationName: 'SiagaBencana Plaju',
   authors: [{ name: 'SiagaBencana Team', url: 'https://www.siagabencana.cloud' }],
   generator: 'Next.js',
-  keywords: ['kebakaran', 'palembang', 'emergency', 'fire', 'report', 'pemadam', 'plaju', 'darurat', 'tanggap darurat', 'pemadam kebakaran palembang'],
+  keywords: ['kebakaran', 'plaju', 'emergency', 'fire', 'report', 'pemadam', 'darurat', 'tanggap darurat', 'pemadam kebakaran plaju'],
   referrer: 'origin-when-cross-origin',
   creator: 'SiagaBencana Team',
-  publisher: 'SiagaBencana Plaju Darat',
+  publisher: 'SiagaBencana Kecamatan Plaju',
   robots: {
     index: true,
     follow: true,
@@ -36,8 +36,8 @@ export const metadata: Metadata = {
   },
   manifest: '/manifest.json', // Basic manifest for SEO/icons
   openGraph: {
-    title: 'SiagaBencana Plaju Darat, Palembang',
-    description: 'Sistem Cepat Tanggap Kebakaran Plaju Darat, Palembang - Laporkan insiden secara instan.',
+    title: 'SiagaBencana Kecamatan Plaju',
+    description: 'Sistem Cepat Tanggap Kebakaran Kecamatan Plaju - Laporkan insiden secara instan.',
     url: 'https://www.siagabencana.cloud',
     siteName: 'SiagaBencana',
     locale: 'id_ID',
@@ -47,13 +47,13 @@ export const metadata: Metadata = {
         url: '/SiagaBencanathumbnail.png',
         width: 1200,
         height: 630,
-        alt: 'SiagaBencana Palembang Thumbnail',
+        alt: 'SiagaBencana Plaju Thumbnail',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'SiagaBencana Plaju Darat, Palembang',
+    title: 'SiagaBencana Kecamatan Plaju',
     description: 'Sistem Cepat Tanggap Kebakaran Real-time untuk wilayah Plaju.',
     creator: '@siagabencana_id',
     images: ['/SiagaBencanathumbnail.png'],

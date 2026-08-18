@@ -7,7 +7,7 @@ import { FaPlus } from 'react-icons/fa';
 const faqs = [
     {
         question: "Apakah layanan SiagaBencana ini gratis?",
-        answer: "Ya, SiagaBencana adalah inisiatif swadaya untuk publik dan sepenuhnya GRATIS 100% tanpa biaya tersembunyi bagi seluruh masyarakat Plaju, Palembang."
+        answer: "Ya, SiagaBencana adalah inisiatif swadaya untuk publik dan sepenuhnya GRATIS 100% tanpa biaya tersembunyi bagi seluruh masyarakat Kecamatan Plaju."
     },
     {
         question: "Apakah bisa melapor tanpa koneksi internet yang stabil?",
@@ -15,7 +15,7 @@ const faqs = [
     },
     {
         question: "Wilayah mana saja yang dicakup oleh aplikasi ini?",
-        answer: "Saat ini jangkauan koordinat deteksi otomatis kami berfokus melayani seluruh wilayah administratif Kecamatan Plaju, Palembang. Jika laporan terdeteksi di luar zona, sistem akan meneruskan notifikasi pembantu ke unit kecamatan tetangga terkait."
+        answer: "Saat ini jangkauan koordinat deteksi otomatis kami berfokus melayani seluruh wilayah administratif Kecamatan Plaju. Jika laporan terdeteksi di luar zona, sistem akan meneruskan notifikasi pembantu ke unit kecamatan tetangga terkait."
     },
     {
         question: "Bagaimana sistem melindungi keamanan data privasi pelapor?",

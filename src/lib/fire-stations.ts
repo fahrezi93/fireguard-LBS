@@ -6,63 +6,49 @@ export interface FireStation {
   phone?: string;
 }
 
-// Data lengkap untuk pos damkar di Plaju, Palembang (Terverifikasi)
-// Data ini telah diverifikasi berdasarkan lokasi resmi pos pemadam kebakaran di wilayah Plaju, Palembang
+// Data lengkap untuk pos damkar di Kelurahan Plaju (Terverifikasi)
+// Data ini telah diverifikasi berdasarkan lokasi resmi kantor kelurahan di wilayah Kecamatan Plaju
 export const fireStations: FireStation[] = [
   {
-    name: "Kantor Dinas Damkar & PB Kota Palembang",
-    latitude: -2.97142,
-    longitude: 104.75923,
-    address: "Jl. Merdeka No. 1, Talang Semut, Kec. Bukit Kecil, Kota Palembang",
+    name: "Kantor Kelurahan Plaju Ulu",
+    latitude: -2.9956005851459295,
+    longitude: 104.81397382787074,
+    address: "Jl. D.I. Panjaitan No.39, Plaju Ulu, Kec. Plaju, Kota Palembang",
     phone: "113",
   },
   {
-    name: "Pos Pemadam Kebakaran Merdeka",
-    latitude: -2.98122,
-    longitude: 104.75763,
-    address: "Jl. Kemuning, Lorok Pakjo, Kec. Ilir Bar. I, Kota Palembang",
-    phone: "0711-351234",
+    name: "Kantor Lurah Plaju Ilir",
+    latitude: -2.9960452419172015,
+    longitude: 104.81803333395953,
+    address: "Plaju Ilir, Kec. Plaju, Kota Palembang",
+    phone: "113",
   },
   {
-    name: "Pos Pemadam Kebakaran Sako",
-    latitude: -2.91205,
-    longitude: 104.80017,
-    address: "Jl. Sako Raya, Sako, Kec. Sako, Kota Palembang",
-    phone: "0711-821234",
+    name: "Kantor Lurah Tegal Binangun, Plaju Darat",
+    latitude: -3.017507003815526,
+    longitude: 104.80998084506518,
+    address: "Lr. Swadaya / Jl. Tegal Binangun, Plaju Darat, Kec. Plaju, Kota Palembang",
+    phone: "113",
   },
   {
-    name: "Pos PBK Alang-Alang Lebar",
-    latitude: -2.91545,
-    longitude: 104.71229,
-    address: "Jl. Lintas Sumatera (Jl. Soekarno-Hatta), Talang Klp., Kec. Alang-Alang Lebar, Kota Palembang",
-    phone: "0711-441234",
+    name: "Kantor Kelurahan Talang Bubuk",
+    latitude: -3.0065295694272423,
+    longitude: 104.80762446636636,
+    address: "Jl. Perguruan Dalam No.555, RT.07a/RW.02, Talang Bubuk, Kec. Plaju, Kota Palembang",
+    phone: "113",
   },
   {
-    name: "Pos PBK Seberang Ulu I",
-    latitude: -3.00151,
-    longitude: 104.75937,
-    address: "Jl. Jend. A. Yani, 9/10 Ulu, Kec. Seberang Ulu I, Kota Palembang",
-    phone: "0711-711234",
+    name: "Kantor Kelurahan Talang Putri",
+    latitude: -3.017146175818114,
+    longitude: 104.82686386834816,
+    address: "Sungai Pinang / Batas Talang Putri, Kec. Plaju, Kota Palembang",
+    phone: "113",
   },
   {
-    name: "Pos Pemadam Kebakaran Kertapati",
-    latitude: -3.07344,
-    longitude: 104.71849,
-    address: "Jl. Sriwijaya Raya, Karya Jaya, Kec. Kertapati, Kota Palembang",
-    phone: "0711-521234",
-  },
-  {
-    name: "Pos Pemadam Kebakaran Talang Keramat",
-    latitude: -2.88150,
-    longitude: 104.73122,
-    address: "Jl. Talang Keramat, Talang Klp., Kec. Alang-Alang Lebar, Kota Palembang",
-    phone: "0711-441567",
-  },
-  {
-    name: "Pos Pemadam Kebakaran Provinsi Sumsel",
-    latitude: -2.95996,
-    longitude: 104.75111,
-    address: "Jl. Kapten A. Rivai, Lorok Pakjo, Kec. Ilir Bar. I, Kota Palembang",
-    phone: "0711-352345",
-  },
+    name: "Kantor Lurah Komperta",
+    latitude: -2.993343856272282,
+    longitude: 104.82092573581042,
+    address: "Komperta, Kec. Plaju, Kota Palembang",
+    phone: "113",
+  }
 ];

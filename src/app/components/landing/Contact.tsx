@@ -21,7 +21,7 @@ const Contact = () => {
                 Keadaan <span className="text-red-600">Darurat?</span>
               </h2>
               <p className="text-xs sm:text-sm md:text-base text-slate-600 leading-relaxed font-normal max-w-sm mx-auto lg:mx-0">
-                Layanan tanggap darurat kami aktif 24 jam nonstop untuk seluruh warga Plaju, Palembang.
+                Layanan tanggap darurat kami aktif 24 jam nonstop untuk seluruh warga Kecamatan Plaju.
               </p>
             </motion.div>
           </div>
@@ -75,7 +75,7 @@ const Contact = () => {
                     <FaEnvelope className="w-4 h-4" />
                   </div>
                   <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Email Resmi</h4>
-                  <p className="text-slate-900 font-bold text-xs sm:text-sm break-all">damkar@palembang.go.id</p>
+                  <p className="text-slate-900 font-bold text-xs sm:text-sm break-all">damkar@plaju.go.id</p>
                 </div>
               </motion.div>
 
@@ -92,7 +92,7 @@ const Contact = () => {
                     <FaMapMarkerAlt className="w-4 h-4" />
                   </div>
                   <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Markas Pusat</h4>
-                  <p className="text-slate-900 font-bold text-xs sm:text-sm leading-normal">Jl. Merdeka No.1, Plaju, Palembang</p>
+                  <p className="text-slate-900 font-bold text-xs sm:text-sm leading-normal">Kantor Kecamatan Plaju</p>
                 </div>
               </motion.div>
 

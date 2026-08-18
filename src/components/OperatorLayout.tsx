@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { 
@@ -11,7 +11,8 @@ import {
   FaWhatsapp, 
   FaSignOutAlt,
   FaBars,
-  FaTimes
+  FaTimes,
+  FaUserShield
 } from "react-icons/fa";
 
 export default function OperatorLayout({ children }: { children: React.ReactNode }) {
@@ -19,10 +20,24 @@ export default function OperatorLayout({ children }: { children: React.ReactNode
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  const [role, setRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/auth/profile")
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.role) setRole(data.role);
+      })
+      .catch(console.error);
+  }, []);
+
   const menuItems = [
-    { name: "Dashboard", href: "/operator/dashboard", icon: <FaBell /> },
+    { name: "Dashboard", href: role === "SUPER_ADMIN" ? "/admin/dashboard" : "/operator/dashboard", icon: <FaBell /> },
     { name: "Statistik", href: "/operator/statistics", icon: <FaChartBar /> },
     { name: "Manajemen", href: "/operator/management", icon: <FaTags /> },
+    ...(role === "SUPER_ADMIN" 
+        ? [{ name: "Manajemen User", href: "/admin/users", icon: <FaUserShield /> }]
+        : []),
     { name: "Edukasi & Berita", href: "/operator/articles", icon: <FaFileAlt /> },
     { name: "WhatsApp", href: "/operator/whatsapp", icon: <FaWhatsapp /> },
   ];
@@ -30,10 +45,10 @@ export default function OperatorLayout({ children }: { children: React.ReactNode
   const handleLogout = async () => {
     try {
       await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
-      window.location.href = "/operator/login";
+      window.location.href = "/login";
     } catch (error) {
       console.error("Logout error:", error);
-      window.location.href = "/operator/login";
+      window.location.href = "/login";
     }
   };
 
@@ -59,7 +74,7 @@ export default function OperatorLayout({ children }: { children: React.ReactNode
           </div>
           <div className="overflow-hidden">
             <h1 className="text-lg font-bold tracking-tight text-gray-900 truncate">SiagaBencana <span className="text-red-500">Ops</span></h1>
-            <p className="text-xs font-medium text-gray-500 uppercase tracking-widest truncate">Operator</p>
+            <p className="text-xs font-medium text-gray-500 uppercase tracking-widest truncate">{role === 'SUPER_ADMIN' ? 'Super Admin' : 'Operator'}</p>
           </div>
           {/* Close button on mobile */}
           <button 

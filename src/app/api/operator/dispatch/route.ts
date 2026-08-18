@@ -11,9 +11,9 @@ export async function POST(request: NextRequest) {
   try {
     const user = await getAuthPayloadFromRequest(request);
 
-    // Pastikan user adalah operator
-    if (!user.isOperator && user.role !== 'operator') {
-      return jsonWithCors({ message: "Akses ditolak. Anda bukan operator." }, { status: 403, request });
+    // Pastikan user adalah operator atau super admin
+    if (!user.isOperator && user.role !== 'operator' && user.role !== 'SUPER_ADMIN') {
+      return jsonWithCors({ message: "Akses ditolak. Anda bukan operator atau admin." }, { status: 403, request });
     }
 
     const { reportId } = await request.json();

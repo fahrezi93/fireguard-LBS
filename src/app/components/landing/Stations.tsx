@@ -36,7 +36,7 @@ const Stations = () => {
           >
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight leading-snug">
               Jaringan Pos Pemadam <br className="hidden md:block" />
-              <span className="text-slate-400 font-normal">Plaju, Palembang.</span>
+              <span className="text-slate-400 font-normal">Kecamatan Plaju.</span>
             </h2>
           </motion.div>
 

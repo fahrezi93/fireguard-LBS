@@ -28,11 +28,10 @@ export async function OPTIONS() {
 
 export async function POST(request: NextRequest) {
     try {
-        // 1. Verifikasi operator (cookie JWT dengan isOperator: true)
         const auth = await requireOperator(request);
         if ('response' in auth) return auth.response;
         const operatorId = auth.payload.id;
-
+        
         // 2. Validasi input
         const body = await request.json();
         const title: string = (body.title ?? '').trim();

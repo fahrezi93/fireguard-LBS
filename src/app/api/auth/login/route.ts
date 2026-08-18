@@ -58,8 +58,9 @@ export async function POST(request: NextRequest) {
       phone_number: string | null;
       password_hash: string | null;
       role: string;
+      kelurahan_id: number | null;
     }>(
-      "SELECT id, name, email, phone_number, password_hash, role FROM users WHERE email = ?",
+      "SELECT id, name, email, phone_number, password_hash, role, kelurahan_id FROM users WHERE email = ?",
       [email],
     );
 
@@ -100,6 +101,7 @@ export async function POST(request: NextRequest) {
         name: user.name,
         phone: user.phone_number,
         role: user.role,
+        kelurahan_id: user.kelurahan_id,
         isOperator: false,
       })
         .setProtectedHeader({ alg: "HS256" })
@@ -123,7 +125,7 @@ export async function POST(request: NextRequest) {
         JSON.stringify({
           message: "Login berhasil!",
           token,
-          user: { id: user.id, name: user.name, email: user.email },
+          user: { id: user.id, name: user.name, email: user.email, role: user.role },
         }),
         {
           status: 200,

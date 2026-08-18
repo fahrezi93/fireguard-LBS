@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
 
         // Get fresh data from database
         const [rows] = await pool.execute<RowDataPacket[]>(
-            'SELECT id, name, email, phone_number, is_verified, role, is_on_duty, created_at FROM users WHERE id = ?',
+            'SELECT id, name, email, phone_number, is_verified, role, is_on_duty, created_at, kelurahan_id FROM users WHERE id = ?',
             [payload.id]
         );
 
@@ -77,7 +77,7 @@ export async function PUT(request: NextRequest) {
 
         // Get updated data
         const [rows] = await pool.execute<RowDataPacket[]>(
-            'SELECT id, name, email, phone_number, is_verified, role, is_on_duty, created_at FROM users WHERE id = ?',
+            'SELECT id, name, email, phone_number, is_verified, role, is_on_duty, created_at, kelurahan_id FROM users WHERE id = ?',
             [payload.id]
         );
 
@@ -93,6 +93,7 @@ export async function PUT(request: NextRequest) {
             email: rows[0].email,
             phone: rows[0].phone_number,
             role: rows[0].role,
+            kelurahan_id: rows[0].kelurahan_id,
             isOperator: false,
         })
             .setProtectedHeader({ alg: 'HS256' })
