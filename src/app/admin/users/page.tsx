@@ -156,8 +156,9 @@ export default function AdminUsersPage() {
                   <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Role</label>
                   <select className="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-900" value={form.role} onChange={e => setForm({...form, role: e.target.value})}>
                     <option value="KELURAHAN">KELURAHAN</option>
-                    <option value="operator">OPERATOR</option>
+                    <option value="OPERATOR">OPERATOR</option>
                     <option value="SUPER_ADMIN">SUPER_ADMIN</option>
+                    <option value="MASYARAKAT">MASYARAKAT (User Biasa)</option>
                   </select>
                 </div>
                 <div>

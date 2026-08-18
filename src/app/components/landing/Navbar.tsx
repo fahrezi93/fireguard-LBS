@@ -8,7 +8,14 @@ import { FaBell, FaUser, FaUserShield, FaChevronDown, FaSignOutAlt, FaBars, FaTi
 const Navbar = ({ isLight = true }: { isLight?: boolean }) => {
   const { push } = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState<{ name?: string; email?: string; phone?: string; id?: number; isOperator?: boolean } | null>(null);
+  const [user, setUser] = useState<{ name?: string; email?: string; phone?: string; id?: number; isOperator?: boolean; role?: string } | null>(null);
+  
+  const getDashboardUrl = () => {
+    if (user?.role === 'SUPER_ADMIN') return '/admin/dashboard';
+    if (user?.role === 'OPERATOR') return '/operator/dashboard';
+    if (user?.role === 'KELURAHAN') return '/kelurahan/dashboard';
+    return '/dashboard';
+  };
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -121,7 +128,7 @@ const Navbar = ({ isLight = true }: { isLight?: boolean }) => {
                   <p className={`text-sm font-medium line-clamp-1 ${isLight ? 'text-neutral-900' : 'text-white'}`}>{user?.name || user?.email || (user?.isOperator ? 'Operator' : 'User')}</p>
                 </div>
                 <div className="p-2 space-y-1">
-                  <button onClick={() => { setDropdownOpen(false); push(user?.isOperator ? '/operator/dashboard' : '/dashboard'); }} className={`w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3 transition-colors ${isLight ? 'text-neutral-600 hover:bg-black/5 hover:text-black' : 'text-neutral-300 hover:bg-white/5 hover:text-white'}`}>
+                  <button onClick={() => { setDropdownOpen(false); push(getDashboardUrl()); }} className={`w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3 transition-colors ${isLight ? 'text-neutral-600 hover:bg-black/5 hover:text-black' : 'text-neutral-300 hover:bg-white/5 hover:text-white'}`}>
                     {user?.isOperator ? <FaUserShield size={14} className="text-neutral-400" /> : <FaUser size={14} className="text-neutral-400" />} Dashboard
                   </button>
                   <button onClick={handleLogout} className="w-full text-left px-3 py-2.5 rounded-xl text-sm text-red-500 hover:bg-red-500/10 flex items-center gap-3 transition-colors">
@@ -184,7 +191,7 @@ const Navbar = ({ isLight = true }: { isLight?: boolean }) => {
         <div className={`pt-8 border-t flex flex-col gap-4 ${isLight ? 'border-black/5' : 'border-white/10'}`}>
           {isLoggedIn ? (
             <>
-              <button onClick={() => { setMobileMenuOpen(false); push(user?.isOperator ? '/operator/dashboard' : '/dashboard'); }} className={`w-full py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 ${isLight ? 'bg-black/5 text-black' : 'bg-white/5 text-white'}`}>
+              <button onClick={() => { setMobileMenuOpen(false); push(getDashboardUrl()); }} className={`w-full py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 ${isLight ? 'bg-black/5 text-black' : 'bg-white/5 text-white'}`}>
                 {user?.isOperator ? <FaUserShield className="text-neutral-400" /> : <FaUser className="text-neutral-400" />} Dashboard
               </button>
               <button onClick={() => { setMobileMenuOpen(false); handleLogout(); }} className="w-full bg-red-500/10 text-red-500 py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-3">
