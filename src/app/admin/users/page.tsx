@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FaUserPlus, FaShieldAlt, FaSpinner, FaTimes, FaSave } from "react-icons/fa";
+import { FaUserPlus, FaShieldAlt, FaSpinner, FaTimes, FaSave, FaEdit, FaTrash } from "react-icons/fa";
 import OperatorLayout from "@/components/OperatorLayout";
 
 interface User {
@@ -18,6 +18,7 @@ export default function AdminUsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
+  const [editId, setEditId] = useState<number | null>(null);
 
   const [form, setForm] = useState({ name: "", email: "", password: "", role: "KELURAHAN", kelurahan_id: "" });
   const [submitting, setSubmitting] = useState(false);
@@ -50,22 +51,50 @@ export default function AdminUsersPage() {
         kelurahan_id: form.kelurahan_id ? parseInt(form.kelurahan_id) : null,
       };
 
-      const res = await fetch("/api/admin/users", {
-        method: "POST",
+      const method = editId ? "PUT" : "POST";
+      const url = editId ? `/api/admin/users/${editId}` : "/api/admin/users";
+
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Gagal membuat user");
+      if (!res.ok) throw new Error(data.message || "Gagal menyimpan user");
 
       setShowAdd(false);
+      setEditId(null);
       setForm({ name: "", email: "", password: "", role: "KELURAHAN", kelurahan_id: "" });
       fetchUsers();
     } catch (err: any) {
       setError(err.message);
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleEditClick = (u: User) => {
+    setEditId(u.id);
+    setForm({
+      name: u.name,
+      email: u.email,
+      password: "", 
+      role: u.role,
+      kelurahan_id: u.kelurahan_id ? u.kelurahan_id.toString() : "",
+    });
+    setShowAdd(true);
+  };
+
+  const handleDelete = async (id: number) => {
+    if (!confirm("Yakin ingin menghapus pengguna ini? Data akan terhapus permanen.")) return;
+    try {
+      const res = await fetch(`/api/admin/users/${id}`, { method: "DELETE" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Gagal menghapus user");
+      fetchUsers();
+    } catch (err: any) {
+      alert(err.message);
     }
   };
 
@@ -82,7 +111,7 @@ export default function AdminUsersPage() {
             </div>
           </div>
           <button
-            onClick={() => setShowAdd(true)}
+            onClick={() => { setShowAdd(true); setEditId(null); setForm({ name: "", email: "", password: "", role: "KELURAHAN", kelurahan_id: "" }); }}
             className="bg-gray-900 text-white px-4 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:bg-gray-800 transition"
           >
             <FaUserPlus /> Tambah Akun
@@ -97,13 +126,14 @@ export default function AdminUsersPage() {
                 <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Email</th>
                 <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Role</th>
                 <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Kel. ID</th>
+                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {loading ? (
-                <tr><td colSpan={4} className="text-center py-8 text-gray-500">Loading...</td></tr>
+                <tr><td colSpan={5} className="text-center py-8 text-gray-500">Loading...</td></tr>
               ) : users.length === 0 ? (
-                <tr><td colSpan={4} className="text-center py-8 text-gray-500">Belum ada user.</td></tr>
+                <tr><td colSpan={5} className="text-center py-8 text-gray-500">Belum ada user.</td></tr>
               ) : (
                 users.map(u => (
                   <tr key={u.id} className="hover:bg-gray-50">
@@ -119,6 +149,14 @@ export default function AdminUsersPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-500">{u.kelurahan_id || '-'}</td>
+                    <td className="px-6 py-4 flex justify-end gap-2">
+                      <button onClick={() => handleEditClick(u)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Edit">
+                        <FaEdit />
+                      </button>
+                      <button onClick={() => handleDelete(u.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition" title="Hapus">
+                        <FaTrash />
+                      </button>
+                    </td>
                   </tr>
                 ))
               )}
@@ -131,8 +169,8 @@ export default function AdminUsersPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
           <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
             <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-              <h3 className="font-bold text-gray-900">Tambah Akun Baru</h3>
-              <button onClick={() => setShowAdd(false)} className="text-gray-400 hover:text-gray-700">
+              <h3 className="font-bold text-gray-900">{editId ? "Edit Akun" : "Tambah Akun Baru"}</h3>
+              <button onClick={() => { setShowAdd(false); setEditId(null); setForm({ name: "", email: "", password: "", role: "KELURAHAN", kelurahan_id: "" }); }} className="text-gray-400 hover:text-gray-700">
                 <FaTimes />
               </button>
             </div>
@@ -149,7 +187,7 @@ export default function AdminUsersPage() {
               </div>
               <div>
                 <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Password Sementara</label>
-                <input required type="text" className="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-900" value={form.password} onChange={e => setForm({...form, password: e.target.value})} />
+                <input required={!editId} type="text" placeholder={editId ? "Tidak dapat mengubah password saat edit" : ""} className={`w-full border border-gray-200 rounded-xl px-4 py-2 text-sm ${editId ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'text-gray-900'}`} value={form.password} onChange={e => setForm({...form, password: e.target.value})} disabled={!!editId} />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>

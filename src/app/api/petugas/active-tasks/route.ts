@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
   try {
     const user = await getAuthPayloadFromRequest(request);
 
-    if (user.role !== 'petugas') {
+    if (user.role !== 'PETUGAS') {
       return jsonWithCors({ message: "Akses ditolak. Anda bukan petugas." }, { status: 403, request });
     }
 

@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     const user = await getAuthPayloadFromRequest(request);
 
     // Pastikan ini adalah petugas
-    if (user.role !== 'petugas') {
+    if (user.role !== 'PETUGAS') {
       return jsonWithCors({ message: "Hanya petugas yang bisa menerima tugas ini." }, { status: 403, request });
     }
 
