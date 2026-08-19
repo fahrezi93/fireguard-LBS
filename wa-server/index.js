@@ -24,6 +24,7 @@ async function connectToWhatsApp() {
         auth: state,
         logger: pino({ level: 'silent' }),
         printQRInTerminal: true, // You can still print to terminal for debugging
+        browser: ['Ubuntu', 'Chrome', '20.0.04'], // Prevent instant connection drops on VPS
     });
 
     sock.ev.on('connection.update', async (update) => {
