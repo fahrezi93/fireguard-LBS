@@ -10,7 +10,9 @@ import OperatorLayout from "@/components/OperatorLayout";
 
 export default function OperatorWhatsAppPage() {
   const [status, setStatus] = useState<"loading" | "connected" | "disconnected" | "error">("loading");
-  const [qrCode, setQrCode] = useState<string | null>(null);
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [pairingCode, setPairingCode] = useState<string | null>(null);
+  const [isRequestingCode, setIsRequestingCode] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { toast, success, error, hideToast } = useToast();
   const router = useRouter();
@@ -29,29 +31,38 @@ export default function OperatorWhatsAppPage() {
     }
   };
 
-  const fetchQr = async () => {
+  const requestPairingCode = async () => {
+    if (!phoneNumber) {
+      error("Silakan masukkan nomor HP terlebih dahulu.");
+      return;
+    }
+    setIsRequestingCode(true);
+    setPairingCode(null);
     try {
-      const res = await fetch("/api/operator/whatsapp/qr");
+      const res = await fetch("/api/operator/whatsapp/pairing", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phoneNumber }),
+      });
       const data = await res.json();
-      if (res.ok && data.status === "ready" && data.qr) {
-        setQrCode(data.qr);
-        setStatus("disconnected");
-      } else if (data.status === "connected") {
-        setStatus("connected");
+      if (data.success && data.code) {
+        setPairingCode(data.code);
+        success("Berhasil mendapatkan kode tautan!");
+      } else {
+        error(data.message || "Gagal mendapatkan kode tautan.");
       }
     } catch (e) {
-      console.error(e);
+      error("Terjadi kesalahan jaringan.");
+    } finally {
+      setIsRequestingCode(false);
     }
   };
 
   useEffect(() => {
     fetchStatus();
-    // Polling status and QR every 5 seconds
+    // Polling status every 5 seconds
     const interval = setInterval(() => {
       fetchStatus();
-      if (status !== "connected") {
-        fetchQr();
-      }
     }, 5000);
     return () => clearInterval(interval);
   }, [status]);
@@ -63,11 +74,11 @@ export default function OperatorWhatsAppPage() {
       const res = await fetch("/api/operator/whatsapp/logout", { method: "POST" });
       const data = await res.json();
       if (data.success) {
-        success("Berhasil logout. Menyiapkan QR code baru...");
+        success("Berhasil logout. Silakan tautkan perangkat baru.");
         setStatus("loading");
-        setQrCode(null);
+        setPairingCode(null);
         setTimeout(() => {
-          fetchQr();
+          fetchStatus();
         }, 3000);
       } else {
         error(data.message || "Gagal melakukan logout.");
@@ -175,37 +186,62 @@ export default function OperatorWhatsAppPage() {
               </button>
             </div>
           ) : (
-            <div className="flex flex-col md:flex-row items-center gap-10">
+            <div className="flex flex-col md:flex-row items-start gap-10">
               <div className="flex-1 text-center md:text-left">
                 <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center justify-center md:justify-start gap-2">
-                  <FaQrcode className="text-gray-400" /> Tautkan Perangkat Baru
+                  <FaQrcode className="text-gray-400" /> Tautkan dengan Nomor
                 </h3>
                 <ol className="text-left text-gray-600 space-y-4 list-decimal pl-5 marker:font-bold marker:text-gray-900">
                   <li>Buka aplikasi WhatsApp di HP pengirim resmi.</li>
                   <li>Ketuk Menu (titik tiga) di Android, atau Pengaturan di iPhone.</li>
                   <li>Pilih <strong>Perangkat Taut</strong> (Linked Devices).</li>
-                  <li>Ketuk <strong>Tautkan Perangkat</strong>.</li>
-                  <li>Arahkan kamera ke layar ini untuk memindai kode QR.</li>
+                  <li>Pilih <strong>Tautkan dengan Nomor Telepon Saja</strong> (di bagian paling bawah).</li>
+                  <li>Masukkan 8 digit kode yang muncul di layar ini ke HP Anda.</li>
                 </ol>
                 <p className="mt-6 text-xs text-amber-600 bg-amber-50 p-3 rounded-lg border border-amber-100 font-medium">
                   <strong>Peringatan:</strong> Pastikan Anda menggunakan nomor khusus notifikasi (bot). Hindari menggunakan nomor pribadi operator.
                 </p>
               </div>
               
-              <div className="flex-1 flex flex-col items-center justify-center">
-                <div className="p-4 bg-white border border-gray-200 shadow-sm rounded-2xl relative w-64 h-64 flex items-center justify-center">
-                  {qrCode ? (
-                    <img src={qrCode} alt="WhatsApp QR Code" className="w-full h-full object-contain" />
+              <div className="flex-1 flex flex-col items-center justify-center w-full">
+                <div className="p-6 bg-white border border-gray-200 shadow-sm rounded-2xl relative w-full max-w-sm flex flex-col gap-4">
+                  {!pairingCode ? (
+                    <>
+                      <label className="text-sm font-bold text-gray-700 text-left">Nomor HP Bot WhatsApp</label>
+                      <input 
+                        type="text" 
+                        placeholder="Contoh: 081234567890" 
+                        className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-500 outline-none text-gray-800"
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                      />
+                      <button 
+                        onClick={requestPairingCode}
+                        disabled={isRequestingCode}
+                        className="w-full py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+                      >
+                        {isRequestingCode ? <FaSpinner className="animate-spin" /> : <FaQrcode />}
+                        {isRequestingCode ? "Meminta Kode..." : "Dapatkan Kode Tautan"}
+                      </button>
+                    </>
                   ) : (
-                    <div className="flex flex-col items-center gap-3 text-gray-400">
-                      <FaSpinner className="animate-spin text-3xl" />
-                      <span className="text-xs font-semibold uppercase tracking-widest">Membuat QR...</span>
+                    <div className="flex flex-col items-center gap-4 py-4">
+                      <span className="text-sm font-bold text-gray-500 uppercase tracking-widest text-center">KODE TAUTAN ANDA</span>
+                      <div className="text-4xl font-black text-gray-900 tracking-[0.2em] bg-gray-100 py-4 px-6 rounded-xl border-2 border-dashed border-gray-300">
+                        {pairingCode}
+                      </div>
+                      <p className="text-xs text-center text-gray-500 mt-2">
+                        Segera masukkan kode ini di aplikasi WhatsApp Anda. Kode ini akan kedaluwarsa dalam beberapa menit.
+                      </p>
+                      <button 
+                        onClick={() => setPairingCode(null)}
+                        className="mt-2 text-sm text-blue-600 hover:underline font-semibold"
+                      >
+                        Minta Ulang Kode
+                      </button>
                     </div>
                   )}
                 </div>
-                <p className="mt-4 text-xs text-gray-400 font-medium text-center">
-                  QR Code otomatis diperbarui setiap 5 detik.
-                </p>
               </div>
             </div>
           )}
