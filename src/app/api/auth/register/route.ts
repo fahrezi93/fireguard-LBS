@@ -3,6 +3,7 @@ import crypto from "crypto";
 import { execute, queryRow, formatDateForMySQL } from "@/lib/db";
 import { hashOtp } from "@/lib/auth";
 import { sendWhatsAppOTP } from "@/lib/whatsapp";
+import { sendEmailOTP } from "@/lib/email";
 import { handleCorsOptions, jsonWithCors } from "@/lib/cors";
 import { enforceRateLimit } from "@/lib/rate-limit";
 import { ensureNotificationTables } from "@/lib/db-init";
@@ -69,11 +70,21 @@ export async function POST(request: NextRequest) {
         const waResult = await sendWhatsAppOTP(phoneNumber, otp, "register");
 
         if (!waResult.success) {
-            return jsonWithCors({ message: "Gagal mengirim OTP ke WhatsApp. Silakan periksa nomor Anda dan coba lagi." }, { status: 500 });
+            console.log(`[Register] WhatsApp gagal untuk ${phoneNumber}. Mencoba Fallback Email ke ${email}...`);
+            const emailResult = await sendEmailOTP(email, otp);
+            
+            if (!emailResult.success) {
+                return jsonWithCors({ message: "Gagal mengirim OTP ke WhatsApp maupun Email. Pastikan nomor atau email Anda aktif." }, { status: 500 });
+            }
+
+            return jsonWithCors({
+                message: `Kode OTP berhasil dikirim ke Email ${email}. Silakan cek kotak masuk atau folder spam Anda.`,
+                tempData: { name, email, phoneNumber },
+            });
         }
 
         return jsonWithCors({
-            message: `Kode OTP telah dikirim ke WhatsApp ${phoneNumber}`,
+            message: `Kode OTP berhasil dikirim ke WhatsApp ${phoneNumber}`,
             tempData: { name, email, phoneNumber },
         });
     } catch (error: any) {
