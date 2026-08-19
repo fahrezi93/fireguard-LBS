@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { default: makeWASocket, useMultiFileAuthState, DisconnectReason } = require('@whiskeysockets/baileys');
+const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, Browsers } = require('@whiskeysockets/baileys');
 const pino = require('pino');
 const QRCode = require('qrcode');
 const fs = require('fs');
@@ -24,7 +24,7 @@ async function connectToWhatsApp() {
         auth: state,
         logger: pino({ level: 'silent' }),
         printQRInTerminal: true, // You can still print to terminal for debugging
-        browser: ['Ubuntu', 'Chrome', '20.0.04'], // Prevent instant connection drops on VPS
+        browser: Browsers.macOS('Desktop'), // Use built-in Browsers config
     });
 
     sock.ev.on('connection.update', async (update) => {
