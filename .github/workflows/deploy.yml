@@ -33,3 +33,9 @@ jobs:
             # Restart menggunakan script rahasia bawaan aaPanel agar tersinkronisasi dengan GUI
             pkill -u www -f "node server.js" || true
             sudo -u www bash /www/server/nodejs/vhost/scripts/siagabencana.sh
+            
+            # Install package wa-server & Restart wa-server menggunakan PM2
+            cd /www/wwwroot/fireguard-LBS/wa-server
+            npm install
+            pm2 restart wa-server || pm2 start index.js --name "wa-server"
+
