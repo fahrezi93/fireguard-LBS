@@ -24,8 +24,9 @@ jobs:
             # Izinkan Git berjalan
             git config --global --add safe.directory /www/wwwroot/fireguard-LBS
             
-            # Tarik update terbaru
-            git pull origin main
+            # Tarik update terbaru secara paksa (timpa perubahan lokal)
+            git fetch --all
+            git reset --hard origin/main
             
             # Install package baru & build
             npm install
