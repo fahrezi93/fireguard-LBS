@@ -261,6 +261,9 @@ export default function DashboardPage() {
               <FaTimes />
             </button>
           </div>
+          <div className="px-6 pb-3 pt-1 border-b border-neutral-100 flex justify-center bg-neutral-50/50">
+            <img src="/Logo_LPKM.png" alt="Sponsor Logos" className="h-6 md:h-8 object-contain" />
+          </div>
 
           <nav className="flex-1 px-4 mt-4 space-y-1">
             <Link href="/" className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 rounded-xl transition-all">

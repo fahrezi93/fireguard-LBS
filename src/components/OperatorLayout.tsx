@@ -84,6 +84,9 @@ export default function OperatorLayout({ children }: { children: React.ReactNode
             <FaTimes />
           </button>
         </div>
+        <div className="px-6 pb-4 pt-2 border-b border-gray-200/70 shrink-0 flex justify-center bg-gray-50/50">
+          <img src="/Logo_LPKM.png" alt="Sponsor Logos" className="h-6 md:h-8 object-contain" />
+        </div>
 
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-1.5">

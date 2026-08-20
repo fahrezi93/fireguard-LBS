@@ -89,7 +89,21 @@ const Navbar = ({ isLight = true }: { isLight?: boolean }) => {
 
   return (
     <>
-    <nav className={`fixed top-0 inset-x-0 w-full z-50 transition-all duration-300 ease-out ${scrolled
+    {/* LPKM Sponsorship Banner */}
+    <div className={`fixed top-0 inset-x-0 w-full z-[60] transition-all duration-300 flex justify-center items-center py-1.5 md:py-2 ${
+      scrolled ? 'bg-slate-50 border-b border-gray-200' : 'bg-black/20 backdrop-blur-md border-b border-white/10'
+    }`}>
+      <div className="flex items-center gap-3 md:gap-4 px-4">
+        <span className={`text-[10px] md:text-[11px] font-bold uppercase tracking-[0.2em] ${scrolled ? 'text-slate-500' : 'text-white/90'}`}>
+          Didukung Oleh:
+        </span>
+        <div className="bg-white/95 px-3 py-1 md:py-1.5 rounded-full shadow-sm">
+          <img src="/Logo_LPKM.png" alt="Sponsorship Logos" className="h-4 md:h-6 object-contain" />
+        </div>
+      </div>
+    </div>
+
+    <nav className={`fixed top-[36px] md:top-[44px] inset-x-0 w-full z-50 transition-all duration-300 ease-out ${scrolled
         ? 'bg-white/90 shadow-sm backdrop-blur-xl border-b border-black/5 py-3 md:py-3.5'
         : 'bg-transparent border-b border-transparent py-4 md:py-5'
       }`}>
