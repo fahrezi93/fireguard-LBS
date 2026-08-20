@@ -15,7 +15,7 @@ export async function GET() {
     
     await connection.query('SET FOREIGN_KEY_CHECKS = 0');
     await connection.query('SET @count = 0');
-    await connection.query('UPDATE reports SET id = @count:= @count + 1 ORDER BY id ASC');
+    await connection.query('UPDATE reports SET id = @count:= @count + 1 ORDER BY created_at ASC');
     await connection.query('ALTER TABLE reports AUTO_INCREMENT = 1');
     await connection.query('SET FOREIGN_KEY_CHECKS = 1');
     
