@@ -217,6 +217,7 @@ export default function ReportDetailModal({
       completed: { text: "Selesai", color: "text-green-600", bgColor: "bg-green-50 border-green-200" },
       selesai: { text: "Selesai", color: "text-green-600", bgColor: "bg-green-50 border-green-200" },
       dibatalkan: { text: "Dibatalkan", color: "text-red-600", bgColor: "bg-red-50 border-red-200" },
+      false: { text: "Laporan Palsu", color: "text-gray-600", bgColor: "bg-gray-50 border-gray-200" },
       false_report: { text: "Laporan Palsu", color: "text-gray-600", bgColor: "bg-gray-50 border-gray-200" },
     };
     return (

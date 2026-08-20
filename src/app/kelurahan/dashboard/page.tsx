@@ -121,66 +121,66 @@ export default function KelurahanDashboard() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between sticky top-0 z-30 shadow-sm">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center">
-            <FaMapMarkerAlt className="text-red-600 text-lg" />
+      <header className="bg-white border-b border-gray-200 px-4 md:px-6 py-3 md:py-4 flex items-center justify-between sticky top-0 z-[100] shadow-sm">
+        <div className="flex items-center gap-2 md:gap-3">
+          <div className="w-8 h-8 md:w-10 md:h-10 bg-red-50 rounded-lg md:rounded-xl flex items-center justify-center shrink-0">
+            <FaMapMarkerAlt className="text-red-600 text-sm md:text-lg" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-gray-900">Dashboard Kelurahan</h1>
+            <h1 className="text-sm md:text-lg font-bold text-gray-900 leading-tight">Dashboard Kelurahan</h1>
             {kelurahanName && (
-              <p className="text-xs text-gray-500 font-medium">{kelurahanName}</p>
+              <p className="text-[10px] md:text-xs text-gray-500 font-medium truncate max-w-[150px] md:max-w-none">{kelurahanName}</p>
             )}
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 md:gap-2">
           <button
             onClick={fetchReports}
             disabled={loading}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg md:rounded-xl transition-colors disabled:opacity-50"
           >
             <FaSyncAlt className={loading ? "animate-spin" : ""} />
-            Refresh
+            <span className="hidden sm:inline">Refresh</span>
           </button>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-red-600 bg-red-50 hover:bg-red-100 border border-red-100 rounded-xl transition-colors"
+            className="flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-semibold text-red-600 bg-red-50 hover:bg-red-100 border border-red-100 rounded-lg md:rounded-xl transition-colors"
           >
             <FaSignOutAlt />
-            Logout
+            <span className="hidden sm:inline">Logout</span>
           </button>
         </div>
       </header>
 
-      <main className="flex-1 p-4 md:p-6 max-w-7xl mx-auto w-full space-y-6">
+      <main className="flex-1 p-4 md:p-6 max-w-7xl mx-auto w-full space-y-4 md:space-y-6">
         {/* Stat Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
           {[
             { icon: <FaClipboardList />, label: "Total Laporan", value: totalLaporan, color: "bg-gray-800" },
-            { icon: <FaFire />, label: "Aktif / Belum Selesai", value: laporanAktif, color: "bg-red-500" },
+            { icon: <FaFire />, label: "Belum Selesai", value: laporanAktif, color: "bg-red-500" },
             { icon: <FaTruck />, label: "Petugas Dikirim", value: laporanDikirim, color: "bg-blue-500" },
-            { icon: <FaCheckCircle />, label: "Selesai Ditangani", value: laporanSelesai, color: "bg-green-500" },
+            { icon: <FaCheckCircle />, label: "Selesai", value: laporanSelesai, color: "bg-green-500" },
           ].map(({ icon, label, value, color }) => (
-            <div key={label} className="bg-white p-4 md:p-5 rounded-2xl border border-gray-200 shadow-sm flex items-center gap-4">
-              <div className={`w-11 h-11 ${color} text-white rounded-xl flex items-center justify-center text-lg shrink-0`}>
+            <div key={label} className="bg-white p-3 md:p-5 rounded-xl md:rounded-2xl border border-gray-200 shadow-sm flex items-center gap-3 md:gap-4">
+              <div className={`w-9 h-9 md:w-11 md:h-11 ${color} text-white rounded-lg md:rounded-xl flex items-center justify-center text-base md:text-lg shrink-0`}>
                 {icon}
               </div>
               <div>
-                <p className="text-2xl font-extrabold text-gray-900">{loading ? "—" : value}</p>
-                <p className="text-xs text-gray-500 font-medium mt-0.5">{label}</p>
+                <p className="text-lg md:text-2xl font-extrabold text-gray-900 leading-none">{loading ? "—" : value}</p>
+                <p className="text-[10px] md:text-xs text-gray-500 font-medium mt-1 md:mt-0.5 leading-tight">{label}</p>
               </div>
             </div>
           ))}
         </div>
 
         {/* Peta */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-          <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-2">
-            <FaMapMarkerAlt className="text-red-500" />
-            <h2 className="font-bold text-gray-900">Peta Kejadian Wilayah</h2>
-            <span className="ml-auto text-xs text-gray-400 font-medium">Data difilter sesuai wilayah Anda</span>
+        <div className="bg-white rounded-xl md:rounded-2xl border border-gray-200 shadow-sm overflow-hidden relative z-0">
+          <div className="px-4 py-3 md:px-5 md:py-4 border-b border-gray-100 flex items-center gap-2">
+            <FaMapMarkerAlt className="text-red-500 shrink-0" />
+            <h2 className="font-bold text-gray-900 text-sm md:text-base">Peta Kejadian Wilayah</h2>
+            <span className="ml-auto text-[10px] md:text-xs text-gray-400 font-medium hidden sm:inline">Data difilter sesuai wilayah Anda</span>
           </div>
-          <div className="h-[420px]">
+          <div className="h-[300px] md:h-[420px]">
             {loading ? (
               <div className="h-full flex items-center justify-center">
                 <FaSpinner className="animate-spin text-gray-300 text-3xl" />
