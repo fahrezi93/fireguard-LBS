@@ -112,35 +112,29 @@ export default function SettingsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#F8F9FA] font-sans selection:bg-red-500/30">
+        <div className="min-h-screen bg-[#F8F9FA] font-sans selection:bg-red-500/30 flex flex-col">
+            {/* Top Sponsor Banner */}
+            <div className="w-full bg-white border-b border-gray-200/80 z-30 flex justify-center items-center py-1.5 sm:py-2 shrink-0 relative">
+              <div className="flex items-center gap-2.5 sm:gap-3.5 px-3">
+                <span className="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.15em] text-slate-500">
+                  Didanai Oleh:
+                </span>
+                <div className="bg-white px-2 py-0.5 rounded-md">
+                  <img src="/Logo_LPKM.png" alt="Sponsorship Logos" className="h-6 sm:h-7 md:h-8 object-contain" />
+                </div>
+              </div>
+            </div>
 
-            {/* Toast Notification */}
-            <AnimatePresence>
-                {toast && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -20, x: "-50%" }}
-                        animate={{ opacity: 1, y: 0, x: "-50%" }}
-                        exit={{ opacity: 0, y: -20, x: "-50%" }}
-                        className="fixed top-24 left-1/2 z-50 flex items-center gap-2 bg-gray-900 text-white px-4 py-3 rounded-2xl shadow-xl shadow-gray-900/20 font-bold text-[11px] uppercase tracking-widest"
-                    >
-                        <div className="w-5 h-5 bg-white/20 rounded-full flex items-center justify-center shrink-0">
-                            <FaCheck className="text-xs" />
-                        </div>
-                        {toast}
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
-            <header className="h-20 bg-white/80 backdrop-blur-xl border-b border-gray-100 sticky top-0 z-40 px-6 md:px-8 flex items-center">
+            <header className="h-14 sm:h-18 bg-white/90 backdrop-blur-xl border-b border-gray-100 sticky top-0 z-20 px-3.5 sm:px-6 md:px-8 flex items-center">
                 <div className="max-w-3xl w-full mx-auto flex items-center justify-between">
                     <Link
                         href="/dashboard"
-                        className="flex items-center gap-2 px-3 py-2 text-sm font-bold text-gray-500 hover:text-gray-900 transition-colors uppercase tracking-wider rounded-xl hover:bg-gray-50"
+                        className="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm font-bold text-gray-500 hover:text-gray-900 transition-colors uppercase tracking-wider rounded-xl hover:bg-gray-50 active:scale-95"
                     >
-                        <FaArrowLeft className="text-sm" /> <span className="hidden sm:inline">Dashboard</span>
+                        <FaArrowLeft className="text-xs sm:text-sm" /> <span className="hidden xs:inline">Dashboard</span>
                     </Link>
-                    <h1 className="text-xl font-bold tracking-tight text-gray-900 leading-none">Pengaturan.</h1>
-                    <div className="w-[88px] sm:w-[130px] invisible"></div>
+                    <h1 className="text-base sm:text-xl font-bold tracking-tight text-gray-900 leading-none">Pengaturan.</h1>
+                    <div className="w-[40px] sm:w-[100px] invisible"></div>
                 </div>
             </header>
 

@@ -106,125 +106,229 @@ export default function EditProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] font-sans selection:bg-red-500/30">
-      <header className="h-20 bg-white/80 backdrop-blur-xl border-b border-gray-100 sticky top-0 z-40 px-6 md:px-8 flex items-center">
-        <div className="max-w-3xl w-full mx-auto flex items-center justify-between">
-            <Link
+    <div className="min-h-screen bg-[#FAFAFA] font-sans selection:bg-red-500/30 flex flex-col text-gray-900">
+      {/* Top Sponsor Banner */}
+      <div className="w-full bg-white border-b border-gray-200/80 z-30 flex justify-center items-center py-1.5 sm:py-2 shrink-0 relative">
+        <div className="flex items-center gap-2.5 sm:gap-3.5 px-3">
+          <span className="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.15em] text-slate-500">
+            Didanai Oleh:
+          </span>
+          <div className="bg-white px-2 py-0.5 rounded-md">
+            <img src="/Logo_LPKM.png" alt="Sponsorship Logos" className="h-6 sm:h-7 md:h-8 object-contain" />
+          </div>
+        </div>
+      </div>
+
+      {/* Sticky Header */}
+      <header className="h-14 sm:h-16 bg-white/90 backdrop-blur-xl border-b border-gray-200/80 sticky top-0 z-20 px-3.5 sm:px-6 lg:px-8 flex items-center justify-between shadow-2xs">
+        <div className="max-w-5xl w-full mx-auto flex items-center justify-between">
+          <Link
             href="/dashboard"
-            className="flex items-center gap-2 px-3 py-2 text-sm font-bold text-gray-500 hover:text-gray-900 transition-colors uppercase tracking-wider rounded-xl hover:bg-gray-50"
-            >
-                <FaArrowLeft className="text-sm" /> <span className="hidden sm:inline">Dashboard</span>
-            </Link>
-            <h1 className="text-xl font-bold tracking-tight text-gray-900 leading-none">Edit Profil.</h1>
-            <div className="w-[88px] sm:w-[130px] invisible"></div>
+            className="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm font-bold text-gray-600 hover:text-gray-900 transition-colors uppercase tracking-wider rounded-xl hover:bg-gray-100 active:scale-95"
+          >
+            <FaArrowLeft className="text-xs sm:text-sm" /> <span>Dashboard</span>
+          </Link>
+          <h1 className="text-base sm:text-lg font-bold tracking-tight text-gray-900">Edit Profil</h1>
+          <div className="w-[60px] sm:w-[90px] invisible"></div>
         </div>
       </header>
 
-      <main className="max-w-3xl mx-auto px-6 py-8 md:py-12">
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+      {/* Main Content Area */}
+      <main className="max-w-5xl w-full mx-auto px-3.5 sm:px-6 lg:px-8 py-5 sm:py-8 flex-1">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
           
-          {/* Identity Header */}
-          <div className="bg-gray-900 p-8 md:p-10 relative overflow-hidden">
-             <div className="absolute top-[-50%] right-[-10%] w-64 h-64 bg-red-500/20 blur-[60px] rounded-full pointer-events-none"></div>
-             <div className="flex flex-col md:flex-row md:items-center gap-6 relative z-10">
-                <div className="w-24 h-24 bg-white/10 backdrop-blur-md rounded-[2rem] flex items-center justify-center border border-white/10 shadow-xl shrink-0">
-                    <FaUser className="text-white/80 text-4xl" />
+          {/* Left Column: Identity Overview Card */}
+          <div className="lg:col-span-4 space-y-4">
+            <motion.div 
+              initial={{ opacity: 0, y: 8 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              className="bg-white rounded-2xl border border-gray-200/80 p-5 sm:p-6 shadow-xs flex flex-col items-center text-center relative overflow-hidden"
+            >
+              {/* Decorative top accent */}
+              <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-red-500 via-red-600 to-amber-500" />
+
+              {/* Avatar Circle */}
+              <div className="relative mt-2 mb-3.5">
+                <div className="w-20 h-20 sm:w-22 sm:h-22 bg-slate-900 text-white rounded-full flex items-center justify-center font-bold text-2xl sm:text-3xl shadow-md border-4 border-white ring-2 ring-gray-100">
+                  {user?.name?.[0]?.toUpperCase() || <FaUser className="text-xl" />}
                 </div>
-                <div>
-                    <h2 className="text-2xl md:text-3xl font-bold text-white tracking-tight mb-1">{user?.name}</h2>
-                    <p className="text-white/60 text-sm font-medium tracking-wide mb-3">{user?.email}</p>
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/10 rounded-xl border border-white/5">
-                        {user?.is_verified ? (
-                            <><FaShieldAlt className="text-green-400 text-xs" /><span className="text-[10px] uppercase tracking-widest font-bold text-green-50">Terverifikasi</span></>
-                        ) : (
-                            <><FaExclamationCircle className="text-amber-400 text-xs" /><span className="text-[10px] uppercase tracking-widest font-bold text-amber-50">Belum Verifikasi</span></>
-                        )}
-                    </div>
+              </div>
+
+              <h2 className="text-base sm:text-lg font-bold text-gray-900 tracking-tight mb-0.5">
+                {user?.name || "Pengguna"}
+              </h2>
+              <p className="text-xs text-gray-500 mb-3 truncate max-w-full font-medium">
+                {user?.email || "-"}
+              </p>
+
+              {/* Verification Badge */}
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider mb-4 border">
+                {user?.is_verified ? (
+                  <span className="flex items-center gap-1.5 text-emerald-700 bg-emerald-50 border-emerald-200">
+                    <FaShieldAlt className="text-emerald-500 text-xs" /> Terverifikasi
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1.5 text-amber-700 bg-amber-50 border-amber-200">
+                    <FaExclamationCircle className="text-amber-500 text-xs" /> Belum Verifikasi
+                  </span>
+                )}
+              </div>
+
+              {/* Metadata Details List */}
+              <div className="w-full pt-4 border-t border-gray-100 space-y-2.5 text-left text-xs">
+                <div className="flex items-center justify-between text-gray-600">
+                  <span className="flex items-center gap-2 text-gray-400">
+                    <FaCalendarAlt className="text-xs" /> Terdaftar:
+                  </span>
+                  <span className="font-semibold text-gray-800">
+                    {user?.created_at ? formatDate(user.created_at) : "-"}
+                  </span>
                 </div>
-             </div>
+                <div className="flex items-center justify-between text-gray-600">
+                  <span className="flex items-center gap-2 text-gray-400">
+                    <FaPhone className="text-xs" /> WhatsApp:
+                  </span>
+                  <span className="font-semibold text-gray-800 truncate max-w-[140px]">
+                    {user?.phone_number || "Belum diisi"}
+                  </span>
+                </div>
+              </div>
+            </motion.div>
           </div>
 
-          {/* Edit Form */}
-          <form onSubmit={handleSubmit} className="p-6 md:p-10 space-y-6">
-            
-            {success && (
-                <div className="flex items-center gap-3 px-5 py-4 bg-green-50 border border-green-100 rounded-2xl">
-                    <FaCheckCircle className="text-green-500 shrink-0" />
-                    <p className="text-sm font-bold text-green-700">{success}</p>
-                </div>
-            )}
+          {/* Right Column: Edit Profile Form */}
+          <div className="lg:col-span-8">
+            <motion.div 
+              initial={{ opacity: 0, y: 8 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              transition={{ delay: 0.05 }}
+              className="bg-white rounded-2xl border border-gray-200/80 p-5 sm:p-7 shadow-xs"
+            >
+              <div className="mb-5 sm:mb-6">
+                <h3 className="text-base sm:text-lg font-bold text-gray-900 tracking-tight">
+                  Informasi Akun
+                </h3>
+                <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
+                  Perbarui identitas profil dan kontak darurat Anda
+                </p>
+              </div>
 
-            {error && (
-                <div className="flex items-center gap-3 px-5 py-4 bg-red-50 border border-red-100 rounded-2xl">
-                    <FaExclamationCircle className="text-red-500 shrink-0" />
-                    <p className="text-sm font-bold text-red-700">{error}</p>
+              {/* Feedback Alerts */}
+              {success && (
+                <div className="mb-5 flex items-center gap-2.5 px-4 py-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs sm:text-sm font-medium animate-in fade-in">
+                  <FaCheckCircle className="text-emerald-500 text-base shrink-0" />
+                  <span>{success}</span>
                 </div>
-            )}
+              )}
 
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="md:col-span-2">
-                    <label className="block text-[11px] uppercase tracking-widest font-bold text-gray-400 mb-2">Nama Lengkap <span className="text-red-500">*</span></label>
-                    <div className="relative">
-                        <input
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            className="w-full bg-gray-50 border border-gray-200 text-gray-900 text-sm font-semibold rounded-2xl block p-4 pl-12 focus:ring-2 focus:ring-gray-900 focus:border-gray-900 focus:bg-white transition-all outline-none"
-                            placeholder="Nama Sesuai Identitas"
-                            required
-                            minLength={2}
-                            maxLength={100}
-                        />
-                        <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+              {error && (
+                <div className="mb-5 flex items-center gap-2.5 px-4 py-3 bg-red-50 border border-red-200 text-red-800 rounded-xl text-xs sm:text-sm font-medium animate-in fade-in">
+                  <FaExclamationCircle className="text-red-500 text-base shrink-0" />
+                  <span>{error}</span>
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+                {/* Full Name */}
+                <div className="space-y-1.5">
+                  <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                    Nama Lengkap <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">
+                      <FaUser className="text-xs" />
                     </div>
+                    <input
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="w-full bg-slate-50/70 border border-gray-200 text-gray-900 text-xs sm:text-sm font-medium rounded-xl pl-9 pr-3.5 py-2.5 focus:bg-white focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all outline-none"
+                      placeholder="Nama sesuai identitas"
+                      required
+                      minLength={2}
+                      maxLength={100}
+                    />
+                  </div>
                 </div>
 
-                <div className="md:col-span-2">
-                    <label className="block text-[11px] uppercase tracking-widest font-bold text-gray-400 mb-2">Alamat Email (Permanen)</label>
-                    <div className="relative opacity-60 grayscale cursor-not-allowed">
-                        <input
-                            type="email"
-                            value={user?.email || ""}
-                            className="w-full bg-gray-50 border border-gray-200 text-gray-900 text-sm font-semibold rounded-2xl block p-4 pl-12 pointer-events-none"
-                            disabled
-                            readOnly
-                        />
-                        <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                {/* Email (Readonly) */}
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                      Alamat Email
+                    </label>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 bg-gray-100 px-2 py-0.5 rounded">
+                      Permanen
+                    </span>
+                  </div>
+                  <div className="relative">
+                    <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">
+                      <FaEnvelope className="text-xs" />
                     </div>
+                    <input
+                      type="email"
+                      value={user?.email || ""}
+                      className="w-full bg-gray-100/70 border border-gray-200 text-gray-500 text-xs sm:text-sm font-medium rounded-xl pl-9 pr-3.5 py-2.5 cursor-not-allowed select-none"
+                      disabled
+                      readOnly
+                    />
+                  </div>
+                  <p className="text-[11px] text-gray-400">Email akun digunakan untuk autentikasi dan tidak dapat diubah.</p>
                 </div>
 
-                <div className="md:col-span-2">
-                    <label className="block text-[11px] uppercase tracking-widest font-bold text-gray-400 mb-2">Nomor Telepon / WhatsApp</label>
-                    <div className="relative">
-                        <input
-                            type="tel"
-                            value={phoneNumber}
-                            onChange={(e) => setPhoneNumber(e.target.value)}
-                            className="w-full bg-gray-50 border border-gray-200 text-gray-900 text-sm font-semibold rounded-2xl block p-4 pl-12 focus:ring-2 focus:ring-gray-900 focus:border-gray-900 focus:bg-white transition-all outline-none"
-                            placeholder="08xxxxxxxxxx"
-                        />
-                        <FaPhone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                {/* Phone Number / WhatsApp */}
+                <div className="space-y-1.5">
+                  <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                    Nomor Telepon / WhatsApp
+                  </label>
+                  <div className="relative">
+                    <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">
+                      <FaPhone className="text-xs" />
                     </div>
-                    <p className="text-xs font-medium text-gray-500 mt-2 flex items-center gap-1.5"><FaShieldAlt className="text-gray-400" /> Informasi ini dijaga kerahasiaannya.</p>
+                    <input
+                      type="tel"
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value)}
+                      className="w-full bg-slate-50/70 border border-gray-200 text-gray-900 text-xs sm:text-sm font-medium rounded-xl pl-9 pr-3.5 py-2.5 focus:bg-white focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all outline-none"
+                      placeholder="Contoh: 08123456789"
+                    />
+                  </div>
+                  <p className="text-[11px] text-gray-500 flex items-center gap-1.5">
+                    <FaShieldAlt className="text-gray-400 text-xs shrink-0" />
+                    <span>Nomor ini digunakan untuk verifikasi respon darurat dan update penanganan.</span>
+                  </p>
                 </div>
-             </div>
 
-            <div className="pt-6 mt-6 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-widest">
-                    <FaCalendarAlt /> <span>Terdaftar {user?.created_at ? formatDate(user.created_at) : "-"}</span>
-                </div>
-                
-                <button
+                {/* Submit Action */}
+                <div className="pt-4 sm:pt-5 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <Link
+                    href="/dashboard"
+                    className="text-center text-xs font-semibold text-gray-500 hover:text-gray-900 transition-colors py-2 px-3 order-2 sm:order-1"
+                  >
+                    Batal
+                  </Link>
+
+                  <button
                     type="submit"
                     disabled={isSaving}
-                    className="flex shrink-0 items-center justify-center gap-2.5 bg-gray-900 hover:bg-black text-white px-8 py-4 rounded-2xl text-sm font-bold uppercase tracking-widest transition-all shadow-[0_8px_30px_rgba(0,0,0,0.1)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    {isSaving ? <><FaSpinner className="animate-spin text-lg" /> Menyimpan</> : <><FaSave className="text-lg opacity-80" /> Simpan Profil</>}
-                </button>
-            </div>
+                    className="inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-black text-white px-6 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-xs active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed order-1 sm:order-2"
+                  >
+                    {isSaving ? (
+                      <>
+                        <FaSpinner className="animate-spin text-xs" /> Menyimpan...
+                      </>
+                    ) : (
+                      <>
+                        <FaSave className="text-xs" /> Simpan Perubahan
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
 
-          </form>
-        </motion.div>
+        </div>
       </main>
     </div>
   );

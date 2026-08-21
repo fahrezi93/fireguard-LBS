@@ -42,31 +42,28 @@ function MapInstructions() {
   if (!show) return null;
 
   return (
-    <div className="mt-4 bg-gray-900 rounded-2xl p-5 relative overflow-hidden select-none">
-      <button onClick={() => setShow(false)} className="absolute top-4 right-4 text-white/50 hover:text-white transition-colors z-10">
-        <FaTimes className="text-sm" />
+    <div className="mt-3 bg-slate-50 border border-slate-200/80 rounded-xl p-3 sm:p-4 relative select-none">
+      <button 
+        onClick={() => setShow(false)} 
+        className="absolute top-2.5 right-2.5 text-gray-400 hover:text-gray-700 p-1 rounded-md transition-colors"
+        aria-label="Tutup panduan"
+      >
+        <FaTimes className="text-xs" />
       </button>
-      <div className="relative z-10">
-        <div className="flex items-center gap-2 mb-3">
-          <FaExclamationTriangle className="text-red-500 text-sm" />
-          <h3 className="text-sm font-bold text-white tracking-wide">Panduan Peta</h3>
-        </div>
-        <ul className="space-y-2.5">
-          <li className="flex items-center gap-3 text-xs md:text-sm text-gray-400 font-medium">
-            <span className="w-2 h-2 rounded-full bg-red-500 shrink-0 shadow-[0_0_8px_rgba(159,28,25,0.6)]"></span>
-            <span><strong className="text-white">Klik</strong> untuk menandai titik darurat.</span>
-          </li>
-          <li className="flex items-center gap-3 text-xs md:text-sm text-gray-400 font-medium">
-            <span className="w-2 h-2 rounded-full bg-blue-500 shrink-0 shadow-[0_0_8px_rgba(59,130,246,0.6)]"></span>
-            <span><strong className="text-white">Seret marker</strong> untuk menyesuaikan posisi.</span>
-          </li>
-          <li className="flex items-center gap-3 text-xs md:text-sm text-gray-400 font-medium">
-            <span className="w-2 h-2 rounded-full bg-green-500 shrink-0 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
-            <span>Gunakan <strong className="text-white">Lokasi Saya</strong> untuk akurasi GPS.</span>
-          </li>
-        </ul>
+      <div className="flex items-center gap-1.5 mb-1.5">
+        <FaExclamationTriangle className="text-red-500 text-xs" />
+        <h3 className="text-xs font-bold text-gray-900">Panduan Titik Lokasi</h3>
       </div>
-      <div className="absolute -right-10 -bottom-10 w-32 h-32 bg-red-500/20 blur-[50px] rounded-full pointer-events-none"></div>
+      <ul className="space-y-1 text-[11px] sm:text-xs text-gray-600">
+        <li className="flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0"></span>
+          <span><strong className="text-gray-900">Ketuk peta / seret marker merah</strong> ke titik lokasi kebakaran.</span>
+        </li>
+        <li className="flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-slate-900 shrink-0"></span>
+          <span>Gunakan tombol <strong className="text-gray-900">Set Lokasi GPS</strong> untuk akurasi instan.</span>
+        </li>
+      </ul>
     </div>
   );
 }
@@ -318,135 +315,192 @@ export default function NewReportPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] font-sans text-gray-900 selection:bg-red-500/30">
-      <header className="h-20 bg-white/80 backdrop-blur-xl border-b border-gray-100 sticky top-0 z-40 px-6 lg:px-8 flex items-center justify-between transition-all">
-        <button onClick={() => router.back()} className="flex items-center gap-2 px-3 py-2 text-sm font-bold text-gray-500 hover:text-gray-900 transition-colors uppercase tracking-wider rounded-xl hover:bg-gray-50">
-          <FaArrowLeft className="text-sm" /> <span>Kembali</span>
-        </button>
-        <div className="flex items-center gap-3">
-          <div>
-            <h1 className="text-xl font-bold tracking-tight text-gray-900 leading-none">Laporan Baru.</h1>
+    <div className="min-h-screen bg-[#FAFAFA] font-sans text-gray-900 selection:bg-red-500/30 flex flex-col">
+      {/* Top Sponsor Banner */}
+      <div className="w-full bg-white border-b border-gray-200/80 z-30 flex justify-center items-center py-1.5 sm:py-2 shrink-0 relative">
+        <div className="flex items-center gap-2.5 sm:gap-3.5 px-3">
+          <span className="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.15em] text-slate-500">
+            Didanai Oleh:
+          </span>
+          <div className="bg-white px-2 py-0.5 rounded-md">
+            <img src="/Logo_LPKM.png" alt="Sponsorship Logos" className="h-6 sm:h-7 md:h-8 object-contain" />
           </div>
         </div>
-        <div className="w-[88px] invisible"></div>
+      </div>
+
+      {/* Sticky Header */}
+      <header className="h-14 sm:h-16 bg-white/90 backdrop-blur-xl border-b border-gray-200/80 sticky top-0 z-20 px-3 sm:px-6 lg:px-8 flex items-center justify-between shadow-2xs">
+        <div className="max-w-6xl w-full mx-auto flex items-center justify-between gap-2">
+          <button 
+            onClick={() => router.push("/dashboard")} 
+            className="h-8 px-2.5 sm:px-3 sm:h-9 flex items-center justify-center gap-1.5 text-xs sm:text-sm font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-all active:scale-95 shrink-0"
+            title="Kembali ke Dashboard"
+          >
+            <FaArrowLeft className="text-xs" /> <span className="hidden sm:inline">Dashboard</span>
+          </button>
+          
+          <h1 className="text-xs sm:text-base md:text-lg font-bold tracking-tight text-gray-900 text-center truncate px-1">
+            Buat Laporan Darurat
+          </h1>
+          
+          <div className="shrink-0">
+            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] sm:text-xs font-bold uppercase tracking-wider bg-red-50 text-red-600 border border-red-200">
+              <FaFire className="text-[10px]" /> <span className="hidden xs:inline">Siaga</span> 24/7
+            </span>
+          </div>
+        </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-6 py-8">
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
+      {/* Main Content */}
+      <main className="max-w-6xl w-full mx-auto px-3 sm:px-6 py-4 sm:py-6 flex-1">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
 
-          {/* Lokasi Peta (Kiri) */}
-          <div className="lg:col-span-7 space-y-6">
-            <div>
-              <h2 className="text-xl font-bold tracking-tight text-gray-900 mb-1">Geolokasi</h2>
-              <p className="text-sm text-gray-500">Tentukan titik presisi lokasi kejadian darurat.</p>
-            </div>
-
-            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-2 relative">
-              <div className="h-[460px] w-full rounded-[1.5rem] overflow-hidden bg-gray-50 relative z-0">
-                <MapWithNoSSR
-                  firePosition={firePosition}
-                  setFirePosition={setFirePosition}
-                  reporterPosition={reporterPosition}
-                  setReporterPosition={setReporterPosition}
-                  onNearestStationFound={setNearestStation}
-                  categoryId={categoryId}
-                  categoryIcon={categories.find((c) => c.id === categoryId)?.icon}
-                />
+          {/* Kolom Kiri: Peta & Lokasi */}
+          <div className="lg:col-span-7 space-y-4">
+            <div className="bg-white rounded-2xl border border-gray-200/80 p-3.5 sm:p-5 md:p-6 shadow-xs space-y-3.5 sm:space-y-4">
+              {/* Card Section Header */}
+              <div className="flex items-start gap-2.5 pb-2.5 border-b border-gray-100">
+                <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-red-50 text-red-600 font-extrabold flex items-center justify-center text-xs shrink-0 mt-0.5">
+                  1
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h2 className="text-sm sm:text-base font-bold text-gray-900 leading-tight">Titik Lokasi Kejadian</h2>
+                  <p className="text-[11px] sm:text-xs text-gray-500 mt-0.5">Tentukan titik kebakaran di peta atau via GPS</p>
+                </div>
               </div>
-            </div>
 
-            <div className="flex flex-col sm:flex-row gap-3">
-              <button
-                type="button"
-                onClick={() => requestLocation(setFirePosition, setIsGettingFireLocation)}
-                disabled={isGettingFireLocation || isGettingMyLocation}
-                className="flex-1 flex max-w-sm items-center justify-center gap-2.5 px-6 py-3.5 text-sm font-bold tracking-wide uppercase text-white bg-gray-900 hover:bg-black rounded-2xl transition-all shadow-sm active:scale-95 disabled:opacity-50"
-              >
-                {isGettingFireLocation ? <FaSpinner className="animate-spin text-lg" /> : <><FaCrosshairs className="text-lg text-gray-400" /> Set Lokasi GPS</>}
-              </button>
-              <button
-                type="button"
-                onClick={() => requestLocation(setReporterPosition, setIsGettingMyLocation)}
-                disabled={isGettingMyLocation || isGettingFireLocation}
-                className="flex-1 flex max-w-sm items-center justify-center gap-2.5 px-6 py-3.5 text-sm font-bold tracking-wide uppercase text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 rounded-2xl transition-all active:scale-95 disabled:opacity-50"
-              >
-                {isGettingMyLocation ? <FaSpinner className="animate-spin text-lg" /> : <><FaUser className="text-lg text-gray-400" /> Posisi Saya</>}
-              </button>
-            </div>
-
-            <p className="text-xs font-semibold text-gray-500">
-              Klik tombol lokasi, lalu pilih <span className="text-gray-900">Izinkan</span> saat popup izin lokasi browser muncul.
-            </p>
-
-            {geoPermissionState === "denied" && (
-              <div className="px-4 py-3 rounded-2xl bg-amber-50 border border-amber-200 text-amber-700 text-xs font-semibold">
-                Izin lokasi browser sedang ditolak. Klik ikon kunci di address bar, ubah Location ke Allow, lalu klik tombol lokasi lagi.
+              {/* Map Container */}
+              <div className="rounded-xl overflow-hidden border border-gray-200 relative bg-gray-50">
+                <div className="h-[280px] sm:h-[360px] md:h-[420px] w-full relative z-0">
+                  <MapWithNoSSR
+                    firePosition={firePosition}
+                    setFirePosition={setFirePosition}
+                    reporterPosition={reporterPosition}
+                    setReporterPosition={setReporterPosition}
+                    onNearestStationFound={setNearestStation}
+                    categoryId={categoryId}
+                    categoryIcon={categories.find((c) => c.id === categoryId)?.icon}
+                  />
+                </div>
               </div>
-            )}
 
-            {/* Koordinat Indicators */}
-            <div className="flex flex-col gap-2">
-              {firePosition && (
-                <div className="flex items-center gap-3 px-5 py-3 bg-gray-900 text-white rounded-2xl">
-                  <FaCheckCircle className="text-green-500 shrink-0" />
-                  <span className="text-xs font-mono tracking-wider opacity-90 truncate">Koor Darurat: {firePosition[0].toFixed(5)}, {firePosition[1].toFixed(5)}</span>
+              {/* Location Action Buttons */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => requestLocation(setFirePosition, setIsGettingFireLocation)}
+                  disabled={isGettingFireLocation || isGettingMyLocation}
+                  className="flex items-center justify-center gap-2 px-3 py-2.5 text-xs sm:text-sm font-bold tracking-wide text-white bg-slate-900 hover:bg-black rounded-xl transition-all shadow-2xs active:scale-95 disabled:opacity-50"
+                >
+                  {isGettingFireLocation ? (
+                    <FaSpinner className="animate-spin text-sm" />
+                  ) : (
+                    <>
+                      <FaCrosshairs className="text-xs text-red-400" /> Set Lokasi GPS Kejadian
+                    </>
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => requestLocation(setReporterPosition, setIsGettingMyLocation)}
+                  disabled={isGettingMyLocation || isGettingFireLocation}
+                  className="flex items-center justify-center gap-2 px-3 py-2.5 text-xs sm:text-sm font-bold tracking-wide text-gray-700 bg-gray-50 border border-gray-200 hover:bg-gray-100 rounded-xl transition-all active:scale-95 disabled:opacity-50"
+                >
+                  {isGettingMyLocation ? (
+                    <FaSpinner className="animate-spin text-sm" />
+                  ) : (
+                    <>
+                      <FaUser className="text-xs text-gray-400" /> Set Posisi Saya Saat Ini
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {geoPermissionState === "denied" && (
+                <div className="px-3.5 py-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-medium">
+                  Izin GPS browser ditolak. Mohon izinkan akses lokasi di browser untuk mendapatkan koordinat presisi.
                 </div>
               )}
-              {reporterPosition && (
-                <div className="flex items-center gap-3 px-5 py-3 bg-white border border-gray-200 text-gray-700 rounded-2xl">
-                  <FaCheckCircle className="text-blue-500 shrink-0" />
-                  <span className="text-xs font-mono tracking-wider truncate">Koor Pelapor: {reporterPosition[0].toFixed(5)}, {reporterPosition[1].toFixed(5)}</span>
-                </div>
-              )}
-            </div>
 
-            <MapInstructions />
-            {nearestStation && <NearestStationInfoBox info={nearestStation} />}
+              {/* Koordinat Indicators */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                {firePosition ? (
+                  <div className="flex items-center gap-2 px-3 py-2 bg-slate-900 text-white rounded-xl text-xs font-mono">
+                    <FaCheckCircle className="text-emerald-400 text-xs shrink-0" />
+                    <span className="truncate">Api: {firePosition[0].toFixed(5)}, {firePosition[1].toFixed(5)}</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 px-3 py-2 bg-red-50 text-red-600 border border-red-100 rounded-xl text-xs">
+                    <FaExclamationTriangle className="text-red-500 text-xs shrink-0" />
+                    <span>Titik api belum ditentukan</span>
+                  </div>
+                )}
+
+                {reporterPosition && (
+                  <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 border border-gray-200 text-gray-700 rounded-xl text-xs font-mono">
+                    <FaCheckCircle className="text-blue-500 text-xs shrink-0" />
+                    <span className="truncate">Pelapor: {reporterPosition[0].toFixed(5)}, {reporterPosition[1].toFixed(5)}</span>
+                  </div>
+                )}
+              </div>
+
+              <MapInstructions />
+              {nearestStation && <NearestStationInfoBox info={nearestStation} />}
+            </div>
           </div>
 
-          {/* Form Detail Darurat (Kanan) */}
-          <div className="lg:col-span-5 space-y-6">
-            <div>
-              <h2 className="text-xl font-bold tracking-tight text-gray-900 mb-1">Form Darurat</h2>
-              <p className="text-sm text-gray-500">Lengkapi data untuk mempercepat respons.</p>
-            </div>
-
-            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8 space-y-6">
+          {/* Kolom Kanan: Detail Informasi Kejadian */}
+          <div className="lg:col-span-5 space-y-4">
+            <div className="bg-white rounded-2xl border border-gray-200/80 p-4 sm:p-6 shadow-xs space-y-4">
+              {/* Card Section Header */}
+              <div className="flex items-center gap-3 pb-3 border-b border-gray-100">
+                <div className="w-7 h-7 rounded-lg bg-red-50 text-red-600 font-extrabold flex items-center justify-center text-xs shrink-0">
+                  2
+                </div>
+                <div>
+                  <h2 className="text-sm sm:text-base font-bold text-gray-900 leading-tight">Detail Insiden & Bukti</h2>
+                  <p className="text-[11px] sm:text-xs text-gray-500">Lengkapi data untuk mempercepat koordinasi penanganan</p>
+                </div>
+              </div>
 
               {/* Field: Kategori */}
-              <div>
-                <label htmlFor="category" className="block text-[11px] uppercase tracking-widest font-bold text-gray-400 mb-2">Jenis Insiden <span className="text-red-500">*</span></label>
+              <div className="space-y-1">
+                <label htmlFor="category" className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                  Jenis Insiden <span className="text-red-500">*</span>
+                </label>
                 <div className="relative">
                   <select
                     id="category"
                     value={categoryId}
                     onChange={(e) => setCategoryId(Number(e.target.value))}
-                    className="w-full appearance-none bg-gray-50 border border-gray-200 text-gray-900 text-sm font-semibold rounded-2xl block p-4 pr-10 focus:ring-2 focus:ring-gray-900 focus:border-gray-900 focus:bg-white transition-all outline-none"
+                    className="w-full appearance-none bg-slate-50/70 border border-gray-200 text-gray-900 text-xs sm:text-sm font-medium rounded-xl px-3.5 py-2.5 pr-10 focus:bg-white focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all outline-none"
                     required
                   >
                     {categories.length === 0 ? (
                       <option value="1">Darurat Umum</option>
                     ) : (
                       categories.map((category) => (
-                        <option key={category.id} value={category.id}>{category.icon}  {category.name}</option>
+                        <option key={category.id} value={category.id}>{category.icon} {category.name}</option>
                       ))
                     )}
                   </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5">
                     <FaChevronDown className="text-gray-400 text-xs" />
                   </div>
                 </div>
               </div>
 
               {/* Field: Kelurahan */}
-              <div>
-                <label htmlFor="kelurahan" className="block text-[11px] uppercase tracking-widest font-bold text-gray-400 mb-2">Wilayah / Kelurahan <span className="text-red-500">*</span></label>
+              <div className="space-y-1">
+                <label htmlFor="kelurahan" className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                  Wilayah / Kelurahan <span className="text-red-500">*</span>
+                </label>
                 <div className="relative">
                   <select
                     id="kelurahan"
                     value={kelurahanId || ""}
                     onChange={(e) => setKelurahanId(e.target.value ? Number(e.target.value) : null)}
-                    className="w-full appearance-none bg-gray-50 border border-gray-200 text-gray-900 text-sm font-semibold rounded-2xl block p-4 pr-10 focus:ring-2 focus:ring-gray-900 focus:border-gray-900 focus:bg-white transition-all outline-none"
+                    className="w-full appearance-none bg-slate-50/70 border border-gray-200 text-gray-900 text-xs sm:text-sm font-medium rounded-xl px-3.5 py-2.5 pr-10 focus:bg-white focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all outline-none"
                     required
                   >
                     <option value="" disabled>-- Pilih Kelurahan --</option>
@@ -454,45 +508,48 @@ export default function NewReportPage() {
                       <option key={kel.id} value={kel.id}>{kel.name}</option>
                     ))}
                   </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5">
                     <FaChevronDown className="text-gray-400 text-xs" />
                   </div>
                 </div>
               </div>
 
               {/* Field: Alamat */}
-              <div>
-                <label htmlFor="address" className="block text-[11px] uppercase tracking-widest font-bold text-gray-400 mb-2">Jalan / Patokan</label>
+              <div className="space-y-1">
+                <label htmlFor="address" className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                  Jalan / Patokan Lokasi
+                </label>
                 <input
                   type="text"
                   id="address"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-200 text-gray-900 text-sm font-semibold rounded-2xl block p-4 focus:ring-2 focus:ring-gray-900 focus:border-gray-900 focus:bg-white transition-all outline-none placeholder:text-gray-400 placeholder:font-medium"
-                  placeholder="Mis: Samping SPBU Cempaka"
+                  className="w-full bg-slate-50/70 border border-gray-200 text-gray-900 text-xs sm:text-sm font-medium rounded-xl px-3.5 py-2.5 focus:bg-white focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all outline-none placeholder:text-gray-400"
+                  placeholder="Contoh: Depan Kantor Camat Plaju / Samping SPBU"
                 />
               </div>
 
               {/* Field: Deskripsi */}
-              <div>
-                <label htmlFor="description" className="block text-[11px] uppercase tracking-widest font-bold text-gray-400 mb-2">Rincian Situasi <span className="text-red-500">*</span></label>
+              <div className="space-y-1">
+                <label htmlFor="description" className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                  Rincian Situasi <span className="text-red-500">*</span>
+                </label>
                 <textarea
                   id="description"
                   rows={3}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-200 text-gray-900 text-sm font-semibold rounded-2xl block p-4 focus:ring-2 focus:ring-gray-900 focus:border-gray-900 focus:bg-white transition-all outline-none resize-none placeholder:text-gray-400 placeholder:font-medium"
-                  placeholder="Deskripsikan apa yang terbakar dan skalanya..."
+                  className="w-full bg-slate-50/70 border border-gray-200 text-gray-900 text-xs sm:text-sm font-medium rounded-xl px-3.5 py-2.5 focus:bg-white focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all outline-none resize-none placeholder:text-gray-400"
+                  placeholder="Jelaskan objek yang terbakar, estimasi skala api, atau kondisi di sekitar..."
                   required
                 />
               </div>
 
-              {/* Divider */}
-              <div className="h-px bg-gray-100 my-2"></div>
-
               {/* Field: File Upload */}
-              <div>
-                <label className="block text-[11px] uppercase tracking-widest font-bold text-gray-400 mb-2">Foto Kejadian (Opsional)</label>
+              <div className="space-y-1">
+                <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                  Foto / Video Kejadian (Opsional)
+                </label>
                 <div className="relative group">
                   <input
                     type="file"
@@ -501,44 +558,47 @@ export default function NewReportPage() {
                     accept="image/*,video/*"
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                   />
-                  <div className={`w-full border-2 border-dashed rounded-2xl p-6 flex flex-col items-center justify-center transition-all ${file ? "border-gray-900 bg-gray-50" : "border-gray-200 bg-white group-hover:border-gray-300 group-hover:bg-gray-50"}`}>
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 ${file ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-400"}`}>
-                      {file ? <FaCheckCircle className="text-lg" /> : <FaCloudUploadAlt className="text-lg" />}
+                  <div className={`w-full border-2 border-dashed rounded-xl p-4 flex flex-col items-center justify-center transition-all ${file ? "border-slate-900 bg-slate-50" : "border-gray-200 bg-white group-hover:border-gray-300 group-hover:bg-gray-50"}`}>
+                    <div className={`w-9 h-9 rounded-full flex items-center justify-center mb-1.5 ${file ? "bg-slate-900 text-white" : "bg-gray-100 text-gray-400"}`}>
+                      {file ? <FaCheckCircle className="text-sm" /> : <FaCloudUploadAlt className="text-base" />}
                     </div>
-                    <span className="text-xs font-bold text-gray-900 text-center truncate max-w-full px-2">
-                      {file ? file.name : "Ketuk untuk upload foto/video"}
+                    <span className="text-xs font-semibold text-gray-800 text-center truncate max-w-full px-2">
+                      {file ? file.name : "Ketuk untuk upload foto/video insiden"}
                     </span>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Error Message */}
-            {error && (
-              <div className="px-5 py-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-sm font-semibold text-center flex items-center justify-center gap-2">
-                <FaExclamationTriangle className="text-red-500 shrink-0" />
-                {error}
+              {/* Error Message */}
+              {error && (
+                <div className="px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs font-medium flex items-center gap-2">
+                  <FaExclamationTriangle className="text-red-500 shrink-0" />
+                  <span>{error}</span>
+                </div>
+              )}
+
+              {/* Submit Action */}
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  disabled={isLoading || !firePosition}
+                  className="w-full flex items-center justify-center gap-2.5 bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm font-bold py-3 sm:py-3.5 rounded-xl transition-all shadow-md active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isLoading ? (
+                    <>
+                      <FaSpinner className="animate-spin text-sm" /> Mengirim Laporan...
+                    </>
+                  ) : (
+                    <>
+                      <FaFireExtinguisher className="text-sm" /> Kirim Laporan Darurat
+                    </>
+                  )}
+                </button>
+                <p className="text-center text-[10px] text-gray-400 mt-2.5">
+                  Laporan darurat akan langsung diteruskan ke Pos Pemadam Kebakaran terdekat.
+                </p>
               </div>
-            )}
-
-            {/* Submit Button */}
-            <div className="pt-2">
-              <button
-                type="submit"
-                disabled={isLoading || !firePosition}
-                className="w-full flex items-center justify-center gap-3 bg-red-600 hover:bg-red-700 text-white text-sm font-bold uppercase tracking-widest py-4 md:py-5 rounded-2xl transition-all shadow-[0_8px_30px_rgba(220,38,38,0.2)] hover:shadow-[0_8px_40px_rgba(220,38,38,0.3)] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
-              >
-                {isLoading ? (
-                  <><FaSpinner className="animate-spin text-lg" /> Memproses...</>
-                ) : (
-                  <><FaFireExtinguisher className="text-lg opacity-80" /> Kirim Darurat</>
-                )}
-              </button>
-              <p className="text-center text-[10px] uppercase font-bold tracking-widest text-gray-400 mt-4 leading-relaxed">
-                Penyalahgunaan sistem mengancam jiwa pihak yang benar-benar membutuhkan.
-              </p>
             </div>
-
           </div>
         </form>
       </main>
