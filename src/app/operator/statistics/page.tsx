@@ -88,32 +88,32 @@ export default function StatisticsPage() {
 
   return (
     <OperatorLayout>
-      <div className="bg-white border-b border-gray-200/70 p-4 sticky top-0 z-20 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
+      <div className="bg-white border-b border-gray-200/70 p-3 sm:p-4 sticky top-0 z-20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center shadow-inner border border-gray-200/50">
-            <FaChartBar className="text-gray-500 text-lg" />
+          <div className="w-9 h-9 sm:w-10 sm:h-10 bg-gray-100 rounded-xl flex items-center justify-center shadow-inner border border-gray-200/50 shrink-0">
+            <FaChartBar className="text-gray-600 text-base sm:text-lg" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-900">Statistik Kinerja</h2>
-            <p className="text-xs font-medium text-gray-500 mt-0.5">Analitik Operasional</p>
+            <h2 className="text-lg sm:text-xl font-bold text-gray-900">Statistik Kinerja</h2>
+            <p className="text-[11px] sm:text-xs font-medium text-gray-500 mt-0.5">Analitik Operasional</p>
           </div>
         </div>
         
-        <div className="flex items-center gap-2 bg-gray-50 p-1.5 rounded-xl border border-gray-200/60 self-start sm:self-auto">
+        <div className="flex items-center gap-2 bg-gray-50 p-1 sm:p-1.5 rounded-xl border border-gray-200/60 w-full sm:w-auto justify-between sm:justify-start">
           <select 
             value={selectedYear}
             onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-            className="px-3 py-2 rounded-lg text-sm font-bold bg-transparent text-gray-700 outline-none cursor-pointer hover:bg-gray-200/50 transition-colors"
+            className="px-2.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-transparent text-gray-700 outline-none cursor-pointer hover:bg-gray-200/50 transition-colors flex-1 sm:flex-initial"
           >
             {availableYears.map(y => (
                 <option key={y} value={y}>{y}</option>
             ))}
           </select>
-          <div className="w-px h-6 bg-gray-300"></div>
+          <div className="w-px h-5 bg-gray-300"></div>
           <select 
             value={selectedMonth}
             onChange={(e) => setSelectedMonth(e.target.value)}
-            className="px-3 py-2 rounded-lg text-sm font-bold bg-transparent text-gray-700 outline-none cursor-pointer hover:bg-gray-200/50 transition-colors"
+            className="px-2.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-transparent text-gray-700 outline-none cursor-pointer hover:bg-gray-200/50 transition-colors flex-1 sm:flex-initial"
           >
             <option value="all">Semua Bulan</option>
             <option value="1">Januari</option>
@@ -132,113 +132,128 @@ export default function StatisticsPage() {
         </div>
       </div>
 
-      <div className="max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8 flex flex-col gap-6 w-full">
+      <div className="max-w-[1600px] mx-auto p-3 sm:p-5 lg:p-8 flex flex-col gap-4 sm:gap-6 w-full">
 
-        <section className="grid grid-cols-1 md:grid-cols-4 gap-4">
-           <div className="bg-white rounded-2xl p-6 border border-gray-200/60 shadow-sm relative overflow-hidden group">
-              <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-gray-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500"></div>
+        <section className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
+           <div className="bg-white rounded-2xl p-3.5 sm:p-5 lg:p-6 border border-gray-200/60 shadow-xs relative overflow-hidden group">
+              <div className="absolute -right-4 -bottom-4 w-20 h-20 bg-gray-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500"></div>
               <div className="relative z-10">
-                <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1.5 flex items-center gap-2"><FaFire className="text-red-400"/> Laporan Masuk</p>
-                <div className="flex items-end gap-3 mt-4">
-                  <span className="text-5xl font-extrabold tracking-tighter text-gray-900">{totalReports}</span>
+                <p className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                  <FaFire className="text-red-500 text-xs shrink-0"/> Laporan
+                </p>
+                <div className="flex items-end gap-2 mt-2 sm:mt-3">
+                  <span className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-gray-900">{totalReports}</span>
                 </div>
               </div>
            </div>
 
-           <div className="bg-white rounded-2xl p-6 border border-gray-200/60 shadow-sm relative overflow-hidden group">
-              <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-emerald-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500"></div>
+           <div className="bg-white rounded-2xl p-3.5 sm:p-5 lg:p-6 border border-gray-200/60 shadow-xs relative overflow-hidden group">
+              <div className="absolute -right-4 -bottom-4 w-20 h-20 bg-emerald-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500"></div>
               <div className="relative z-10">
-                <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1.5 flex items-center gap-2"><FaCheckCircle className="text-emerald-400"/> Insiden Valid</p>
-                <div className="flex items-end gap-3 mt-4">
-                  <span className="text-5xl font-extrabold tracking-tighter text-gray-900">{validStatus}</span>
-                  <span className="text-sm font-semibold text-emerald-500 bg-emerald-50 px-2 py-1 rounded mb-1">{getPercentage(validStatus)}%</span>
+                <p className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                  <FaCheckCircle className="text-emerald-500 text-xs shrink-0"/> Valid
+                </p>
+                <div className="flex items-end gap-1.5 sm:gap-2 mt-2 sm:mt-3 flex-wrap">
+                  <span className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-gray-900">{validStatus}</span>
+                  <span className="text-[10px] sm:text-xs font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded mb-0.5 sm:mb-1">{getPercentage(validStatus)}%</span>
                 </div>
               </div>
            </div>
 
-           <div className="bg-white rounded-2xl p-6 border border-gray-200/60 shadow-sm relative overflow-hidden group">
-              <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-red-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500"></div>
+           <div className="bg-white rounded-2xl p-3.5 sm:p-5 lg:p-6 border border-gray-200/60 shadow-xs relative overflow-hidden group">
+              <div className="absolute -right-4 -bottom-4 w-20 h-20 bg-red-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500"></div>
               <div className="relative z-10">
-                <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1.5 flex items-center gap-2"><FaTimesCircle className="text-red-400"/> Laporan Palsu</p>
-                <div className="flex items-end gap-3 mt-4">
-                  <span className="text-5xl font-extrabold tracking-tighter text-gray-900">{falseStatus}</span>
-                  <span className="text-sm font-semibold text-red-500 bg-red-50 px-2 py-1 rounded mb-1">{getPercentage(falseStatus)}%</span>
+                <p className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                  <FaTimesCircle className="text-red-500 text-xs shrink-0"/> Palsu
+                </p>
+                <div className="flex items-end gap-1.5 sm:gap-2 mt-2 sm:mt-3 flex-wrap">
+                  <span className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-gray-900">{falseStatus}</span>
+                  <span className="text-[10px] sm:text-xs font-bold text-red-600 bg-red-50 px-1.5 py-0.5 rounded mb-0.5 sm:mb-1">{getPercentage(falseStatus)}%</span>
                 </div>
               </div>
            </div>
 
-           <div className="bg-white rounded-2xl p-6 border border-gray-200/60 shadow-sm relative overflow-hidden group">
-              <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-blue-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500"></div>
+           <div className="bg-white rounded-2xl p-3.5 sm:p-5 lg:p-6 border border-gray-200/60 shadow-xs relative overflow-hidden group">
+              <div className="absolute -right-4 -bottom-4 w-20 h-20 bg-blue-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500"></div>
               <div className="relative z-10">
-                <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1.5 flex items-center gap-2"><FaClock className="text-blue-400"/> Petugas Aktif</p>
-                <div className="flex items-end gap-3 mt-4">
-                  <span className="text-5xl font-extrabold tracking-tighter text-gray-900">{stats?.petugasLeaderboard?.length || 0}</span>
-                  <span className="text-lg font-bold text-gray-400 mb-1">orang</span>
+                <p className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                  <FaClock className="text-blue-500 text-xs shrink-0"/> Petugas
+                </p>
+                <div className="flex items-end gap-1.5 sm:gap-2 mt-2 sm:mt-3">
+                  <span className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-gray-900">{stats?.petugasLeaderboard?.length || 0}</span>
+                  <span className="text-xs sm:text-sm font-bold text-gray-400 mb-0.5 sm:mb-1">aktif</span>
                 </div>
               </div>
            </div>
         </section>
 
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
 
-           <div className="bg-white rounded-2xl p-6 border border-gray-200/60 shadow-sm flex flex-col col-span-1 lg:col-span-2 overflow-x-auto">
-              <div className="mb-6 flex justify-between items-center">
+           <div className="bg-white rounded-2xl p-4 sm:p-6 border border-gray-200/60 shadow-xs flex flex-col col-span-1 lg:col-span-2">
+              <div className="mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1">
                 <div>
-                    <h3 className="text-lg font-extrabold tracking-tight text-gray-900 flex items-center gap-2"><FaCalendarAlt className="text-gray-400"/> Tren Insiden</h3>
-                    <p className="text-gray-500 text-sm font-medium">Berdasarkan {selectedMonth === 'all' ? 'Bulan' : 'Tanggal'} (Tahun {selectedYear})</p>
+                    <h3 className="text-base sm:text-lg font-extrabold tracking-tight text-gray-900 flex items-center gap-2">
+                      <FaCalendarAlt className="text-gray-400 text-sm"/> Tren Insiden
+                    </h3>
+                    <p className="text-gray-500 text-xs sm:text-sm font-medium">Berdasarkan {selectedMonth === 'all' ? 'Bulan' : 'Tanggal'} (Tahun {selectedYear})</p>
                 </div>
+                <span className="text-[10px] text-gray-400 block sm:hidden">👈 Geser grafik untuk melihat selengkapnya 👉</span>
               </div>
               
-              <div className="flex items-end gap-2 h-64 mt-4 w-full min-w-[600px] border-b border-gray-200 pb-2 relative">
-                {chartData.length === 0 ? (
-                    <div className="w-full flex justify-center items-center h-full text-gray-400 font-medium">Tidak ada data untuk periode ini</div>
-                ) : (
-                    chartData.map((d: any, idx: number) => {
-                        const heightPercent = chartMax > 0 ? (d.value / chartMax) * 100 : 0;
-                        return (
-                            <div key={idx} className="flex-1 flex flex-col items-center justify-end h-full group relative">
-                                <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 text-white text-xs font-bold py-1 px-2 rounded absolute -top-8 pointer-events-none z-10 whitespace-nowrap">
-                                    {d.label}: {d.value} Lap
-                                </div>
-                                <motion.div 
-                                    initial={{ height: 0 }}
-                                    animate={{ height: `${heightPercent}%` }}
-                                    transition={{ duration: 0.5, delay: idx * 0.02 }}
-                                    className="w-full max-w-[40px] bg-red-500 hover:bg-red-600 rounded-t-sm transition-colors cursor-pointer"
-                                />
-                                <span className="text-[10px] sm:text-xs font-semibold text-gray-500 mt-2 rotate-45 sm:rotate-0 origin-left whitespace-nowrap">{d.label}</span>
-                            </div>
-                        )
-                    })
-                )}
+              <div className="overflow-x-auto custom-scrollbar pb-2">
+                <div className="flex items-end gap-2 h-56 sm:h-64 mt-2 w-full min-w-[500px] sm:min-w-[600px] border-b border-gray-200 pb-2 relative px-2">
+                  {chartData.length === 0 ? (
+                      <div className="w-full flex justify-center items-center h-full text-gray-400 font-medium text-xs sm:text-sm">Tidak ada data untuk periode ini</div>
+                  ) : (
+                      chartData.map((d: any, idx: number) => {
+                          const heightPercent = chartMax > 0 ? (d.value / chartMax) * 100 : 0;
+                          return (
+                              <div key={idx} className="flex-1 flex flex-col items-center justify-end h-full group relative">
+                                  <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 text-white text-[10px] sm:text-xs font-bold py-1 px-2 rounded absolute -top-7 pointer-events-none z-10 whitespace-nowrap shadow-sm">
+                                      {d.label}: {d.value} Lap
+                                  </div>
+                                  <motion.div 
+                                      initial={{ height: 0 }}
+                                      animate={{ height: `${heightPercent}%` }}
+                                      transition={{ duration: 0.5, delay: idx * 0.02 }}
+                                      className="w-full max-w-[32px] sm:max-w-[40px] bg-red-500 hover:bg-red-600 rounded-t-sm transition-colors cursor-pointer min-h-[4px]"
+                                  />
+                                  <span className="text-[9px] sm:text-xs font-semibold text-gray-500 mt-2 truncate max-w-[40px] text-center">{d.label}</span>
+                              </div>
+                          )
+                      })
+                  )}
+                </div>
               </div>
            </div>
 
-           <div className="bg-white rounded-2xl p-6 border border-gray-200/60 shadow-sm flex flex-col">
-              <div className="mb-6">
-                <h3 className="text-lg font-extrabold tracking-tight text-gray-900 flex items-center gap-2"><FaTrophy className="text-yellow-500"/> Kinerja Petugas (Leaderboard)</h3>
-                <p className="text-gray-500 text-sm font-medium">Peringkat berdasarkan laporan terselesaikan</p>
+           <div className="bg-white rounded-2xl p-4 sm:p-6 border border-gray-200/60 shadow-xs flex flex-col">
+              <div className="mb-4">
+                <h3 className="text-base sm:text-lg font-extrabold tracking-tight text-gray-900 flex items-center gap-2">
+                  <FaTrophy className="text-yellow-500 text-sm"/> Kinerja Petugas (Leaderboard)
+                </h3>
+                <p className="text-gray-500 text-xs sm:text-sm font-medium">Peringkat berdasarkan laporan terselesaikan</p>
               </div>
               
-              <div className="flex flex-col gap-3 flex-1 overflow-y-auto max-h-[400px] pr-2">
+              <div className="flex flex-col gap-2.5 flex-1 overflow-y-auto max-h-[380px] pr-1">
                  {stats?.petugasLeaderboard?.length === 0 ? (
-                     <div className="text-center text-gray-400 py-10 font-medium">Belum ada petugas yang menangani laporan di periode ini.</div>
+                     <div className="text-center text-gray-400 py-8 font-medium text-xs sm:text-sm">Belum ada petugas yang menangani laporan di periode ini.</div>
                  ) : (
                      stats?.petugasLeaderboard?.map((petugas: PetugasLeaderboard, idx: number) => (
-                        <div key={petugas.petugas_id} className="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 border border-transparent hover:border-gray-100 transition-colors">
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${idx === 0 ? 'bg-yellow-100 text-yellow-700' : idx === 1 ? 'bg-gray-200 text-gray-700' : idx === 2 ? 'bg-orange-100 text-orange-700' : 'bg-blue-50 text-blue-700'}`}>
+                        <div key={petugas.petugas_id} className="flex items-center gap-2.5 sm:gap-3.5 p-2.5 sm:p-3 rounded-xl bg-gray-50/50 hover:bg-gray-100/70 border border-gray-100 transition-colors">
+                            <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm shrink-0 ${idx === 0 ? 'bg-yellow-100 text-yellow-700' : idx === 1 ? 'bg-gray-200 text-gray-700' : idx === 2 ? 'bg-orange-100 text-orange-700' : 'bg-blue-50 text-blue-700'}`}>
                                 #{idx + 1}
                             </div>
-                            <div className="flex-1">
-                                <h4 className="font-bold text-gray-900">{petugas.petugas_name}</h4>
-                                <div className="text-xs text-gray-500 font-medium flex items-center gap-3 mt-1">
+                            <div className="flex-1 min-w-0">
+                                <h4 className="font-bold text-xs sm:text-sm text-gray-900 truncate">{petugas.petugas_name}</h4>
+                                <div className="text-[11px] text-gray-500 font-medium flex flex-wrap items-center gap-x-2.5 gap-y-0.5 mt-0.5">
                                     <span>Tugas: <strong className="text-gray-700">{petugas.total_handled}</strong></span>
-                                    <span>Rata-rata Respon: <strong className="text-gray-700">{petugas.avg_response_time ? Math.round(petugas.avg_response_time / 60) : 0} mnt</strong></span>
+                                    <span>Respon: <strong className="text-gray-700">{petugas.avg_response_time ? Math.round(petugas.avg_response_time / 60) : 0} mnt</strong></span>
                                 </div>
                             </div>
-                            <div className="text-right">
-                                <span className="block text-lg font-extrabold text-emerald-600">{petugas.total_completed}</span>
-                                <span className="text-[10px] font-bold uppercase text-gray-400">Selesai</span>
+                            <div className="text-right shrink-0">
+                                <span className="block text-base sm:text-lg font-extrabold text-emerald-600 leading-tight">{petugas.total_completed}</span>
+                                <span className="text-[9px] sm:text-[10px] font-bold uppercase text-gray-400">Selesai</span>
                             </div>
                         </div>
                      ))
@@ -246,13 +261,15 @@ export default function StatisticsPage() {
               </div>
            </div>
 
-           <div className="bg-white rounded-2xl p-6 border border-gray-200/60 shadow-sm flex flex-col">
-              <div className="mb-6">
-                <h3 className="text-lg font-extrabold tracking-tight text-gray-900 flex items-center gap-2"><FaListUl className="text-gray-400"/> Komposisi Status</h3>
-                <p className="text-gray-500 text-sm font-medium">Distribusi status penanganan pada periode ini</p>
+           <div className="bg-white rounded-2xl p-4 sm:p-6 border border-gray-200/60 shadow-xs flex flex-col">
+              <div className="mb-4">
+                <h3 className="text-base sm:text-lg font-extrabold tracking-tight text-gray-900 flex items-center gap-2">
+                  <FaListUl className="text-gray-400 text-sm"/> Komposisi Status
+                </h3>
+                <p className="text-gray-500 text-xs sm:text-sm font-medium">Distribusi status penanganan pada periode ini</p>
               </div>
               
-              <div className="flex flex-col gap-5 justify-center flex-1">
+              <div className="flex flex-col gap-3.5 sm:gap-4 justify-center flex-1">
                  {[
                    { label: 'Baru', count: getStatusCount('submitted'), color: 'bg-red-500' },
                    { label: 'Diverifikasi', count: getStatusCount('verified'), color: 'bg-yellow-500' },
@@ -261,13 +278,13 @@ export default function StatisticsPage() {
                    { label: 'Selesai', count: getStatusCount('completed'), color: 'bg-emerald-500' },
                    { label: 'Palsu', count: getStatusCount('false'), color: 'bg-slate-500' },
                  ].map((item, idx) => (
-                    <div key={idx} className="flex flex-col gap-1.5">
-                       <div className="flex justify-between text-sm font-bold">
+                    <div key={idx} className="flex flex-col gap-1">
+                       <div className="flex justify-between text-xs sm:text-sm font-bold">
                           <span className="text-gray-700">{item.label}</span>
-                          <span className="text-gray-900">{item.count} <span className="text-gray-400 text-xs ml-1 font-medium">({getPercentage(item.count)}%)</span></span>
+                          <span className="text-gray-900">{item.count} <span className="text-gray-400 text-[10px] sm:text-xs ml-1 font-medium">({getPercentage(item.count)}%)</span></span>
                        </div>
-                       <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
-                          <div className={`h-2.5 rounded-full ${item.color} transition-all duration-1000`} style={{ width: `${Math.max(getPercentage(item.count), 2)}%` }}></div>
+                       <div className="w-full bg-gray-100 rounded-full h-2 sm:h-2.5 overflow-hidden">
+                          <div className={`h-full rounded-full ${item.color} transition-all duration-1000`} style={{ width: `${Math.max(getPercentage(item.count), 2)}%` }}></div>
                        </div>
                     </div>
                  ))}

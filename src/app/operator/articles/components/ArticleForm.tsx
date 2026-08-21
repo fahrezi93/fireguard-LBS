@@ -126,17 +126,18 @@ export default function ArticleForm({ articleId }: { articleId?: number }) {
     <OperatorLayout>
       {toast.show && <Toast {...toast} onClose={hideToast} />}
       
-      <div className="bg-white border-b border-gray-200/70 p-4 sticky top-0 z-20 flex justify-between items-center shadow-sm">
-        <div className="flex items-center gap-4">
+      <div className="bg-white border-b border-gray-200/70 p-3 sm:p-4 sticky top-0 z-20 flex justify-between items-center gap-3 shadow-xs">
+        <div className="flex items-center gap-2.5 sm:gap-4 min-w-0">
           <button
             type="button"
             onClick={() => router.push('/operator/articles')}
-            className="w-10 h-10 rounded-xl bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-gray-500 transition-colors"
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-gray-500 transition-colors shrink-0"
+            aria-label="Kembali"
           >
-            <FaArrowLeft />
+            <FaArrowLeft className="text-sm" />
           </button>
-          <div>
-            <h2 className="text-xl font-bold text-gray-900">
+          <div className="min-w-0">
+            <h2 className="text-base sm:text-xl font-bold text-gray-900 truncate">
               {articleId ? "Edit Artikel" : "Tulis Artikel Baru"}
             </h2>
           </div>
@@ -144,15 +145,15 @@ export default function ArticleForm({ articleId }: { articleId?: number }) {
         <button
           onClick={handleSubmit}
           disabled={isSubmitting}
-          className="bg-red-500 hover:bg-red-600 disabled:bg-red-300 text-white px-5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 shadow-sm transition-all"
+          className="bg-red-500 hover:bg-red-600 disabled:bg-red-300 text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-xs transition-all shrink-0 active:scale-95"
         >
-          <FaSave /> {isSubmitting ? "Menyimpan..." : "Simpan"}
+          <FaSave className="text-xs" /> {isSubmitting ? "Menyimpan..." : "Simpan"}
         </button>
       </div>
 
-      <div className="max-w-[1000px] mx-auto px-6 py-8">
-        <form className="space-y-6" onSubmit={handleSubmit}>
-          <div className="bg-white p-6 rounded-2xl border border-gray-200/70 shadow-sm space-y-4">
+      <div className="max-w-[1000px] mx-auto p-3 sm:p-5 lg:p-8">
+        <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit}>
+          <div className="bg-white p-4 sm:p-6 rounded-2xl border border-gray-200/70 shadow-xs space-y-4">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1.5">Judul Artikel *</label>
               <input

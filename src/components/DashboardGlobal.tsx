@@ -25,6 +25,9 @@ import {
   FaPaperPlane,
   FaFireExtinguisher,
   FaWhatsapp,
+  FaMapMarkerAlt,
+  FaVolumeUp,
+  FaVolumeMute,
 } from "react-icons/fa";
 import ReportDetailModal from "@/components/ReportDetailModal";
 import { useToast } from "@/hooks/useToast";
@@ -103,15 +106,15 @@ const StatCard = ({
   value: string;
   color: string;
 }) => (
-  <div className={`bg-white rounded-xl p-3 md:p-5 flex flex-col md:flex-row items-center md:gap-4 gap-2 border border-gray-200/60 shadow-sm hover:shadow-md transition-all duration-200`}>
+  <div className="bg-white rounded-xl p-3 sm:p-4 md:p-5 flex items-center gap-2.5 sm:gap-4 border border-gray-200/70 shadow-xs hover:shadow-md transition-all duration-200 min-w-0">
     <div
-      className={`w-10 h-10 md:w-11 md:h-11 rounded-lg flex items-center justify-center text-white text-base md:text-lg ${color} shadow-sm`}
+      className={`w-9 h-9 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center text-white text-sm sm:text-lg ${color} shadow-sm shrink-0`}
     >
       {icon}
     </div>
-    <div className="text-center md:text-left">
-      <h3 className="text-xl md:text-2xl font-semibold text-gray-900">{value}</h3>
-      <p className="text-xs text-gray-500 mt-0.5">{title}</p>
+    <div className="min-w-0 flex-1">
+      <h3 className="text-base sm:text-xl lg:text-2xl font-extrabold text-gray-900 tracking-tight truncate">{value}</h3>
+      <p className="text-[10px] sm:text-xs font-medium text-gray-500 truncate mt-0.5">{title}</p>
     </div>
   </div>
 );
@@ -283,6 +286,7 @@ export default function DashboardGlobal() {
   const [isMonitorMode, setIsMonitorMode] = useState(true);
   const [wsStatus, setWsStatus] = useState("Connecting");
   const [showBroadcastConfirm, setShowBroadcastConfirm] = useState(false);
+  const [mobileTab, setMobileTab] = useState<"queue" | "map">("queue");
   const alarmIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const ws = useRef<WebSocket | null>(null);
 
@@ -773,48 +777,55 @@ export default function DashboardGlobal() {
       )}
 
       {/* Dashboard Specific Header Actions */}
-      <div className="bg-white border-b border-gray-200/70 p-4 sticky top-0 z-20 flex justify-between items-center shadow-sm">
-        <div className="flex items-center gap-4">
-          <h2 className="text-xl font-bold text-gray-900">Live Dashboard</h2>
-          <div className="hidden md:flex items-center gap-2 pl-4 border-l border-gray-200">
-            <div className="relative flex h-2.5 w-2.5">
+      <div className="bg-white border-b border-gray-200/70 p-3 sm:p-4 sticky top-0 z-20 flex flex-wrap justify-between items-center gap-3 shadow-xs">
+        <div className="flex items-center gap-3">
+          <h2 className="text-lg sm:text-xl font-bold text-gray-900">Live Dashboard</h2>
+          <div className="flex items-center gap-1.5 pl-3 border-l border-gray-200">
+            <div className="relative flex h-2 w-2 sm:h-2.5 sm:w-2.5">
               {wsStatus === "Connected" && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>}
-              <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${wsStatus === "Connected" ? "bg-emerald-500" : wsStatus === "Connecting" ? "bg-amber-500" : "bg-red-500"}`}></span>
+              <span className={`relative inline-flex rounded-full h-2 w-2 sm:h-2.5 sm:w-2.5 ${wsStatus === "Connected" ? "bg-emerald-500" : wsStatus === "Connecting" ? "bg-amber-500" : "bg-red-500"}`}></span>
             </div>
-            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{wsStatus === "Connected" ? 'System Online' : wsStatus}</span>
+            <span className="text-[11px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider">
+              {wsStatus === "Connected" ? 'Online' : wsStatus}
+            </span>
           </div>
         </div>
         
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          {/* Tombol Kirim Broadcast */}
           <button
             onClick={() => setShowBroadcastModal(true)}
-            className="px-4 py-2 bg-red-50 hover:bg-red-100 border border-red-200 hover:border-red-300 rounded-lg transition-all flex items-center gap-2 group"
-            title="Kirim Notifikasi Broadcast"
+            className="px-2.5 py-1.5 sm:px-3.5 sm:py-2 bg-red-50 hover:bg-red-100 border border-red-200 hover:border-red-300 rounded-xl transition-all flex items-center gap-1.5 group text-xs sm:text-sm font-semibold text-red-600 active:scale-95"
+            title="Kirim Notifikasi Peringatan Darurat ke Petugas / Warga"
           >
-            <FaBullhorn className="text-red-500 group-hover:scale-110 transition-transform" />
-            <span className="hidden sm:inline text-sm font-semibold text-red-600">Broadcast</span>
+            <FaBullhorn className="text-red-500 group-hover:scale-110 transition-transform text-xs sm:text-sm shrink-0" />
+            <span>Broadcast</span>
           </button>
           
-          <div className="h-8 w-px bg-gray-200 mx-1 hidden sm:block"></div>
-          
-          <div className="flex items-center gap-3 px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-50 rounded-lg border border-gray-200/60">
-            <span className="text-sm font-semibold text-gray-700 hidden sm:inline">Auto-Alarm</span>
-            <button
-              onClick={() => setIsMonitorMode(!isMonitorMode)}
-              className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none ${isMonitorMode ? "bg-red-500" : "bg-gray-300"}`}
-            >
-              <span
-                className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${isMonitorMode ? "translate-x-4" : "translate-x-1"}`}
-              />
-            </button>
-          </div>
+          {/* Tombol Suara Sirene Alarm Laporan Baru */}
+          <button
+            onClick={() => setIsMonitorMode(!isMonitorMode)}
+            className={`px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-xl border flex items-center gap-1.5 text-xs sm:text-sm font-semibold transition-all active:scale-95 ${
+              isMonitorMode 
+                ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100" 
+                : "bg-gray-100 text-gray-500 border-gray-200 hover:bg-gray-200"
+            }`}
+            title={isMonitorMode ? "Suara Sirene Alarm Otomatis Saat Ada Laporan Baru: AKTIF" : "Suara Sirene Alarm Otomatis Saat Ada Laporan Baru: MATI"}
+          >
+            {isMonitorMode ? (
+              <FaVolumeUp className="text-emerald-600 text-xs sm:text-sm shrink-0 animate-pulse" />
+            ) : (
+              <FaVolumeMute className="text-gray-400 text-xs sm:text-sm shrink-0" />
+            )}
+            <span>{isMonitorMode ? "Alarm: ON" : "Alarm: OFF"}</span>
+          </button>
         </div>
       </div>
 
-      <div className="max-w-[1600px] w-full mx-auto p-4 sm:p-6 lg:p-8 flex-grow flex flex-col gap-6">
+      <div className="max-w-[1600px] w-full mx-auto p-3 sm:p-5 lg:p-8 flex-grow flex flex-col gap-4 sm:gap-6">
           
           {/* Top Stats Row */}
-          <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <section className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
             <StatCard
               icon={<FaFire className="text-white" />}
               title="Laporan Aktif"
@@ -823,13 +834,13 @@ export default function DashboardGlobal() {
             />
             <StatCard
               icon={<FaTruck className="text-white" />}
-              title="Unit Di Lapangan"
+              title="Unit Lapangan"
               value={dispatchedCount.toString()}
               color="bg-blue-500"
             />
             <StatCard
               icon={<FaClock className="text-white" />}
-              title="Rata-rata Respons"
+              title="Respon Rata-rata"
               value="< 5 min"
               color="bg-amber-500"
             />
@@ -841,31 +852,57 @@ export default function DashboardGlobal() {
             />
           </section>
 
+          {/* Mobile View Toggle */}
+          <div className="lg:hidden flex bg-gray-200/70 p-1 rounded-xl border border-gray-200">
+            <button
+              onClick={() => setMobileTab("queue")}
+              className={`flex-1 py-2 text-xs font-bold rounded-lg flex items-center justify-center gap-1.5 transition-all ${
+                mobileTab === "queue"
+                  ? "bg-white text-gray-900 shadow-sm"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              <FaFileAlt className={mobileTab === "queue" ? "text-red-500" : "text-gray-400"} />
+              <span>Antrean ({filteredReports.length})</span>
+            </button>
+            <button
+              onClick={() => setMobileTab("map")}
+              className={`flex-1 py-2 text-xs font-bold rounded-lg flex items-center justify-center gap-1.5 transition-all ${
+                mobileTab === "map"
+                  ? "bg-white text-gray-900 shadow-sm"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              <FaMapMarkerAlt className={mobileTab === "map" ? "text-red-500" : "text-gray-400"} />
+              <span>Peta Live</span>
+            </button>
+          </div>
+
           {/* Main Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-grow h-[calc(100vh-16rem)] min-h-[600px]">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6 flex-grow lg:h-[calc(100vh-16rem)] lg:min-h-[600px]">
             
             {/* Left Queue Panel */}
-            <section className="lg:col-span-4 xl:col-span-3 bg-white border border-gray-200/80 rounded-2xl shadow-sm flex flex-col overflow-hidden h-full max-h-[800px]">
-              <div className="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-white shrink-0">
+            <section className={`lg:col-span-4 xl:col-span-3 bg-white border border-gray-200/80 rounded-2xl shadow-sm flex flex-col overflow-hidden h-[550px] lg:h-full lg:max-h-[800px] order-2 lg:order-1 ${mobileTab === "queue" ? "flex" : "hidden lg:flex"}`}>
+              <div className="px-4 py-3.5 sm:px-6 sm:py-4 border-b border-gray-100 flex justify-between items-center bg-white shrink-0">
                 <div>
-                  <h2 className="text-base font-bold text-gray-900 tracking-tight">Antrean Darurat</h2>
-                  <p className="text-xs text-gray-500 mt-0.5">Laporan masuk real-time</p>
+                  <h2 className="text-sm sm:text-base font-bold text-gray-900 tracking-tight">Antrean Darurat</h2>
+                  <p className="text-[11px] sm:text-xs text-gray-500 mt-0.5">Laporan masuk real-time</p>
                 </div>
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1">
                   <button onClick={fetchReports} className="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all" title="Segarkan">
-                    <FaSyncAlt className="text-sm" />
+                    <FaSyncAlt className="text-xs sm:text-sm" />
                   </button>
                   <button onClick={handleDeleteAllReports} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all" title="Kosongkan Semua">
-                    <FaTrash className="text-sm" />
+                    <FaTrash className="text-xs sm:text-sm" />
                   </button>
                 </div>
               </div>
               
-              <div className="px-6 py-3 border-b border-gray-100 bg-gray-50/50 shrink-0">
+              <div className="px-4 py-2.5 sm:px-6 sm:py-3 border-b border-gray-100 bg-gray-50/50 shrink-0">
                 <select
                   onChange={(e) => setStatusFilter(e.target.value)}
                   value={statusFilter}
-                  className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none cursor-pointer"
+                  className="w-full bg-white border border-gray-200 rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none cursor-pointer"
                 >
                   <option value="all">Semua Status Laporan</option>
                   <option value="submitted">Menunggu Verifikasi</option>
@@ -877,18 +914,18 @@ export default function DashboardGlobal() {
                 </select>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50/30 custom-scrollbar relative">
+              <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-2.5 sm:space-y-3 bg-gray-50/30 custom-scrollbar relative">
                 {isLoading ? (
                   <div className="flex flex-col items-center justify-center h-40 gap-3 text-gray-400">
                     <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-red-500"></div>
-                    <span className="text-sm font-medium">Sinkronisasi data...</span>
+                    <span className="text-xs sm:text-sm font-medium">Sinkronisasi data...</span>
                   </div>
                 ) : filteredReports.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-40 gap-2 text-gray-400">
-                    <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-1">
-                       <FaCheck className="text-gray-300 text-xl" />
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-100 rounded-full flex items-center justify-center mb-1">
+                       <FaCheck className="text-gray-300 text-lg sm:text-xl" />
                     </div>
-                    <span className="text-sm font-medium">Antrean bersih</span>
+                    <span className="text-xs sm:text-sm font-medium">Antrean bersih</span>
                   </div>
                 ) : (
                   filteredReports.map((report) => (
@@ -903,11 +940,11 @@ export default function DashboardGlobal() {
             </section>
 
             {/* Right Map Panel */}
-            <section className="lg:col-span-8 xl:col-span-9 bg-white border border-gray-200/80 rounded-2xl shadow-sm overflow-hidden flex flex-col h-full relative min-h-[500px]">
-              <div className="absolute top-4 left-4 z-[400] bg-white/90 backdrop-blur px-4 py-2.5 rounded-xl shadow-lg border border-gray-200/50 pointer-events-none">
-                <div className="flex items-center gap-3">
+            <section className={`lg:col-span-8 xl:col-span-9 bg-white border border-gray-200/80 rounded-2xl shadow-sm overflow-hidden flex flex-col h-[480px] sm:h-[550px] lg:h-full relative min-h-[400px] order-1 lg:order-2 ${mobileTab === "map" ? "flex" : "hidden lg:flex"}`}>
+              <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-[400] bg-white/90 backdrop-blur px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl shadow-lg border border-gray-200/50 pointer-events-none">
+                <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
-                  <span className="text-sm font-bold tracking-tight text-gray-900">Live Command Map</span>
+                  <span className="text-xs sm:text-sm font-bold tracking-tight text-gray-900">Live Command Map</span>
                 </div>
               </div>
               <div className="flex-grow w-full h-full bg-gray-100 rounded-xl overflow-hidden shadow-inner">

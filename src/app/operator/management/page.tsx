@@ -71,16 +71,16 @@ const blankPos = (): Omit<PosPemadam, "id"> => ({
 
 function Modal({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
-        <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
-          <h3 className="text-base font-bold text-gray-900">{title}</h3>
+      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden max-h-[90vh] flex flex-col">
+        <div className="flex items-center justify-between px-5 py-4 sm:px-6 sm:py-5 border-b border-gray-100 shrink-0">
+          <h3 className="text-sm sm:text-base font-bold text-gray-900">{title}</h3>
           <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
             <FaTimes className="text-sm" />
           </button>
         </div>
-        <div className="p-6">{children}</div>
+        <div className="p-4 sm:p-6 overflow-y-auto">{children}</div>
       </div>
     </div>
   );
@@ -640,60 +640,208 @@ export default function ManagementPage() {
 
     <OperatorLayout>
       {/* ── Header ── */}
-      <div className="bg-white border-b border-gray-200/70 p-4 sticky top-0 z-20 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
+      <div className="bg-white border-b border-gray-200/70 p-3 sm:p-4 sticky top-0 z-20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center shadow-inner border border-gray-200/50">
-            <FaTags className="text-gray-500 text-lg" />
+          <div className="w-9 h-9 sm:w-10 sm:h-10 bg-gray-100 rounded-xl flex items-center justify-center shadow-inner border border-gray-200/50 shrink-0">
+            <FaTags className="text-gray-600 text-base sm:text-lg" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-900">
+            <h2 className="text-lg sm:text-xl font-bold text-gray-900">
               Manajemen Data
             </h2>
-            <p className="text-xs font-medium text-gray-500 mt-0.5">Master Data Sistem</p>
+            <p className="text-[11px] sm:text-xs font-medium text-gray-500 mt-0.5">Master Data Sistem</p>
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 bg-gray-50 p-1 rounded-xl border border-gray-200/60 w-full sm:w-auto">
+        <div className="flex items-center gap-1 overflow-x-auto pb-1 sm:pb-0 bg-gray-50 p-1 rounded-xl border border-gray-200/60 w-full sm:w-auto">
           {(["kategori", "kelurahan", "pos", "petugas"] as ActiveTab[]).map((tab) => (
             <button key={tab} onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all whitespace-nowrap ${
+              className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-bold flex items-center gap-1.5 sm:gap-2 transition-all whitespace-nowrap flex-1 sm:flex-initial justify-center ${
                 activeTab === tab
-                  ? "bg-white text-gray-900 shadow-[0_2px_10px_rgba(0,0,0,0.05)]"
+                  ? "bg-white text-gray-900 shadow-xs font-bold"
                   : "text-gray-500 hover:text-gray-700 hover:bg-white/50"
               }`}>
-              {tab === "kategori" && <FaLayerGroup />}
-              {tab === "kelurahan" && <FaMapMarkerAlt />}
-              {tab === "pos" && <FaFireExtinguisher />}
-              {tab === "petugas" && <FaUserShield />}
+              {tab === "kategori" && <FaLayerGroup className="text-xs" />}
+              {tab === "kelurahan" && <FaMapMarkerAlt className="text-xs" />}
+              {tab === "pos" && <FaFireExtinguisher className="text-xs" />}
+              {tab === "petugas" && <FaUserShield className="text-xs" />}
               <span className="hidden sm:inline">
                 {tab === "kategori" ? "Kategori" : tab === "kelurahan" ? "Kelurahan" : tab === "pos" ? "Pos Pemadam" : "Akun Petugas"}
               </span>
               <span className="sm:hidden">
-                {tab === "kategori" ? "Kategori" : tab === "kelurahan" ? "Lurah" : tab === "pos" ? "Pos" : "Petugas"}
+                {tab === "kategori" ? "Kategori" : tab === "kelurahan" ? "Kelurahan" : tab === "pos" ? "Pos" : "Petugas"}
               </span>
             </button>
           ))}
         </div>
       </div>
 
-      <div className="max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8">
+      <div className="max-w-[1600px] mx-auto p-3 sm:p-5 lg:p-8">
           {/* Title + Add */}
-          <div className="flex justify-between items-center mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 sm:mb-8">
             <div>
-              <h2 className="text-2xl font-extrabold tracking-tight text-gray-900">{tabLabel[activeTab]}</h2>
-              <p className="text-gray-500 font-normal mt-1">Kelola master data untuk referensi operasional sistem.</p>
+              <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight text-gray-900">{tabLabel[activeTab]}</h2>
+              <p className="text-xs sm:text-sm text-gray-500 font-normal mt-0.5 sm:mt-1">Kelola master data untuk referensi operasional sistem.</p>
             </div>
             <button onClick={() => setShowAdd(true)}
-              className="bg-gray-900 hover:bg-red-500 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 text-sm transition-colors shadow-lg shadow-black/5 hover:shadow-red-500/20 group">
+              className="bg-gray-900 hover:bg-red-500 text-white px-4 sm:px-5 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 text-xs sm:text-sm transition-colors shadow-xs group w-full sm:w-auto">
               <FaPlus className="text-xs group-hover:scale-110 transition-transform" /> Tambah Baru
             </button>
           </div>
 
-          {/* Table */}
-          <div className="bg-white border border-gray-200/80 rounded-2xl shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+          {/* Table Container */}
+          <div className="bg-white border border-gray-200/80 rounded-2xl shadow-xs overflow-hidden">
+            
+            {/* Mobile Card List View (Visible on small screens) */}
+            <div className="block sm:hidden divide-y divide-gray-100">
+              {isLoading && (
+                <div className="p-8 text-center text-xs text-gray-400">Memuat data...</div>
+              )}
+
+              {/* Mobile Petugas Cards */}
+              {!isLoading && activeTab === "petugas" && petugasList.map((pet) => (
+                <div key={pet.id} className="p-4 flex flex-col gap-2.5">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <span className="text-[10px] font-bold text-gray-400">ID #{pet.id}</span>
+                      <h4 className="font-bold text-sm text-gray-900">{pet.name}</h4>
+                    </div>
+                    <button
+                      onClick={() => setDeleteTarget({ id: pet.id, name: pet.name, type: "petugas" })}
+                      className="p-2 text-red-500 bg-red-50 hover:bg-red-100 rounded-lg transition-colors text-xs"
+                      title="Hapus"
+                    >
+                      <FaTrash />
+                    </button>
+                  </div>
+                  <div className="text-xs text-gray-500 space-y-1 bg-gray-50 p-2.5 rounded-xl border border-gray-100">
+                    <div>Email: <span className="font-semibold text-gray-700">{pet.email}</span></div>
+                    <div>WhatsApp: <span className="font-semibold text-gray-700">{pet.phone_number || "-"}</span></div>
+                    <div>Dibuat: <span className="text-gray-600">{new Date(pet.created_at).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'})}</span></div>
+                  </div>
+                </div>
+              ))}
+
+              {/* Mobile Kategori Cards */}
+              {!isLoading && activeTab === "kategori" && categories.map((cat) => (
+                <div key={cat.id} className="p-4 flex flex-col gap-2.5">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-3">
+                      <div className="text-2xl" style={{ color: cat.color }}>{cat.icon}</div>
+                      <div>
+                        <span className="text-[10px] font-bold text-gray-400">ID #{cat.id}</span>
+                        <h4 className="font-bold text-sm text-gray-900">{cat.name}</h4>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={() => setEditCategory(cat)}
+                        className="p-2 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors text-xs"
+                        title="Edit"
+                      >
+                        <FaEdit />
+                      </button>
+                      <button
+                        onClick={() => setDeleteTarget({ id: cat.id, name: cat.name, type: "kategori" })}
+                        className="p-2 text-red-500 bg-red-50 hover:bg-red-100 rounded-lg transition-colors text-xs"
+                        title="Hapus"
+                      >
+                        <FaTrash />
+                      </button>
+                    </div>
+                  </div>
+                  {cat.description && (
+                    <p className="text-xs text-gray-600 bg-gray-50 p-2.5 rounded-xl border border-gray-100">
+                      {cat.description}
+                    </p>
+                  )}
+                </div>
+              ))}
+
+              {/* Mobile Kelurahan Cards */}
+              {!isLoading && activeTab === "kelurahan" && kelurahans.map((kel) => (
+                <div key={kel.id} className="p-4 flex flex-col gap-2.5">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <span className="text-[10px] font-bold text-gray-400">ID #{kel.id}</span>
+                      <h4 className="font-bold text-sm text-gray-900">{kel.name}</h4>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={() => setEditKelurahan(kel)}
+                        className="p-2 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors text-xs"
+                        title="Edit"
+                      >
+                        <FaEdit />
+                      </button>
+                      <button
+                        onClick={() => setDeleteTarget({ id: kel.id, name: kel.name, type: "kelurahan" })}
+                        className="p-2 text-red-500 bg-red-50 hover:bg-red-100 rounded-lg transition-colors text-xs"
+                        title="Hapus"
+                      >
+                        <FaTrash />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 text-xs text-gray-600 bg-gray-50 p-2.5 rounded-xl border border-gray-100">
+                    <div>Kecamatan: <span className="font-semibold text-gray-800">{kel.kecamatan}</span></div>
+                    <div>Kota: <span className="font-semibold text-gray-800">{kel.kota}</span></div>
+                  </div>
+                </div>
+              ))}
+
+              {/* Mobile Pos Cards */}
+              {!isLoading && activeTab === "pos" && posPemadam.map((pos) => (
+                <div key={pos.id} className="p-4 flex flex-col gap-2.5">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <span className="text-[10px] font-bold text-gray-400">ID #{pos.id}</span>
+                      <h4 className="font-bold text-sm text-gray-900">{pos.name}</h4>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={() => setEditPos(pos)}
+                        className="p-2 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors text-xs"
+                        title="Edit"
+                      >
+                        <FaEdit />
+                      </button>
+                      <button
+                        onClick={() => setDeleteTarget({ id: pos.id, name: pos.name, type: "pos" })}
+                        className="p-2 text-red-500 bg-red-50 hover:bg-red-100 rounded-lg transition-colors text-xs"
+                        title="Hapus"
+                      >
+                        <FaTrash />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="space-y-1.5 text-xs text-gray-600 bg-gray-50 p-2.5 rounded-xl border border-gray-100">
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-500">Status:</span>
+                      <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-bold ${
+                        pos.status === "aktif" ? "bg-emerald-100 text-emerald-700" : "bg-gray-200 text-gray-600"
+                      }`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${pos.status === "aktif" ? "bg-emerald-500" : "bg-gray-400"}`} />
+                        {pos.status.toUpperCase()}
+                      </span>
+                    </div>
+                    <div>Kontak: <span className="font-mono font-semibold text-gray-800">{pos.contact_phone || "—"}</span></div>
+                    <div>Alamat: <span className="text-gray-700">{pos.address || "—"}</span></div>
+                  </div>
+                </div>
+              ))}
+
+              {/* Mobile Empty states */}
+              {!isLoading && activeTab === "petugas" && petugasList.length === 0 && <EmptyState label="akun petugas" />}
+              {!isLoading && activeTab === "kategori" && categories.length === 0 && <EmptyState label="kategori darurat" />}
+              {!isLoading && activeTab === "kelurahan" && kelurahans.length === 0 && <EmptyState label="data kelurahan" />}
+              {!isLoading && activeTab === "pos" && posPemadam.length === 0 && <EmptyState label="pos pemadam" />}
+            </div>
+
+            {/* Desktop Table View (Visible on sm and up) */}
+            <div className="hidden sm:block overflow-x-auto">
+              <table className="w-full text-left border-collapse min-w-[650px]">
                 <thead>
                   <tr className="bg-gray-50/80 border-b border-gray-200">
                     {activeTab === "petugas" && (
@@ -741,7 +889,7 @@ export default function ManagementPage() {
                   ))}
 
                   {/* Data rows */}
-                                    {!isLoading && activeTab === "petugas" && petugasList.map((pet) => (
+                  {!isLoading && activeTab === "petugas" && petugasList.map((pet) => (
                     <tr key={pet.id} className="border-b border-gray-100 hover:bg-gray-50/50 transition-colors">
                       <td className="px-6 py-4 text-sm font-semibold text-gray-900">#{pet.id}</td>
                       <td className="px-6 py-4">
@@ -810,7 +958,7 @@ export default function ManagementPage() {
                 </tbody>
               </table>
 
-              {/* Empty states */}
+              {/* Desktop Empty states */}
               {!isLoading && activeTab === "petugas" && petugasList.length === 0 && <EmptyState label="akun petugas" />}
               {!isLoading && activeTab === "kategori" && categories.length === 0 && <EmptyState label="kategori darurat" />}
               {!isLoading && activeTab === "kelurahan" && kelurahans.length === 0 && <EmptyState label="data kelurahan" />}

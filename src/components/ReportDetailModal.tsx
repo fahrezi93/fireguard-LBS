@@ -95,10 +95,10 @@ const StatusButton = ({
   <button
     onClick={onClick}
     disabled={disabled}
-    className={`${color} text-white px-4 py-2.5 rounded-xl font-medium text-sm flex items-center gap-2 transition-all hover:shadow-lg shadow-md disabled:opacity-50 disabled:cursor-not-allowed`}
+    className={`${color} text-white px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl font-medium text-xs sm:text-sm flex items-center justify-center gap-1.5 sm:gap-2 transition-all hover:shadow-md shadow-xs disabled:opacity-50 disabled:cursor-not-allowed active:scale-95`}
   >
     {icon}
-    {label}
+    <span>{label}</span>
   </button>
 );
 
@@ -230,37 +230,37 @@ export default function ReportDetailModal({
 
   return (
     <div
-      className="fixed inset-0 z-[9998] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-[9998] flex items-center justify-center bg-black/60 backdrop-blur-sm p-2 sm:p-4"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col"
+        className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[92vh] sm:max-h-[90vh] overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b border-gray-200/60 px-6 py-5 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-red-500 to-orange-600 rounded-xl">
-              <FaFileAlt className="text-white text-base" />
+        <div className="sticky top-0 bg-white border-b border-gray-200/60 px-4 py-3.5 sm:px-6 sm:py-5 flex justify-between items-center z-10 shrink-0">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="p-2 bg-gradient-to-br from-red-500 to-orange-600 rounded-xl shrink-0">
+              <FaFileAlt className="text-white text-sm sm:text-base" />
             </div>
-            <div>
-              <div className="flex items-center gap-3">
-                <h2 className="text-lg font-semibold text-gray-900">Detail Laporan #{report.id}</h2>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h2 className="text-base sm:text-lg font-semibold text-gray-900 truncate">Detail Laporan #{report.id}</h2>
                 {report.needs_backup == 1 && (
-                  <span className="bg-red-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full animate-pulse shadow-sm">
+                  <span className="bg-red-500 text-white text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full animate-pulse shadow-xs">
                     🚨 BUTUH BACKUP
                   </span>
                 )}
               </div>
-              <p className="text-xs text-gray-500 mt-0.5">Informasi lengkap laporan kebakaran</p>
+              <p className="text-[11px] sm:text-xs text-gray-500 mt-0.5">Informasi lengkap laporan kebakaran</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all p-2 rounded-xl"
+            className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all p-2 rounded-xl shrink-0 ml-2"
             aria-label="Close modal"
           >
-            <FaTimes size={20} />
+            <FaTimes size={18} />
           </button>
         </div>
 
@@ -718,21 +718,21 @@ export default function ReportDetailModal({
 
         {/* Action Buttons */}
         {!readOnly && onUpdateStatus && (
-          <div className="sticky bottom-0 bg-white border-t border-gray-200/60 px-6 py-5">
-            <p className="text-xs font-medium text-gray-600 mb-3">Ubah Status Laporan:</p>
-            <div className="flex flex-wrap gap-2.5 justify-between items-center">
-              <div className="flex flex-wrap gap-2.5">
+          <div className="sticky bottom-0 bg-white border-t border-gray-200/60 px-4 py-3 sm:px-6 sm:py-4 shrink-0">
+            <p className="text-[11px] sm:text-xs font-semibold text-gray-500 mb-2">Ubah Status Laporan:</p>
+            <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center justify-between gap-2 sm:gap-2.5">
+              <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-1.5 sm:gap-2.5 flex-1">
                 <StatusButton
                   label="Verifikasi"
-                  icon={<FaCheck className="text-sm" />}
+                  icon={<FaCheck className="text-xs sm:text-sm" />}
                   color="bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700"
                   onClick={() => handleStatusUpdate("verified")}
                   disabled={report.status === 'completed' || report.status === 'false' || report.status === 'false_report'}
                 />
                 {onDispatchToPetugas && (
                   <StatusButton
-                    label={report.assigned_petugas_id ? "Sudah Diambil Petugas" : report.status === 'dispatched' || report.status === 'dikirim' ? "Broadcast Terkirim" : "Kirim ke Petugas (Broadcast)"}
-                    icon={<FaTruck className="text-sm" />}
+                    label={report.assigned_petugas_id ? "Sudah Diambil" : report.status === 'dispatched' || report.status === 'dikirim' ? "Terkirim" : "Broadcast Petugas"}
+                    icon={<FaTruck className="text-xs sm:text-sm" />}
                     color="bg-gradient-to-r from-red-500 to-orange-600 hover:from-red-600 hover:to-orange-700"
                     onClick={handleDispatch}
                     disabled={!!report.assigned_petugas_id || report.status === 'completed' || report.status === 'selesai' || report.status === 'false' || report.status === 'false_report' || report.status === 'dispatched' || report.status === 'dikirim'}
@@ -740,21 +740,21 @@ export default function ReportDetailModal({
                 )}
                 <StatusButton
                   label="Kirim Unit (Manual)"
-                  icon={<FaTruck className="text-sm" />}
+                  icon={<FaTruck className="text-xs sm:text-sm" />}
                   color="bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700"
                   onClick={() => handleStatusUpdate("dispatched")}
                   disabled={!!report.assigned_petugas_id || report.status === 'completed' || report.status === 'selesai' || report.status === 'false' || report.status === 'false_report' || report.status === 'dispatched' || report.status === 'dikirim'}
                 />
                 <StatusButton
                   label="Selesaikan"
-                  icon={<FaCheckCircle className="text-sm" />}
+                  icon={<FaCheckCircle className="text-xs sm:text-sm" />}
                   color="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
                   onClick={() => handleStatusUpdate("completed")}
                   disabled={report.status === 'completed' || report.status === 'false' || report.status === 'false_report'}
                 />
                 <StatusButton
                   label="Laporan Palsu"
-                  icon={<FaTimesCircle className="text-sm" />}
+                  icon={<FaTimesCircle className="text-xs sm:text-sm" />}
                   color="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700"
                   onClick={() => handleStatusUpdate("false")}
                   disabled={report.status === 'completed' || report.status === 'false' || report.status === 'false_report'}
@@ -764,9 +764,9 @@ export default function ReportDetailModal({
               {onDelete && (
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-red-600 border border-red-200 hover:bg-red-50 transition-all"
+                  className="flex items-center justify-center gap-1.5 px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-medium text-red-600 border border-red-200 hover:bg-red-50 transition-all active:scale-95"
                 >
-                  <FaTrash className="text-sm" />
+                  <FaTrash className="text-xs" />
                   Hapus
                 </button>
               )}

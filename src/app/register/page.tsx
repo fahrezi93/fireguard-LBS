@@ -128,7 +128,7 @@ export default function RegisterPage() {
         </Link>
 
         <div className="max-w-sm w-full mx-auto my-auto">
-          <Link href="/" className="inline-flex items-center gap-2 mb-6 group w-fit">
+          <Link href="/" className="inline-flex items-center gap-2 mb-4 group w-fit">
             <FaBell className="text-2xl text-red-600 transition-transform duration-300 group-hover:scale-110" />
             <span className="text-xl font-bold tracking-tight text-slate-900">SiagaBencana</span>
           </Link>
@@ -288,6 +288,14 @@ export default function RegisterPage() {
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* Sponsor Footer */}
+          <div className="mt-8 pt-6 border-t border-slate-100 flex flex-col items-center gap-2 text-center">
+            <span className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-slate-400">
+              Didanai Oleh:
+            </span>
+            <img src="/Logo_LPKM.png" alt="Sponsorship Logos" className="h-6 sm:h-7 object-contain" />
+          </div>
         </div>
       </div>
 
