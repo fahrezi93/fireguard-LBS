@@ -132,7 +132,7 @@ export default function KelurahanDashboard() {
             Didanai Oleh:
           </span>
           <div className="bg-white px-2 py-0.5 rounded-md">
-            <img src="/Logo_LPKM.png" alt="Sponsorship Logos" className="h-6 sm:h-7 md:h-8 object-contain" />
+            <img src="/Logo_LPKM.webp" alt="Sponsorship Logos" className="h-6 sm:h-7 md:h-8 object-contain" />
           </div>
         </div>
       </div>
@@ -365,7 +365,10 @@ export default function KelurahanDashboard() {
       {/* Detail Modal saat laporan diklik */}
       {selectedReport && (
         <UserReportDetailModal
-          report={selectedReport}
+          report={{
+            ...selectedReport,
+            assigned_petugas_id: selectedReport.assigned_petugas_id ?? undefined,
+          }}
           onClose={() => setSelectedReport(null)}
         />
       )}

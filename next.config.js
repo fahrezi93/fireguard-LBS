@@ -19,7 +19,16 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  // Compress output CSS/JS bundles
+  compress: true,
   images: {
+    // Prefer AVIF then WebP for better compression
+    formats: ['image/avif', 'image/webp'],
+    qualities: [60, 75, 85],
+    // Cache optimized images for 1 year
+    minimumCacheTTL: 31536000,
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     remotePatterns: [
       {
         protocol: 'https',
@@ -41,6 +50,26 @@ const nextConfig = {
   },
   async headers() {
     return [
+      {
+        // Next.js hashed static assets — safe to cache for 1 year (immutable)
+        source: '/_next/static/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        // Public images & fonts — cache for 1 year
+        source: '/(.*\\.webp|.*\\.png|.*\\.jpg|.*\\.jpeg|.*\\.svg|.*\\.woff2|.*\\.woff)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
       {
         source: '/(.*)',
         headers: [

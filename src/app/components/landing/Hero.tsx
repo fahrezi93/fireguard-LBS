@@ -10,39 +10,61 @@ import { FaShieldAlt, FaPhoneAlt } from 'react-icons/fa';
 const Hero = () => {
   const router = useRouter();
   const [currentSlide, setCurrentSlide] = useState(0);
-  const images = ['/bg1.jpg', '/bg2.jpg', '/bg3.jpeg', '/bg4.jpg'];
+  const [slideshowReady, setSlideshowReady] = useState(false);
+  const images = ['/bg1.webp', '/bg2.webp', '/bg3.webp', '/bg4.webp'];
 
   useEffect(() => {
+    // Delay slideshow start so it doesn't interfere with LCP
+    const ready = setTimeout(() => setSlideshowReady(true), 3000);
+    return () => clearTimeout(ready);
+  }, []);
+
+  useEffect(() => {
+    if (!slideshowReady) return;
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % images.length);
-    }, 5000);
-
+    }, 8000);
     return () => clearInterval(interval);
-  }, [images.length]);
+  }, [slideshowReady, images.length]);
 
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#050505] text-white">
-      {/* Background Images with Cinematic Ken Burns Effect */}
-      <AnimatePresence mode="popLayout">
-        <motion.div
-          key={currentSlide}
-          initial={{ opacity: 0, scale: 1.1 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 1.5, ease: "easeInOut" }}
-          className="absolute inset-0 z-0"
-        >
+      {/* Background Images - Static first image for LCP, then slideshow */}
+      {!slideshowReady ? (
+        <div className="absolute inset-0 z-0">
           <Image
-            src={images[currentSlide]}
+            src="/bg1.webp"
             alt="Hero Background"
             fill
-            priority={currentSlide === 0}
+            priority
+            fetchPriority="high"
             className="object-cover object-center"
-            sizes="100vw"
-            quality={80}
+            sizes="(max-width: 828px) 750px, 1920px"
+            quality={75}
           />
-        </motion.div>
-      </AnimatePresence>
+        </div>
+      ) : (
+        <AnimatePresence mode="popLayout">
+          <motion.div
+            key={currentSlide}
+            initial={currentSlide === 0 ? false : { opacity: 0, scale: 1.05 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.2, ease: "easeInOut" }}
+            className="absolute inset-0 z-0"
+          >
+            <Image
+              src={images[currentSlide]}
+              alt="Hero Background"
+              fill
+              priority={currentSlide === 0}
+              className="object-cover object-center"
+              sizes="(max-width: 828px) 750px, 1920px"
+              quality={75}
+            />
+          </motion.div>
+        </AnimatePresence>
+      )}
 
       {/* Cinematic Gradient Overlays */}
       <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/80 via-black/50 to-[#050505]" />
@@ -99,7 +121,7 @@ const Hero = () => {
         </motion.div>
       </div>
 
-      {/* Modern Slide Indicators */}
+      {/* Modern Slide Indicators — fixed-width containers, only opacity changes (composited) */}
       <div className="absolute bottom-10 left-0 right-0 z-30 flex justify-center items-center gap-3">
         {images.map((_, index) => (
           <button
@@ -108,8 +130,16 @@ const Hero = () => {
             className="relative h-1.5 focus:outline-none group flex items-center"
             aria-label={`Go to slide ${index + 1}`}
           >
-            <div className={`rounded-full transition-all duration-500 ${index === currentSlide ? 'w-12 bg-red-500 h-1.5' : 'w-4 h-1.5 bg-white/30 group-hover:bg-white/50'
-              }`} />
+            {/* Fixed-width outer — no width transition, only opacity/color changes */}
+            <div className={`rounded-full h-1.5 overflow-hidden transition-all duration-500 ${index === currentSlide ? 'w-12' : 'w-4'}`}>
+              <div
+                className={`h-full w-full rounded-full ${
+                  index === currentSlide
+                    ? 'bg-red-500'
+                    : 'bg-white/30 group-hover:bg-white/50'
+                }`}
+              />
+            </div>
           </button>
         ))}
       </div>

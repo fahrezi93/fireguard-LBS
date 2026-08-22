@@ -323,7 +323,7 @@ export default function NewReportPage() {
             Didanai Oleh:
           </span>
           <div className="bg-white px-2 py-0.5 rounded-md">
-            <img src="/Logo_LPKM.png" alt="Sponsorship Logos" className="h-6 sm:h-7 md:h-8 object-contain" />
+            <img src="/Logo_LPKM.webp" alt="Sponsorship Logos" className="h-6 sm:h-7 md:h-8 object-contain" />
           </div>
         </div>
       </div>

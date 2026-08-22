@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { FaBell, FaUser, FaUserShield, FaChevronDown, FaSignOutAlt, FaBars, FaTimes } from 'react-icons/fa';
 
 const Navbar = ({ isLight = true }: { isLight?: boolean }) => {
@@ -96,7 +97,7 @@ const Navbar = ({ isLight = true }: { isLight?: boolean }) => {
           Didanai Oleh:
         </span>
         <div className="bg-white px-2 py-0.5 rounded-md">
-          <img src="/Logo_LPKM.png" alt="Sponsorship Logos" className="h-4 sm:h-5 md:h-6 object-contain" />
+          <Image src="/Logo_LPKM.webp" alt="Sponsorship Logos" width={144} height={28} className="h-4 sm:h-5 md:h-6 w-auto object-contain" />
         </div>
       </div>
     </div>

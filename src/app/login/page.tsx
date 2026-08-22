@@ -532,7 +532,7 @@ export default function LoginPage() {
               <span className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-slate-400">
                 Didanai Oleh:
               </span>
-              <img src="/Logo_LPKM.png" alt="Sponsorship Logos" className="h-6 sm:h-7 object-contain" />
+              <img src="/Logo_LPKM.webp" alt="Sponsorship Logos" className="h-6 sm:h-7 object-contain" />
             </div>
           </div>
         </div>

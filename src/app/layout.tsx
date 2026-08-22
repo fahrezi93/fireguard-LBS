@@ -4,9 +4,11 @@ import './globals.css';
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800'],
+  // Only load 3 weights instead of 5 — cuts woff2 file significantly
+  weight: ['400', '600', '700'],
   variable: '--font-plus-jakarta',
   display: 'swap',
+  preload: true,
 });
 
 export const dynamic = 'force-dynamic';
@@ -91,6 +93,30 @@ export default function RootLayout({
   return (
     <html lang="id">
       <head>
+
+          {/* Preconnect to Google Fonts CDN */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+
+        {/* Preload hero image (LCP element) with high priority */}
+        <link
+          rel="preload"
+          as="image"
+          href="/bg1-mobile.webp"
+          type="image/webp"
+          // @ts-ignore
+          fetchpriority="high"
+          media="(max-width: 828px)"
+        />
+        <link
+          rel="preload"
+          as="image"
+          href="/bg1-desktop.webp"
+          type="image/webp"
+          // @ts-ignore
+          fetchpriority="high"
+          media="(min-width: 829px)"
+        />
 
         {/* Favicon */}
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />

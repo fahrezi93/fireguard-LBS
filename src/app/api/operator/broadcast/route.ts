@@ -2,7 +2,6 @@
  * POST /api/operator/broadcast
  *
  * Endpoint untuk operator mengirim notifikasi broadcast ke SEMUA pengguna.
- * Mirip cara kerja info-notif Tokopedia / Gojek.
  *
  * Flow:
  *   1. Validasi sesi operator via cookie (pakai requireOperator)
@@ -31,7 +30,7 @@ export async function POST(request: NextRequest) {
         const auth = await requireOperator(request);
         if ('response' in auth) return auth.response;
         const operatorId = auth.payload.id;
-        
+
         // 2. Validasi input
         const body = await request.json();
         const title: string = (body.title ?? '').trim();
