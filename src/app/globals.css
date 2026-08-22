@@ -23,9 +23,8 @@ body {
 }
 
 @theme {
-  --font-plus-jakarta: "Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  /* Override font-sans agar semua className="font-sans" pakai Plus Jakarta Sans */
-  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  /* Override font-sans agar semua className="font-sans" pakai Plus Jakarta Sans dari Next.js */
+  --font-sans: var(--font-plus-jakarta), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --color-red-50: #fdf2f2;
   --color-red-100: #fbe3e2;
   --color-red-200: #f5caca;
@@ -46,10 +45,10 @@ body {
 
 @layer base {
   *, *::before, *::after {
-    font-family: "Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-family: var(--font-plus-jakarta), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   }
   h1, h2, h3, h4, h5, h6, body {
-    font-family: var(--font-plus-jakarta);
+    font-family: var(--font-plus-jakarta), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   }
 }
 
@@ -72,7 +71,7 @@ body {
 
 /* ── Article Prose Overrides ─────────────────────────────────── */
 .prose h1, .prose h2, .prose h3, .prose h4, .prose h5 {
-  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  font-family: var(--font-plus-jakarta), system-ui, sans-serif;
   font-weight: 800;
   color: #111827;
   letter-spacing: -0.02em;

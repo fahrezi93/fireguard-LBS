@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaShieldAlt, FaPhoneAlt } from 'react-icons/fa';
 
@@ -31,9 +32,14 @@ const Hero = () => {
           transition={{ duration: 1.5, ease: "easeInOut" }}
           className="absolute inset-0 z-0"
         >
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url('${images[currentSlide]}')` }}
+          <Image
+            src={images[currentSlide]}
+            alt="Hero Background"
+            fill
+            priority={currentSlide === 0}
+            className="object-cover object-center"
+            sizes="100vw"
+            quality={80}
           />
         </motion.div>
       </AnimatePresence>
