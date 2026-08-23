@@ -622,8 +622,8 @@ export default function DashboardPage() {
                     <div className="inline-flex items-center justify-center w-14 h-14 sm:w-20 sm:h-20 bg-neutral-50 rounded-full border border-neutral-100 mb-4 sm:mb-5">
                       <FaChartBar className="text-neutral-400 text-xl sm:text-2xl" />
                     </div>
-                    <h3 className="text-base sm:text-lg font-bold text-neutral-900 tracking-tight mb-1.5 sm:mb-2">Belum Ada Laporan</h3>
-                    <p className="text-neutral-500 text-xs sm:text-sm max-w-sm mx-auto leading-relaxed">Anda belum memiliki riwayat pelaporan. Laporan yang Anda buat akan muncul di sini.</p>
+                    <h3 className="text-base sm:text-lg font-bold text-neutral-900 tracking-tight mb-1.5 sm:mb-2">Belum Ada Riwayat Tugas</h3>
+                    <p className="text-neutral-500 text-xs sm:text-sm max-w-sm mx-auto leading-relaxed">Anda belum memiliki riwayat tugas. Laporan yang telah Anda tangani akan muncul di sini.</p>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 gap-2.5 sm:gap-3">

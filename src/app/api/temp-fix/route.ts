@@ -28,7 +28,8 @@ export async function GET() {
     const affectedRows = await execute(
       `UPDATE reports 
        SET assigned_petugas_id = ? 
-       WHERE assigned_petugas_id IS NULL OR assigned_petugas_id NOT IN (SELECT id FROM users)`,
+       WHERE (assigned_petugas_id IS NULL OR assigned_petugas_id NOT IN (SELECT id FROM users))
+         AND status IN ('completed', 'dibatalkan', 'false_report')`,
       [newId]
     );
 
