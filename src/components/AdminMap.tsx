@@ -257,6 +257,8 @@ export default function AdminMap({ reports, onReportClick, selectedReport }: Adm
     }, null);
   }, [selectedReport]);
 
+  const isSingleReportView = reports.length === 1 && selectedReport && reports[0].id === selectedReport.id;
+  
   // Tentukan apakah rute harus ditampilkan
   const showRoute = !!(
     selectedReport &&
@@ -275,8 +277,8 @@ export default function AdminMap({ reports, onReportClick, selectedReport }: Adm
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
 
-      {/* Tampilkan semua pos damkar */}
-      {fireStations.map(station => (
+      {/* Tampilkan semua pos damkar (kecuali di mode single report view) */}
+      {!isSingleReportView && fireStations.map(station => (
         <Marker
           key={`station-${station.name}`}
           position={[station.latitude, station.longitude]}
@@ -286,7 +288,7 @@ export default function AdminMap({ reports, onReportClick, selectedReport }: Adm
         </Marker>
       ))}
 
-      {/* Marker lokasi kejadian untuk semua laporan */}
+      {/* Marker lokasi kejadian untuk laporan */}
       {reports.map(report => {
         const fireLat = Number(report.fire_latitude);
         const fireLng = Number(report.fire_longitude);
@@ -337,19 +339,30 @@ export default function AdminMap({ reports, onReportClick, selectedReport }: Adm
       })}
 
       {/* Marker lokasi petugas */}
-      {petugasLocations.map(petugas => (
-        <Marker
-          key={`petugas-${petugas.id}`}
-          position={[Number(petugas.last_latitude), Number(petugas.last_longitude)]}
-          icon={createPetugasIcon()}
-        >
-          <Popup>
-            <strong>{petugas.name}</strong><br />
-            {petugas.is_on_duty ? <span style={{ color: 'green' }}>🟢 Bertugas</span> : <span style={{ color: 'orange' }}>🟡 Standby</span>}<br />
-            <span style={{ fontSize: '10px', color: '#666' }}>Update: {new Date(petugas.last_location_update).toLocaleTimeString('id-ID')}</span>
-          </Popup>
-        </Marker>
-      ))}
+      {petugasLocations.map(petugas => {
+        // Jika di dalam ReportDetailModal (isSingleReportView), hanya tampilkan petugas yang ditugaskan ke laporan ini
+        if (isSingleReportView && selectedReport?.assigned_petugas_id) {
+          if (Number(petugas.id) !== Number(selectedReport.assigned_petugas_id)) {
+            return null;
+          }
+        } else if (isSingleReportView && !selectedReport?.assigned_petugas_id) {
+            return null;
+        }
+
+        return (
+          <Marker
+            key={`petugas-${petugas.id}`}
+            position={[Number(petugas.last_latitude), Number(petugas.last_longitude)]}
+            icon={createPetugasIcon()}
+          >
+            <Popup>
+              <strong>{petugas.name}</strong><br />
+              {petugas.is_on_duty ? <span style={{ color: 'green' }}>🟢 Bertugas</span> : <span style={{ color: 'orange' }}>🟡 Standby</span>}<br />
+              <span style={{ fontSize: '10px', color: '#666' }}>Update: {new Date(petugas.last_location_update).toLocaleTimeString('id-ID')}</span>
+            </Popup>
+          </Marker>
+        );
+      })}
 
       {/* Rute dari petugas yang di-assign (realtime GPS) → ke lokasi kebakaran.
           Fallback ke pos damkar terdekat jika petugas belum kirim lokasi. */}
@@ -365,11 +378,10 @@ export default function AdminMap({ reports, onReportClick, selectedReport }: Adm
           const petugas = petugasLocations.find(p => Number(p.id) === assignedId);
           if (petugas && petugas.last_latitude && petugas.last_longitude) {
             routeStart = [Number(petugas.last_latitude), Number(petugas.last_longitude)];
-            // Sertakan koordinat (3 desimal ≈ 111m) dalam key agar rute otomatis
-            // diperbarui saat petugas bergerak cukup jauh — seperti Gojek update rute driver.
-            const latRounded = Number(petugas.last_latitude).toFixed(3);
-            const lngRounded = Number(petugas.last_longitude).toFixed(3);
-            routeKey = `route-petugas-${petugas.id}-${selectedReport.id}-${latRounded}-${lngRounded}`;
+            // Ganti routeKey agar tidak menggunakan latitude/longitude
+            // Dengan key yang tetap, komponen RoutingMachine tidak akan unmount & mount ulang
+            // Sehingga fungsi fitBounds (yang hanya dipanggil di render pertama) tidak membajak layar terus-menerus
+            routeKey = `route-petugas-${petugas.id}-${selectedReport.id}`;
           }
         }
 
