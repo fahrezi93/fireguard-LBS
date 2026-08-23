@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   FaTags, FaArrowLeft, FaLayerGroup, FaMapMarkerAlt,
   FaFireExtinguisher, FaPlus, FaEdit, FaTrash, FaTimes,
-  FaSave, FaExclamationTriangle, FaSpinner, FaUserShield,
+  FaSave, FaExclamationTriangle, FaSpinner, FaUserShield, FaHistory
 } from "react-icons/fa";
 import { useToast } from "@/hooks/useToast";
 import Toast from "@/components/Toast";
@@ -707,13 +707,22 @@ export default function ManagementPage() {
                       <span className="text-[10px] font-bold text-gray-400">ID #{pet.id}</span>
                       <h4 className="font-bold text-sm text-gray-900">{pet.name}</h4>
                     </div>
-                    <button
-                      onClick={() => setDeleteTarget({ id: pet.id, name: pet.name, type: "petugas" })}
-                      className="p-2 text-red-500 bg-red-50 hover:bg-red-100 rounded-lg transition-colors text-xs"
-                      title="Hapus"
-                    >
-                      <FaTrash />
-                    </button>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={() => router.push(`/operator/management/petugas/${pet.id}`)}
+                        className="p-2 text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors text-xs"
+                        title="Lihat Riwayat Tugas"
+                      >
+                        <FaHistory />
+                      </button>
+                      <button
+                        onClick={() => setDeleteTarget({ id: pet.id, name: pet.name, type: "petugas" })}
+                        className="p-2 text-red-500 bg-red-50 hover:bg-red-100 rounded-lg transition-colors text-xs"
+                        title="Hapus"
+                      >
+                        <FaTrash />
+                      </button>
+                    </div>
                   </div>
                   <div className="text-xs text-gray-500 space-y-1 bg-gray-50 p-2.5 rounded-xl border border-gray-100">
                     <div>Email: <span className="font-semibold text-gray-700">{pet.email}</span></div>
@@ -904,8 +913,14 @@ export default function ManagementPage() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex gap-2">
+                          <button onClick={() => router.push(`/operator/management/petugas/${pet.id}`)}
+                            className="p-2 text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors"
+                            title="Lihat Riwayat Tugas">
+                            <FaHistory />
+                          </button>
                           <button onClick={() => setDeleteTarget({ id: pet.id, name: pet.name, type: "petugas" })}
-                            className="p-2 text-red-500 bg-red-50 hover:bg-red-100 rounded-lg transition-colors">
+                            className="p-2 text-red-500 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
+                            title="Hapus">
                             <FaTrash />
                           </button>
                         </div>
