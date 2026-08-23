@@ -149,6 +149,7 @@ export default function AdminUsersPage() {
                       u.role === 'SUPER_ADMIN' ? 'bg-purple-100 text-purple-700' :
                       u.role === 'KELURAHAN' ? 'bg-blue-100 text-blue-700' :
                       u.role === 'OPERATOR' ? 'bg-amber-100 text-amber-700' :
+                      u.role === 'PETUGAS' ? 'bg-teal-100 text-teal-700' :
                       'bg-gray-100 text-gray-700'
                     }`}>
                       {u.role}
@@ -191,6 +192,7 @@ export default function AdminUsersPage() {
                           u.role === 'SUPER_ADMIN' ? 'bg-purple-100 text-purple-700' :
                           u.role === 'KELURAHAN' ? 'bg-blue-100 text-blue-700' :
                           u.role === 'OPERATOR' ? 'bg-amber-100 text-amber-700' :
+                          u.role === 'PETUGAS' ? 'bg-teal-100 text-teal-700' :
                           'bg-gray-100 text-gray-700'
                         }`}>
                           {u.role}
@@ -243,6 +245,7 @@ export default function AdminUsersPage() {
                   <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Role</label>
                   <select className="w-full border border-gray-200 rounded-xl px-3.5 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-400" value={form.role} onChange={e => setForm({...form, role: e.target.value})}>
                     <option value="KELURAHAN">KELURAHAN</option>
+                    <option value="PETUGAS">PETUGAS</option>
                     <option value="OPERATOR">OPERATOR</option>
                     <option value="SUPER_ADMIN">SUPER_ADMIN</option>
                     <option value="MASYARAKAT">MASYARAKAT</option>
@@ -250,7 +253,7 @@ export default function AdminUsersPage() {
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-500 uppercase mb-1">ID Kelurahan</label>
-                  <input type="number" placeholder="Opsional" className="w-full border border-gray-200 rounded-xl px-3.5 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-400 disabled:bg-gray-100 disabled:text-gray-400" value={form.kelurahan_id} onChange={e => setForm({...form, kelurahan_id: e.target.value})} disabled={form.role !== 'KELURAHAN'} />
+                  <input type="number" placeholder="Opsional" className="w-full border border-gray-200 rounded-xl px-3.5 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-400 disabled:bg-gray-100 disabled:text-gray-400" value={form.kelurahan_id} onChange={e => setForm({...form, kelurahan_id: e.target.value})} disabled={form.role !== 'KELURAHAN' && form.role !== 'PETUGAS'} />
                 </div>
               </div>
               <button type="submit" disabled={submitting} className="w-full bg-gray-900 text-white py-2.5 sm:py-3 rounded-xl font-bold flex justify-center items-center gap-2 mt-3 text-sm active:scale-98 transition-transform disabled:opacity-50">
