@@ -98,6 +98,7 @@ export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<"tugas" | "riwayat">("tugas");
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+  const [pendingTasks, setPendingTasks] = useState<any[]>([]);
   const [error, setError] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedReport, setSelectedReport] = useState<ReportHistory | null>(null);
@@ -139,7 +140,8 @@ export default function DashboardPage() {
       const res = await fetch("/api/petugas/active-tasks");
       if (res.ok) {
         const data = await res.json();
-        setActiveTask(data.report || null);
+        setActiveTask(data.active_task || data.report || null);
+        setPendingTasks(data.pending_tasks || []);
       }
     } catch (e) {
       console.error("Failed to fetch active task", e);
@@ -166,6 +168,72 @@ export default function DashboardPage() {
       alert("Terjadi kesalahan jaringan");
     } finally {
       setIsUpdatingStatus(false);
+    }
+  };
+
+  // Polling setiap 10 detik jika user is_on_duty
+  useEffect(() => {
+    if (user && (user as any).is_on_duty) {
+      const interval = setInterval(() => {
+        fetchActiveTask();
+      }, 10000);
+      return () => clearInterval(interval);
+    }
+  }, [user]);
+
+  const handleStatusUpdate = (taskId: number) => async (status: string, notes?: string, photoBase64?: string) => {
+    try {
+      let res;
+      if (status === "accepted" || status === "refresh") {
+        // Sudah di-handle oleh ActiveTask.tsx secara internal, cukup refresh data saja.
+        fetchActiveTask();
+        fetchReports();
+        return;
+      } else {
+        if (photoBase64 && photoBase64.startsWith('data:image')) {
+          // Manual Base64 to Blob conversion (menghindari TypeError: Failed to fetch pada data: URI)
+          const [header, base64Data] = photoBase64.split(',');
+          const mimeType = header.match(/:(.*?);/)?.[1] || 'image/jpeg';
+          const byteString = atob(base64Data);
+          const ab = new ArrayBuffer(byteString.length);
+          const ia = new Uint8Array(ab);
+          for (let i = 0; i < byteString.length; i++) {
+            ia[i] = byteString.charCodeAt(i);
+          }
+          const blob = new Blob([ab], { type: mimeType });
+          
+          const formData = new FormData();
+          formData.append("reportId", taskId.toString());
+          formData.append("status", status);
+          if (notes) formData.append("notes", notes);
+          formData.append("file", blob, "completion_photo.jpg");
+
+          res = await fetch("/api/petugas/update-status", {
+            method: "POST",
+            body: formData
+          });
+        } else {
+          res = await fetch("/api/petugas/update-status", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+              reportId: taskId, 
+              status, 
+              notes
+            })
+          });
+        }
+      }
+      
+      if (res.ok) {
+        fetchActiveTask();
+        fetchReports();
+      } else {
+        const errorData = await res.json().catch(() => ({}));
+        alert(errorData.message || "Gagal memperbarui status laporan");
+      }
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -461,6 +529,24 @@ export default function DashboardPage() {
               />
             </div>
 
+            {/* Tab Switcher (Main Content Area) */}
+            <div className="flex bg-neutral-100 p-1.5 rounded-xl w-full sm:w-fit mb-6 sm:mb-8">
+              <button 
+                onClick={() => setActiveTab("tugas")} 
+                className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 rounded-lg text-sm font-semibold transition-all ${activeTab === "tugas" ? "bg-white text-red-600 shadow-sm" : "text-neutral-500 hover:text-neutral-700"}`}
+              >
+                <FaFire className={activeTab === "tugas" ? "text-red-500" : "text-neutral-400"} />
+                Tugas Aktif
+              </button>
+              <button 
+                onClick={() => setActiveTab("riwayat")} 
+                className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 rounded-lg text-sm font-semibold transition-all ${activeTab === "riwayat" ? "bg-white text-red-600 shadow-sm" : "text-neutral-500 hover:text-neutral-700"}`}
+              >
+                <FaChartBar className={activeTab === "riwayat" ? "text-red-500" : "text-neutral-400"} />
+                Riwayat Laporan
+              </button>
+            </div>
+
             {/* Tabs Content */}
             {activeTab === "tugas" ? (
                <div className="flex flex-col">
@@ -482,31 +568,31 @@ export default function DashboardPage() {
                     </div>
                   </div>
                   
-                  <ActiveTask 
-                     task={activeTask} 
-                     onStatusUpdate={async (status, notes, photoBase64) => {
-                        try {
-                           const res = await fetch("/api/petugas/update-status", {
-                              method: "POST",
-                              headers: { "Content-Type": "application/json" },
-                              body: JSON.stringify({ 
-                                 reportId: activeTask.id, 
-                                 status, 
-                                 notes, 
-                                 completion_photo_base64: photoBase64 
-                              })
-                           });
-                           if (res.ok) {
-                              fetchActiveTask();
-                              fetchReports();
-                           } else {
-                              alert("Gagal memperbarui status laporan");
-                           }
-                        } catch (e) {
-                           console.error(e);
-                        }
-                     }} 
-                  />
+                  {activeTask ? (
+                     <ActiveTask 
+                        task={activeTask} 
+                        onStatusUpdate={handleStatusUpdate(activeTask.id)} 
+                     />
+                  ) : pendingTasks.length > 0 ? (
+                     <div className="space-y-4">
+                        <h3 className="text-lg font-bold text-red-600 mb-2">Laporan Darurat Baru!</h3>
+                        {pendingTasks.map(task => (
+                           <ActiveTask 
+                              key={task.id}
+                              task={task} 
+                              onStatusUpdate={handleStatusUpdate(task.id)} 
+                           />
+                        ))}
+                     </div>
+                  ) : (
+                     <div className="bg-neutral-50 rounded-2xl border border-neutral-100 p-8 sm:p-12 flex flex-col items-center justify-center text-center">
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mb-4 sm:mb-6">
+                           <FaCheckCircle className="text-2xl sm:text-3xl" />
+                        </div>
+                        <h3 className="text-lg sm:text-xl font-bold text-neutral-900 mb-2">Tidak Ada Tugas Aktif</h3>
+                        <p className="text-sm sm:text-base text-neutral-500 max-w-sm">Anda saat ini tidak sedang menangani insiden apapun. Tetap siaga untuk tugas selanjutnya.</p>
+                     </div>
+                  )}
                </div>
             ) : (
             <div className="flex flex-col">

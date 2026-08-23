@@ -33,7 +33,13 @@ export default function ActiveTask({ task, onStatusUpdate }: { task: any, onStat
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ reportId: task.id })
         });
-        if (res.ok) onStatusUpdate("accepted");
+        if (res.ok) {
+          onStatusUpdate("accepted");
+        } else {
+          const errData = await res.json().catch(() => ({}));
+          alert(errData.message || "Gagal menerima tugas. Mungkin sudah diambil oleh petugas lain.");
+          onStatusUpdate("refresh");
+        }
       } else if (action === "request-backup") {
         const res = await fetch("/api/petugas/request-backup", {
           method: "POST",
@@ -41,6 +47,8 @@ export default function ActiveTask({ task, onStatusUpdate }: { task: any, onStat
           body: JSON.stringify({ reportId: task.id })
         });
         if (res.ok) alert("Permintaan bantuan telah dikirim ke operator!");
+      } else if (action === "arrived") {
+        await onStatusUpdate("arrived");
       } else if (action === "complete") {
         await onStatusUpdate("completed", notes, photoPreview || undefined);
         setIsCompleting(false);
@@ -61,10 +69,44 @@ export default function ActiveTask({ task, onStatusUpdate }: { task: any, onStat
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onloadend = () => {
-      setPhotoPreview(reader.result as string);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        // Kompresi gambar (maksimal lebar/tinggi 1280px)
+        const MAX_DIMENSION = 1280;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height && width > MAX_DIMENSION) {
+          height = Math.round((height * MAX_DIMENSION) / width);
+          width = MAX_DIMENSION;
+        } else if (height > MAX_DIMENSION) {
+          width = Math.round((width * MAX_DIMENSION) / height);
+          height = MAX_DIMENSION;
+        }
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          // Export dengan kualitas 70%
+          const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.7);
+          setPhotoPreview(compressedDataUrl);
+        } else {
+          // Fallback jika canvas gagal
+          setPhotoPreview(event.target?.result as string);
+        }
+      };
+      img.src = event.target?.result as string;
     };
     reader.readAsDataURL(file);
+  };
+
+  const openGoogleMaps = (lat: number, lng: number) => {
+    window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, "_blank");
   };
 
   return (
@@ -77,8 +119,8 @@ export default function ActiveTask({ task, onStatusUpdate }: { task: any, onStat
         </div>
         <div className="text-right sm:text-right text-left">
           <p className="text-xs text-neutral-500 font-semibold uppercase tracking-wider">Status</p>
-          <p className={`font-bold text-lg ${task.status_petugas === "accepted" ? "text-blue-600" : "text-orange-500"}`}>
-            {task.status_petugas === "accepted" ? "SEDANG DITANGANI" : "MENUNGGU DITERIMA"}
+          <p className={`font-bold text-lg ${task.status_petugas === "accepted" ? "text-blue-600" : task.status_petugas === "arrived" ? "text-indigo-600" : "text-orange-500"}`}>
+            {task.status_petugas === "accepted" ? "MENUJU LOKASI" : task.status_petugas === "arrived" ? "TIBA DI LOKASI" : "MENUNGGU DITERIMA"}
           </p>
         </div>
       </div>
@@ -111,7 +153,7 @@ export default function ActiveTask({ task, onStatusUpdate }: { task: any, onStat
         </div>
 
         <div className="mt-8 border-t border-neutral-100 pt-6">
-          {task.status_petugas !== "accepted" ? (
+          {task.status_petugas === "pending" || !task.status_petugas ? (
             <button 
               onClick={() => handleAction("accept")} 
               disabled={loadingAction === "accept"}
@@ -120,6 +162,23 @@ export default function ActiveTask({ task, onStatusUpdate }: { task: any, onStat
               {loadingAction === "accept" ? <FaSpinner className="animate-spin" /> : <FaCheck />}
               TERIMA TUGAS INI
             </button>
+          ) : task.status_petugas === "accepted" ? (
+             <div className="flex flex-col gap-3">
+              <button 
+                onClick={() => handleAction("arrived")} 
+                disabled={loadingAction === "arrived"}
+                className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-lg shadow-md transition-colors flex items-center justify-center gap-2"
+              >
+                {loadingAction === "arrived" ? <FaSpinner className="animate-spin" /> : <FaMapMarkerAlt />}
+                TIBA DI LOKASI
+              </button>
+              <button 
+                onClick={() => openGoogleMaps(task.fire_latitude, task.fire_longitude)}
+                className="w-full py-3 bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 rounded-xl font-bold text-sm shadow-sm transition-colors flex items-center justify-center gap-2"
+              >
+                <FaMapMarkerAlt /> BUKA GOOGLE MAPS
+              </button>
+            </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
               <button 
@@ -149,7 +208,7 @@ export default function ActiveTask({ task, onStatusUpdate }: { task: any, onStat
 
       <AnimatePresence>
         {(isCompleting || isFalseReport) && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
             <m.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl">
               <h3 className="text-lg font-bold mb-2">{isCompleting ? "Selesaikan Laporan" : "Tandai Laporan Palsu"}</h3>
               <p className="text-sm text-neutral-500 mb-4">

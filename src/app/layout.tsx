@@ -104,8 +104,7 @@ export default function RootLayout({
           as="image"
           href="/bg1-mobile.webp"
           type="image/webp"
-          // @ts-ignore
-          fetchpriority="high"
+          fetchPriority="high"
           media="(max-width: 828px)"
         />
         <link
@@ -113,8 +112,7 @@ export default function RootLayout({
           as="image"
           href="/bg1-desktop.webp"
           type="image/webp"
-          // @ts-ignore
-          fetchpriority="high"
+          fetchPriority="high"
           media="(min-width: 829px)"
         />
 
