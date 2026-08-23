@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { queryRows, queryRow, executeQuery } from "@/lib/db";
+import { queryRows, queryRow, execute } from "@/lib/db";
 
 export async function GET() {
   try {
@@ -12,7 +12,7 @@ export async function GET() {
       return NextResponse.json({ success: false, message: "Misyadi tidak ditemukan" });
     }
 
-    const newId = misyadi.id;
+    const newId = (misyadi as any).id;
 
     // Cari report yang memiliki assigned_petugas_id yang merujuk ke Misyadi yang lama
     // Tapi karena Misyadi lama sudah dihapus, mungkin assigned_petugas_id-nya sudah NULL atau masih angka lama (jika ON DELETE NO ACTION)
@@ -25,7 +25,7 @@ export async function GET() {
     // Wait, let's just assign ALL completed and dibatalkan/false_report reports that have assigned_petugas_id IS NULL (or an ID < 42 that no longer exists in users table) to Misyadi!
     
     // Karena Misyadi adalah petugas kita satu-satunya saat ini yang demo, kita ambil semua report yang yatim piatu.
-    const updated = await executeQuery(
+    const affectedRows = await execute(
       `UPDATE reports 
        SET assigned_petugas_id = ? 
        WHERE assigned_petugas_id IS NULL OR assigned_petugas_id NOT IN (SELECT id FROM users)`,
@@ -36,7 +36,7 @@ export async function GET() {
       success: true,
       message: "Riwayat berhasil disambungkan ke Misyadi",
       newId,
-      affectedRows: updated.affectedRows
+      affectedRows
     });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message });
