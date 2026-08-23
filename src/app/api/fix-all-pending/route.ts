@@ -4,7 +4,7 @@ import { execute } from "@/lib/db";
 export async function GET() {
   try {
     const affectedRows = await execute(
-      "UPDATE reports SET assigned_petugas_id = NULL WHERE status = 'pending'"
+      "UPDATE reports SET assigned_petugas_id = NULL WHERE status NOT IN ('in_progress', 'completed', 'false_report', 'dibatalkan', 'ditangani', 'arrived')"
     );
 
     return NextResponse.json({
