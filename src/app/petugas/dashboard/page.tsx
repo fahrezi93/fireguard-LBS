@@ -24,9 +24,11 @@ import {
   FaChevronDown,
   FaBell, FaFire,
   FaUserCircle,
+  FaPowerOff,
 } from "react-icons/fa";
 
 import NotificationBell from "@/components/NotificationBell";
+import ActiveTask from "./ActiveTask";
 
 // Removed UserReportDetailModal import as it's modified for Petugas
 
@@ -92,7 +94,10 @@ export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null);
   const [reports, setReports] = useState<ReportHistory[]>([]);
   const [stats, setStats] = useState<{ totalCompleted: number, avgResponseTimeSeconds: number }>({ totalCompleted: 0, avgResponseTimeSeconds: 0 });
+  const [activeTask, setActiveTask] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState<"tugas" | "riwayat">("tugas");
   const [isLoading, setIsLoading] = useState(true);
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [error, setError] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedReport, setSelectedReport] = useState<ReportHistory | null>(null);
@@ -126,7 +131,43 @@ export default function DashboardPage() {
   useEffect(() => {
     checkAuth();
     fetchReports();
+    fetchActiveTask();
   }, [checkAuth]);
+
+  const fetchActiveTask = async () => {
+    try {
+      const res = await fetch("/api/petugas/active-tasks");
+      if (res.ok) {
+        const data = await res.json();
+        setActiveTask(data.report || null);
+      }
+    } catch (e) {
+      console.error("Failed to fetch active task", e);
+    }
+  };
+
+  const toggleOnDutyStatus = async () => {
+    if (!user) return;
+    setIsUpdatingStatus(true);
+    try {
+      const newStatus = !(user as any).is_on_duty;
+      const res = await fetch("/api/petugas/status", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ is_on_duty: newStatus })
+      });
+      if (res.ok) {
+        setUser({ ...user, is_on_duty: newStatus } as any);
+      } else {
+        alert("Gagal memperbarui status");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Terjadi kesalahan jaringan");
+    } finally {
+      setIsUpdatingStatus(false);
+    }
+  };
 
   // WebSocket untuk update status real-time
   useEffect(() => {
@@ -151,6 +192,19 @@ export default function DashboardPage() {
             setSelectedReport((prev) =>
               prev && prev.id === reportId ? { ...prev, statusPetugas: newStatus } : prev
             );
+            // Cek apakah update ini untuk active task saat ini
+            setActiveTask((prev: any) => {
+               if (prev && prev.id === reportId) {
+                  if (newStatus === 'completed' || newStatus === 'dibatalkan' || newStatus === 'false_report') {
+                     return null; // Task is no longer active
+                  }
+                  return { ...prev, status_petugas: newStatus };
+               }
+               return prev;
+            });
+          } else if (data.type === "NEW_ASSIGNMENT") {
+             // Fetch ulang active task karena ada assignment baru
+             fetchActiveTask();
           }
         } catch (e) {
           console.error("Error parsing WS message", e);
@@ -278,11 +332,17 @@ export default function DashboardPage() {
               <span>Beranda</span>
             </Link>
 
-            <div className="flex items-center gap-3 px-3 py-2.5 relative bg-red-50/50 rounded-xl">
-              <FaChartBar className="text-base text-red-500 relative z-10" />
-              <span className="text-sm font-semibold text-red-600 relative z-10">Riwayat Laporan</span>
-              <div className="absolute inset-0 border border-red-100 rounded-xl pointer-events-none" />
-            </div>
+            <button onClick={() => setActiveTab("tugas")} className={`w-full flex items-center gap-3 px-3 py-2.5 relative rounded-xl transition-all ${activeTab === "tugas" ? "bg-red-50/50" : "hover:bg-neutral-50"}`}>
+              <FaFire className={`text-base relative z-10 ${activeTab === "tugas" ? "text-red-500" : "text-neutral-400"}`} />
+              <span className={`text-sm font-semibold relative z-10 ${activeTab === "tugas" ? "text-red-600" : "text-neutral-600"}`}>Tugas Aktif</span>
+              {activeTab === "tugas" && <div className="absolute inset-0 border border-red-100 rounded-xl pointer-events-none" />}
+            </button>
+
+            <button onClick={() => setActiveTab("riwayat")} className={`w-full flex items-center gap-3 px-3 py-2.5 relative rounded-xl transition-all ${activeTab === "riwayat" ? "bg-red-50/50" : "hover:bg-neutral-50"}`}>
+              <FaChartBar className={`text-base relative z-10 ${activeTab === "riwayat" ? "text-red-500" : "text-neutral-400"}`} />
+              <span className={`text-sm font-semibold relative z-10 ${activeTab === "riwayat" ? "text-red-600" : "text-neutral-600"}`}>Riwayat Laporan</span>
+              {activeTab === "riwayat" && <div className="absolute inset-0 border border-red-100 rounded-xl pointer-events-none" />}
+            </button>
 
             <div className="pt-6 pb-2">
               <p className="px-3 text-[10px] font-semibold text-neutral-400 uppercase tracking-wider">Akun</p>
@@ -361,6 +421,14 @@ export default function DashboardPage() {
                         <p className="text-xs text-neutral-500 truncate mt-0.5">{user?.email || "-"}</p>
                       </div>
                       <div className="p-2">
+                        <button 
+                          onClick={() => { setProfileDropdownOpen(false); toggleOnDutyStatus(); }} 
+                          disabled={isUpdatingStatus}
+                          className="w-full flex items-center gap-3 px-3 py-2.5 text-xs sm:text-sm font-medium text-neutral-700 hover:text-neutral-900 hover:bg-neutral-50 rounded-xl transition-colors"
+                        >
+                          <FaPowerOff className={(user as any)?.is_on_duty ? "text-green-500" : "text-neutral-400"} /> 
+                          {(user as any)?.is_on_duty ? "Sedang Bertugas (On Duty)" : "Sedang Istirahat (Off Duty)"}
+                        </button>
                         <button onClick={() => { setProfileDropdownOpen(false); router.push('/dashboard/profile'); }} className="w-full flex items-center gap-3 px-3 py-2.5 text-xs sm:text-sm font-medium text-neutral-700 hover:text-neutral-900 hover:bg-neutral-50 rounded-xl transition-colors">
                           <FaEdit className="text-neutral-400" /> Edit Profil
                         </button>
@@ -393,6 +461,54 @@ export default function DashboardPage() {
               />
             </div>
 
+            {/* Tabs Content */}
+            {activeTab === "tugas" ? (
+               <div className="flex flex-col">
+                  <div className="flex justify-between items-center mb-4 sm:mb-6">
+                    <div>
+                      <h2 className="text-base sm:text-lg md:text-xl font-bold tracking-tight text-neutral-900">Tugas Saat Ini</h2>
+                      <p className="text-xs sm:text-sm text-neutral-500 mt-0.5">Segera tindak lanjuti laporan yang ditugaskan kepada Anda</p>
+                    </div>
+                    {/* Status Toggle Indicator */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-semibold text-neutral-500">Status Anda:</span>
+                      <button 
+                        onClick={toggleOnDutyStatus}
+                        disabled={isUpdatingStatus}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isUpdatingStatus ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} ${(user as any)?.is_on_duty ? 'bg-green-500' : 'bg-neutral-300'}`}
+                      >
+                        <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${(user as any)?.is_on_duty ? 'translate-x-6' : 'translate-x-1'}`} />
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <ActiveTask 
+                     task={activeTask} 
+                     onStatusUpdate={async (status, notes, photoBase64) => {
+                        try {
+                           const res = await fetch("/api/petugas/update-status", {
+                              method: "POST",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({ 
+                                 reportId: activeTask.id, 
+                                 status, 
+                                 notes, 
+                                 completion_photo_base64: photoBase64 
+                              })
+                           });
+                           if (res.ok) {
+                              fetchActiveTask();
+                              fetchReports();
+                           } else {
+                              alert("Gagal memperbarui status laporan");
+                           }
+                        } catch (e) {
+                           console.error(e);
+                        }
+                     }} 
+                  />
+               </div>
+            ) : (
             <div className="flex flex-col">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
                 <div>
@@ -466,6 +582,7 @@ export default function DashboardPage() {
                 )}
               </div>
             </div>
+            )}
           </main>
         </div>
       </LazyMotion>
