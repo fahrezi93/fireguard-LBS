@@ -10,11 +10,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ message: 'Akses ditolak' }, { status: 403 });
     }
 
-    // Ambil petugas yang punya lokasi dan diupdate dalam 30 menit terakhir
+    // Ambil petugas yang sedang on duty, punya lokasi, dan diupdate dalam 30 menit terakhir.
+    // Filter is_on_duty = 1 memastikan petugas off duty tidak tampil di peta
+    // meski masih punya data lokasi lama (< 30 menit).
     const locations = await queryRows(
       `SELECT id, name, last_latitude, last_longitude, last_location_update, is_on_duty 
        FROM users 
        WHERE role = 'petugas' 
+         AND is_on_duty = 1
          AND last_latitude IS NOT NULL 
          AND last_longitude IS NOT NULL
          AND last_location_update >= NOW() - INTERVAL 30 MINUTE`

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { toSafeExternalUrl } from "@/lib/url-safety";
@@ -29,7 +29,18 @@ import {
   FaTimesCircle,
   FaTrash,
   FaUser,
+  FaLocationArrow,
+  FaWifi,
 } from "react-icons/fa";
+
+interface PetugasLocation {
+  id: number;
+  name: string;
+  last_latitude: number;
+  last_longitude: number;
+  last_location_update: string;
+  is_on_duty: number | boolean;
+}
 
 interface Report {
   id: number;
@@ -118,6 +129,12 @@ export default function ReportDetailModal({
   // State lokal untuk kelurahan agar tidak mutasi prop
   const [localKelurahan, setLocalKelurahan] = useState<{ id: number; name: string } | null | undefined>(report.kelurahan);
 
+  // State untuk lokasi realtime petugas yang di-assign
+  const [assignedPetugasLocation, setAssignedPetugasLocation] = useState<PetugasLocation | null>(null);
+  const [isLocationLoading, setIsLocationLoading] = useState(false);
+  const wsRef = useRef<WebSocket | null>(null);
+  const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
   // Fetch kelurahan list
   useEffect(() => {
     const fetchKelurahan = async () => {
@@ -131,6 +148,76 @@ export default function ReportDetailModal({
     };
     if (!readOnly) fetchKelurahan();
   }, [readOnly]);
+
+  // Fetch + track lokasi realtime petugas yang di-assign
+  useEffect(() => {
+    if (!report.assigned_petugas_id) {
+      setAssignedPetugasLocation(null);
+      return;
+    }
+
+    const fetchLocation = async () => {
+      setIsLocationLoading(true);
+      try {
+        const res = await fetch('/api/operator/petugas-locations');
+        if (res.ok) {
+          const data: PetugasLocation[] = await res.json();
+          const assigned = data.find(p => Number(p.id) === Number(report.assigned_petugas_id));
+          setAssignedPetugasLocation(assigned ?? null);
+        }
+      } catch (err) {
+        console.error('Gagal fetch lokasi petugas:', err);
+      } finally {
+        setIsLocationLoading(false);
+      }
+    };
+
+    fetchLocation();
+
+    // Polling setiap 15 detik sebagai fallback
+    pollIntervalRef.current = setInterval(fetchLocation, 15000);
+
+    // WebSocket untuk update realtime posisi petugas
+    let reconnectTimeout: ReturnType<typeof setTimeout>;
+    const connect = () => {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = `${protocol}//${window.location.host}/ws`;
+      const ws = new WebSocket(wsUrl);
+      wsRef.current = ws;
+
+      ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          if (
+            data.type === 'PETUGAS_LOCATION_UPDATE' &&
+            data.payload &&
+            Number(data.payload.petugasId) === Number(report.assigned_petugas_id)
+          ) {
+            setAssignedPetugasLocation(prev => prev ? {
+              ...prev,
+              last_latitude: data.payload.lat,
+              last_longitude: data.payload.lng,
+              last_location_update: new Date().toISOString(),
+            } : prev);
+          }
+        } catch (_) {}
+      };
+
+      ws.onclose = () => {
+        reconnectTimeout = setTimeout(connect, 5000);
+      };
+    };
+    connect();
+
+    return () => {
+      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+      clearTimeout(reconnectTimeout);
+      if (wsRef.current) {
+        wsRef.current.onclose = null;
+        wsRef.current.close();
+      }
+    };
+  }, [report.assigned_petugas_id]);
 
   const handleStatusUpdate = async (newStatus: string) => {
     if (!onUpdateStatus || readOnly) return;
@@ -315,7 +402,7 @@ export default function ReportDetailModal({
                   </p>
                 </div>
               </div>
-              {report.assigned_petugas_name && (
+              {report.assigned_petugas_name ? (
                 <div className="bg-white/60 p-3 rounded-lg border border-gray-200/50">
                   <p className="text-[10px] uppercase font-bold text-gray-500 tracking-wider mb-1">Diambil Oleh Petugas</p>
                   <div className="flex items-center gap-2">
@@ -346,6 +433,19 @@ export default function ReportDetailModal({
                           </span>
                         </div>
                       )}
+                    </div>
+                  </div>
+                </div>
+              ) : (['dispatched', 'dikirim', 'diproses', 'arrived', 'ditangani', 'in_progress', 'completed', 'selesai'].includes(report.status)) && (
+                <div className="bg-white/60 p-3 rounded-lg border border-gray-200/50">
+                  <p className="text-[10px] uppercase font-bold text-gray-500 tracking-wider mb-1">Penanganan Manual</p>
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center">
+                      <span className="text-xs font-bold text-orange-700">M</span>
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-gray-900">Dikirim Manual</p>
+                      <p className="text-xs text-gray-500">Tidak ada Petugas ter-assign</p>
                     </div>
                   </div>
                 </div>
@@ -618,6 +718,74 @@ export default function ReportDetailModal({
             </div>
           )}
 
+          {/* Panel Lokasi Realtime Petugas */}
+          {report.assigned_petugas_id && (
+            <div className={`rounded-xl p-4 border shadow-sm ${
+              assignedPetugasLocation
+                ? 'bg-blue-50 border-blue-200'
+                : 'bg-gray-50 border-gray-200'
+            }`}>
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <div className={`p-1.5 rounded-lg ${
+                    assignedPetugasLocation ? 'bg-blue-100' : 'bg-gray-100'
+                  }`}>
+                    <FaLocationArrow className={`text-sm ${
+                      assignedPetugasLocation ? 'text-blue-600' : 'text-gray-400'
+                    }`} />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-gray-700 uppercase tracking-wide">Lokasi Realtime Petugas</p>
+                    <p className="text-[10px] text-gray-500">{report.assigned_petugas_name || 'Petugas ter-assign'}</p>
+                  </div>
+                </div>
+                {/* Indikator live */}
+                {assignedPetugasLocation && (
+                  <div className="flex items-center gap-1.5 bg-green-100 border border-green-200 px-2.5 py-1 rounded-full">
+                    <div className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                    </div>
+                    <span className="text-[10px] font-semibold text-green-700">LIVE</span>
+                  </div>
+                )}
+              </div>
+
+              {isLocationLoading && !assignedPetugasLocation ? (
+                <div className="flex items-center gap-2 text-gray-400 py-2">
+                  <div className="animate-spin h-4 w-4 border-2 border-gray-300 border-t-blue-500 rounded-full" />
+                  <span className="text-xs">Memuat lokasi petugas...</span>
+                </div>
+              ) : assignedPetugasLocation ? (
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mt-1">
+                  <div className="flex items-center gap-1.5 text-gray-500">
+                    <FaClock className="text-[10px]" />
+                    <span className="text-[10px]">
+                      Terakhir diperbarui: {new Date(assignedPetugasLocation.last_location_update).toLocaleTimeString('id-ID', {
+                        hour: '2-digit', minute: '2-digit', second: '2-digit'
+                      })} WIB
+                    </span>
+                  </div>
+                  <a
+                    href={`https://www.google.com/maps?q=${assignedPetugasLocation.last_latitude},${assignedPetugasLocation.last_longitude}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:text-blue-700 text-[10px] font-medium inline-flex items-center gap-1 hover:underline"
+                  >
+                    Buka di Maps →
+                  </a>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 text-gray-400 py-1">
+                  <FaWifi className="text-sm opacity-40" />
+                  <span className="text-xs text-gray-500">
+                    Petugas belum mengirimkan lokasi atau sedang offline.
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Peta Rute Kebakaran */}
           <div className="bg-white rounded-xl p-5 border border-gray-200/60 shadow-sm overflow-hidden">
             <div className="flex items-start gap-3 mb-3">
@@ -628,6 +796,11 @@ export default function ReportDetailModal({
                 <p className="text-xs text-gray-500 mb-1">Rute Pemadam Kebakaran</p>
                 <p className="text-sm font-semibold text-gray-900">
                   Estimasi Rute Tercepat
+                  {assignedPetugasLocation && (
+                    <span className="ml-2 text-[10px] font-normal text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100">
+                      🚒 Dari lokasi petugas
+                    </span>
+                  )}
                 </p>
               </div>
             </div>

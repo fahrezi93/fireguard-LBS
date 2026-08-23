@@ -22,6 +22,11 @@ body {
   z-index: 1000;
 }
 
+/* Animasi pergerakan halus (Gojek style) untuk marker realtime petugas */
+.leaflet-marker-icon.petugas-marker {
+  transition: transform 2s linear !important;
+}
+
 @theme {
   /* Override font-sans agar semua className="font-sans" pakai Plus Jakarta Sans dari Next.js */
   --font-sans: var(--font-plus-jakarta), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;

@@ -124,7 +124,7 @@ const createReporterLocationIcon = () => new L.DivIcon({
 // Ikon untuk petugas pemadam
 const createPetugasIcon = () => new L.DivIcon({
   html: `<div style="font-size: 28px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">🚒</div>`,
-  className: 'leaflet-emoji-icon',
+  className: 'leaflet-emoji-icon petugas-marker',
   iconSize: [28, 28],
   iconAnchor: [14, 28],
 });
@@ -166,21 +166,10 @@ export default function AdminMap({ reports, onReportClick, selectedReport }: Adm
   const defaultPosition: [number, number] = [-3.0073, 104.8156]; // Plaju, Palembang
   const [petugasLocations, setPetugasLocations] = useState<PetugasLocation[]>([]);
 
-  // Cek apakah ada laporan aktif yang butuh tracking
-  const hasActiveTracking = useMemo(() => {
-    return reports.some(r => {
-      const s = r.status.toLowerCase();
-      return ['diproses', 'dikirim', 'dispatched', 'arrived', 'ditangani', 'in_progress'].includes(s);
-    });
-  }, [reports]);
-
-  // Fetch lokasi petugas sekali saat ada laporan aktif, lalu dengarkan via WebSocket
+  // Fetch lokasi petugas on-duty saat mount, lalu dengarkan update realtime via WebSocket.
+  // Tracking SELALU aktif (tidak bergantung pada status laporan) agar petugas yang
+  // sedang on duty langsung terlihat di peta meski belum ada laporan aktif.
   useEffect(() => {
-    if (!hasActiveTracking) {
-      setPetugasLocations([]);
-      return;
-    }
-
     const fetchPetugas = async () => {
       try {
         const res = await fetch('/api/operator/petugas-locations');
@@ -195,7 +184,7 @@ export default function AdminMap({ reports, onReportClick, selectedReport }: Adm
 
     fetchPetugas();
 
-    // Setup WebSocket
+    // Setup WebSocket untuk update realtime posisi petugas
     let ws: WebSocket | null = null;
     let reconnectTimeout: NodeJS.Timeout;
 
@@ -219,7 +208,7 @@ export default function AdminMap({ reports, onReportClick, selectedReport }: Adm
                                 last_location_update: new Date().toISOString()
                             } : p);
                         } else {
-                            // Fetch ulang jika ada petugas baru yang tiba-tiba broadcast
+                            // Petugas baru on duty — fetch ulang dari API untuk dapatkan data lengkapnya
                             fetchPetugas();
                             return prev;
                         }
@@ -244,7 +233,7 @@ export default function AdminMap({ reports, onReportClick, selectedReport }: Adm
           ws.close();
       }
     };
-  }, [hasActiveTracking]);
+  }, []);
 
   // Hitung pos damkar terdekat untuk laporan yang dipilih
   const nearestStation: FireStation | null = useMemo(() => {
@@ -362,19 +351,29 @@ export default function AdminMap({ reports, onReportClick, selectedReport }: Adm
         </Marker>
       ))}
 
-      {/* Rute dari petugas (jika sudah di-assign) atau pos damkar terdekat ke lokasi kebakaran */}
+      {/* Rute dari petugas yang di-assign (realtime GPS) → ke lokasi kebakaran.
+          Fallback ke pos damkar terdekat jika petugas belum kirim lokasi. */}
       {showRoute && selectedReport && (() => {
         let routeStart: [number, number] | null = null;
         let routeKey = '';
 
+        // Prioritas 1: lokasi realtime petugas yang di-assign
+        // PENTING: cast ke Number() di kedua sisi karena assigned_petugas_id dari DB
+        // kadang datang sebagai string di JSON → strict === selalu false tanpa cast ini.
         if (selectedReport.assigned_petugas_id) {
-          const petugas = petugasLocations.find(p => p.id === selectedReport.assigned_petugas_id);
-          if (petugas) {
+          const assignedId = Number(selectedReport.assigned_petugas_id);
+          const petugas = petugasLocations.find(p => Number(p.id) === assignedId);
+          if (petugas && petugas.last_latitude && petugas.last_longitude) {
             routeStart = [Number(petugas.last_latitude), Number(petugas.last_longitude)];
-            routeKey = `route-petugas-${petugas.id}-${selectedReport.id}`;
+            // Sertakan koordinat (3 desimal ≈ 111m) dalam key agar rute otomatis
+            // diperbarui saat petugas bergerak cukup jauh — seperti Gojek update rute driver.
+            const latRounded = Number(petugas.last_latitude).toFixed(3);
+            const lngRounded = Number(petugas.last_longitude).toFixed(3);
+            routeKey = `route-petugas-${petugas.id}-${selectedReport.id}-${latRounded}-${lngRounded}`;
           }
         }
 
+        // Fallback: pos damkar terdekat jika petugas belum/tidak punya data lokasi
         if (!routeStart && nearestStation) {
            routeStart = [nearestStation.latitude, nearestStation.longitude];
            routeKey = `route-station-${nearestStation.name}-${selectedReport.id}`;

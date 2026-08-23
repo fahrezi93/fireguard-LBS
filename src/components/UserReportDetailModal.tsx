@@ -78,7 +78,10 @@ export default function UserReportDetailModal({ report, onClose }: UserReportDet
                 try {
                     const data = JSON.parse(event.data);
                     if (data.type === "PETUGAS_LOCATION_UPDATE" && data.payload) {
-                        if (data.payload.petugasId === report.assigned_petugas_id) {
+                        // PENTING: cast ke Number() di kedua sisi — petugasId dari WS bisa string,
+                        // assigned_petugas_id dari DB bisa string saat di-serialize JSON.
+                        // Tanpa cast ini, === selalu false dan tracking tidak pernah update.
+                        if (Number(data.payload.petugasId) === Number(report.assigned_petugas_id)) {
                             setLivePetugasLocation([data.payload.lat, data.payload.lng]);
                         }
                     }
@@ -225,7 +228,8 @@ export default function UserReportDetailModal({ report, onClose }: UserReportDet
                     )}
 
                     {/* Live Tracking Map */}
-                    {(report.status === 'dispatched' || report.status === 'dikirim' || report.status === 'arrived' || report.status === 'ditangani') && (
+                    {/* Tampilkan live tracking sejak petugas berangkat (accepted) sampai selesai di lokasi */}
+                    {(['accepted', 'dispatched', 'dikirim', 'arrived', 'ditangani', 'in_progress'].includes(report.status)) && report.assigned_petugas_id && (
                         <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm space-y-3">
                             <p className="text-[10px] font-semibold uppercase tracking-wider text-blue-500 flex items-center gap-1.5">
                                 <span className="relative flex h-2 w-2 mr-1">

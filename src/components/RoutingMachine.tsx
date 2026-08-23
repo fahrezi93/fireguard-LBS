@@ -11,6 +11,7 @@ interface RoutingMachineProps {
 
 const RoutingMachine = ({ start, end, onRouteFound, onLoadingChange }: RoutingMachineProps) => {
   const map = useMap();
+  const isFirstRender = useRef(true);
   const animationRef = useRef<number | null>(null);
   const onRouteFoundRef = useRef(onRouteFound);
   const onLoadingChangeRef = useRef(onLoadingChange);
@@ -69,82 +70,15 @@ const RoutingMachine = ({ start, end, onRouteFound, onLoadingChange }: RoutingMa
 
     clearRouteLayers();
 
-    // Icon untuk marker yang bergerak (mobil pemadam)
-    const truckIcon = L.divIcon({
-      html: `
-        <div style="
-          font-size: 24px;
-          text-align: center;
-          filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
-          animation: bounce 1s infinite;
-        ">🚒</div>
-        <style>
-          @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-          }
-        </style>
-      `,
-      className: 'moving-truck-marker',
-      iconSize: [24, 24],
-      iconAnchor: [12, 24],
-    });
-
-    // Fungsi untuk animasi route seperti Gojek
-    const animateRoute = (coordinates: L.LatLngExpression[], duration: number = 2500) => {
-      const startTime = Date.now();
-      const totalPoints = coordinates.length;
-      
-      // Buat polyline untuk animasi
-      animatedPolylineRef.current = L.polyline([], {
+    // Fungsi untuk menggambar rute statis (tanpa animasi yang mengganggu)
+    const drawRoute = (coordinates: L.LatLngExpression[]) => {
+      animatedPolylineRef.current = L.polyline(coordinates, {
         color: '#9F1C19',
         weight: 6,
         opacity: 0.8,
         lineJoin: 'round',
         lineCap: 'round',
       }).addTo(map);
-
-      // Tambahkan marker mobil pemadam yang bergerak
-      movingMarkerRef.current = L.marker(coordinates[0] as L.LatLngExpression, {
-        icon: truckIcon,
-        zIndexOffset: 1000,
-      }).addTo(map);
-
-      // Fungsi animasi frame by frame
-      const animate = () => {
-        const elapsed = Date.now() - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        
-        // Easing function untuk animasi smooth (ease-out)
-        const easeProgress = 1 - Math.pow(1 - progress, 3);
-        
-        // Hitung berapa banyak point yang harus ditampilkan
-        const currentPointIndex = Math.floor(easeProgress * totalPoints);
-        
-        // Update polyline dengan koordinat sampai index saat ini
-        const currentCoords = coordinates.slice(0, currentPointIndex + 1);
-        animatedPolylineRef.current?.setLatLngs(currentCoords);
-        
-        // Update posisi marker mobil pemadam
-        if (currentPointIndex < totalPoints && movingMarkerRef.current) {
-          movingMarkerRef.current.setLatLng(coordinates[currentPointIndex] as L.LatLngExpression);
-        }
-        
-        if (progress < 1) {
-          // Lanjutkan animasi
-          animationRef.current = requestAnimationFrame(animate);
-        } else {
-          // Animasi selesai - hapus marker
-          if (movingMarkerRef.current) {
-            map.removeLayer(movingMarkerRef.current);
-            movingMarkerRef.current = null;
-          }
-          animationRef.current = null;
-        }
-      };
-
-      // Mulai animasi
-      animate();
     };
 
     const fetchRoute = async () => {
@@ -201,18 +135,21 @@ const RoutingMachine = ({ start, end, onRouteFound, onLoadingChange }: RoutingMa
 
           clearRouteLayers();
 
-          // Mulai animasi route (durasi 2.5 detik)
-          animateRoute(latlngs, 2500);
+          // Gambar rute secara langsung tanpa animasi berulang
+          drawRoute(latlngs);
           
-          // Fit bounds ke rute dengan animasi smooth
-          const tempPolyline = L.polyline(latlngs);
-          const bounds = tempPolyline.getBounds();
-          map.fitBounds(bounds, {
-            padding: [80, 80],
-            maxZoom: 15,
-            animate: true,
-            duration: 1
-          });
+          // Fit bounds ke rute HANYA pada render pertama agar tidak mengganggu pandangan user (Gojek style)
+          if (isFirstRender.current) {
+            const tempPolyline = L.polyline(latlngs);
+            const bounds = tempPolyline.getBounds();
+            map.fitBounds(bounds, {
+              padding: [80, 80],
+              maxZoom: 15,
+              animate: true,
+              duration: 1
+            });
+            isFirstRender.current = false;
+          }
 
           // Kirim summary ke parent component
           if (onRouteFoundRef.current) {

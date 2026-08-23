@@ -12,7 +12,8 @@ import {
   FaSignOutAlt,
   FaBars,
   FaTimes,
-  FaUserShield
+  FaUserShield,
+  FaClipboardList
 } from "react-icons/fa";
 
 export default function OperatorLayout({ children }: { children: React.ReactNode }) {
@@ -36,7 +37,10 @@ export default function OperatorLayout({ children }: { children: React.ReactNode
     { name: "Statistik", href: "/operator/statistics", icon: <FaChartBar /> },
     { name: "Manajemen", href: "/operator/management", icon: <FaTags /> },
     ...(role === "SUPER_ADMIN" 
-        ? [{ name: "Manajemen User", href: "/admin/users", icon: <FaUserShield /> }]
+        ? [
+            { name: "Manajemen User", href: "/admin/users", icon: <FaUserShield /> },
+            { name: "Riwayat Petugas", href: "/admin/petugas", icon: <FaClipboardList /> }
+          ]
         : []),
     { name: "Edukasi & Berita", href: "/operator/articles", icon: <FaFileAlt /> },
     { name: "WhatsApp", href: "/operator/whatsapp", icon: <FaWhatsapp /> },

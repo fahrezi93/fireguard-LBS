@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FaUserPlus, FaShieldAlt, FaSpinner, FaTimes, FaSave, FaEdit, FaTrash } from "react-icons/fa";
+import { FaUserPlus, FaShieldAlt, FaSpinner, FaTimes, FaSave, FaEdit, FaTrash, FaHistory } from "react-icons/fa";
+import Link from "next/link";
 import OperatorLayout from "@/components/OperatorLayout";
 
 interface User {
@@ -146,13 +147,14 @@ export default function AdminUsersPage() {
                   </div>
                   <div className="flex items-center gap-2 pt-1 border-t border-gray-50">
                     <span className={`px-2 py-0.5 text-[10px] font-bold rounded-md ${
-                      u.role === 'SUPER_ADMIN' ? 'bg-purple-100 text-purple-700' :
-                      u.role === 'KELURAHAN' ? 'bg-blue-100 text-blue-700' :
-                      u.role === 'OPERATOR' ? 'bg-amber-100 text-amber-700' :
-                      u.role === 'PETUGAS' ? 'bg-teal-100 text-teal-700' :
+                      u.role.toUpperCase() === 'SUPER_ADMIN' ? 'bg-purple-100 text-purple-700' :
+                      u.role.toUpperCase() === 'KELURAHAN' ? 'bg-blue-100 text-blue-700' :
+                      u.role.toUpperCase() === 'OPERATOR' ? 'bg-amber-100 text-amber-700' :
+                      u.role.toUpperCase() === 'PETUGAS' ? 'bg-teal-100 text-teal-700' :
+                      (u.role.toUpperCase() === 'USER' || u.role.toUpperCase() === 'MASYARAKAT') ? 'bg-emerald-100 text-emerald-700' :
                       'bg-gray-100 text-gray-700'
                     }`}>
-                      {u.role}
+                      {u.role.toUpperCase() === 'USER' ? 'MASYARAKAT' : u.role.toUpperCase()}
                     </span>
                     {u.kelurahan_id && (
                       <span className="text-[11px] text-gray-500 bg-gray-50 px-2 py-0.5 rounded border border-gray-100">
@@ -189,13 +191,14 @@ export default function AdminUsersPage() {
                       <td className="px-6 py-4 text-sm text-gray-600">{u.email}</td>
                       <td className="px-6 py-4">
                         <span className={`px-2.5 py-1 text-xs font-bold rounded-lg ${
-                          u.role === 'SUPER_ADMIN' ? 'bg-purple-100 text-purple-700' :
-                          u.role === 'KELURAHAN' ? 'bg-blue-100 text-blue-700' :
-                          u.role === 'OPERATOR' ? 'bg-amber-100 text-amber-700' :
-                          u.role === 'PETUGAS' ? 'bg-teal-100 text-teal-700' :
+                          u.role.toUpperCase() === 'SUPER_ADMIN' ? 'bg-purple-100 text-purple-700' :
+                          u.role.toUpperCase() === 'KELURAHAN' ? 'bg-blue-100 text-blue-700' :
+                          u.role.toUpperCase() === 'OPERATOR' ? 'bg-amber-100 text-amber-700' :
+                          u.role.toUpperCase() === 'PETUGAS' ? 'bg-teal-100 text-teal-700' :
+                          (u.role.toUpperCase() === 'USER' || u.role.toUpperCase() === 'MASYARAKAT') ? 'bg-emerald-100 text-emerald-700' :
                           'bg-gray-100 text-gray-700'
                         }`}>
-                          {u.role}
+                          {u.role.toUpperCase() === 'USER' ? 'MASYARAKAT' : u.role.toUpperCase()}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500">{u.kelurahan_id || '-'}</td>
