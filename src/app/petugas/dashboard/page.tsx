@@ -145,11 +145,11 @@ export default function DashboardPage() {
             const { reportId, newStatus } = data.payload;
             setReports((prevReports) =>
               prevReports.map((r) =>
-                r.id === reportId ? { ...r, status: newStatus } : r
+                r.id === reportId ? { ...r, statusPetugas: newStatus } : r
               )
             );
             setSelectedReport((prev) =>
-              prev && prev.id === reportId ? { ...prev, status: newStatus } : prev
+              prev && prev.id === reportId ? { ...prev, statusPetugas: newStatus } : prev
             );
           }
         } catch (e) {
@@ -188,7 +188,8 @@ export default function DashboardPage() {
     }
   };
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string | null | undefined) => {
+    if (!dateString) return "-";
     const date = new Date(dateString);
     return date.toLocaleDateString("id-ID", {
       day: "numeric",
@@ -425,7 +426,7 @@ export default function DashboardPage() {
                 ) : (
                   <div className="grid grid-cols-1 gap-2.5 sm:gap-3">
                     {reports.map((report) => {
-                      const statusInfo = statusConfig[report.status as StatusType] || defaultStatusConfig;
+                      const statusInfo = statusConfig[report.statusPetugas as StatusType] || defaultStatusConfig;
                       const StatusIcon = statusInfo.icon;
 
                       return (
