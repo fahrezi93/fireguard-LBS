@@ -25,7 +25,8 @@ export async function middleware(request: NextRequest) {
     try {
       const payload = await verifyAuthToken(token);
       const isOperator = payload.isOperator === true;
-      const role = payload.role as string | undefined;
+      const rawRole = payload.role as string | undefined;
+      const role = rawRole?.toUpperCase();
 
       if (isOperator) {
         return NextResponse.redirect(new URL("/operator/dashboard", request.url));
@@ -33,6 +34,8 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL("/admin/dashboard", request.url));
       } else if (role === "KELURAHAN") {
         return NextResponse.redirect(new URL("/kelurahan/dashboard", request.url));
+      } else if (role === "PETUGAS") {
+        return NextResponse.redirect(new URL("/petugas/dashboard", request.url));
       } else {
         return NextResponse.redirect(new URL("/dashboard", request.url));
       }
@@ -61,7 +64,8 @@ export async function middleware(request: NextRequest) {
   try {
     const payload = await verifyAuthToken(token);
     const isOperator = payload.isOperator === true;
-    const role = payload.role as string | undefined;
+    const rawRole = payload.role as string | undefined;
+    const role = rawRole?.toUpperCase();
 
     // Proteksi rute Admin
     if (pathname.startsWith("/admin")) {
@@ -91,6 +95,15 @@ export async function middleware(request: NextRequest) {
       }
     }
 
+    // Proteksi rute Petugas
+    if (pathname.startsWith("/petugas")) {
+      if (role === "PETUGAS" || role === "SUPER_ADMIN" || isOperator) {
+        return NextResponse.next();
+      } else {
+        return NextResponse.redirect(new URL("/", request.url));
+      }
+    }
+
     // Jika mencoba mengakses rute pengguna biasa
     if (isOperator) {
       return NextResponse.redirect(new URL("/operator/dashboard", request.url));
@@ -99,6 +112,9 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next();
     } else if (role === "KELURAHAN") {
       if (pathname === "/") return NextResponse.redirect(new URL("/kelurahan/dashboard", request.url));
+      return NextResponse.next();
+    } else if (role === "PETUGAS") {
+      if (pathname === "/" || pathname === "/dashboard") return NextResponse.redirect(new URL("/petugas/dashboard", request.url));
       return NextResponse.next();
     } else {
       return NextResponse.next();

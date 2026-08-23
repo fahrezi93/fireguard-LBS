@@ -2,6 +2,8 @@ import { NextRequest } from 'next/server';
 import { getAuthPayloadFromRequest, handleCorsOptions, jsonWithCors } from '@/lib/cors';
 import { queryRow } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 // OPTIONS: CORS preflight
 export async function OPTIONS(request: NextRequest) {
   return handleCorsOptions(request);

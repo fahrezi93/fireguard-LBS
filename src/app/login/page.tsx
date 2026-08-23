@@ -66,8 +66,9 @@ export default function LoginPage() {
         if (response.ok) {
           const data = await response.json();
           if (data.isOperator) replace("/operator/dashboard");
-          else if (data.role === "SUPER_ADMIN") replace("/admin/dashboard");
-          else if (data.role === "KELURAHAN") replace("/kelurahan/dashboard");
+          else if (data.role?.toUpperCase() === "SUPER_ADMIN") replace("/admin/dashboard");
+          else if (data.role?.toUpperCase() === "KELURAHAN") replace("/kelurahan/dashboard");
+          else if (data.role?.toUpperCase() === "PETUGAS") replace("/petugas/dashboard");
           else replace("/dashboard");
           return;
         }
@@ -104,8 +105,9 @@ export default function LoginPage() {
         const data = await response.json();
 
         if (response.ok) {
-          if (data.user?.role === "SUPER_ADMIN") push("/admin/dashboard");
-          else if (data.user?.role === "KELURAHAN") push("/kelurahan/dashboard");
+          if (data.user?.role?.toUpperCase() === "SUPER_ADMIN") push("/admin/dashboard");
+          else if (data.user?.role?.toUpperCase() === "KELURAHAN") push("/kelurahan/dashboard");
+          else if (data.user?.role?.toUpperCase() === "PETUGAS") push("/petugas/dashboard");
           else push("/dashboard");
           return;
         }
@@ -175,8 +177,9 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (response.ok) {
-        if (data.user?.role === "SUPER_ADMIN") push("/admin/dashboard");
-        else if (data.user?.role === "KELURAHAN") push("/kelurahan/dashboard");
+        if (data.user?.role?.toUpperCase() === "SUPER_ADMIN") push("/admin/dashboard");
+        else if (data.user?.role?.toUpperCase() === "KELURAHAN") push("/kelurahan/dashboard");
+        else if (data.user?.role?.toUpperCase() === "PETUGAS") push("/petugas/dashboard");
         else push("/dashboard");
         return;
       }
