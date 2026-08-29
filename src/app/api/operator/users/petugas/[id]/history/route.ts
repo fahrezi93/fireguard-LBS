@@ -46,8 +46,8 @@ export async function GET(
 
     // Hitung metrik
     const totalHandled = history.length;
-    const totalCompleted = history.filter(h => h.status_petugas === 'completed').length;
-    const avgResponseTime = history.filter(h => h.response_time_seconds != null).reduce((acc: number, curr: any) => acc + curr.response_time_seconds, 0) / (totalCompleted || 1);
+    const totalCompleted = history.filter((h: any) => h.status_petugas === 'completed').length;
+    const avgResponseTime = history.filter((h: any) => h.response_time_seconds != null).reduce((acc: number, curr: any) => acc + curr.response_time_seconds, 0) / (totalCompleted || 1);
 
     return jsonWithCors({
       success: true,

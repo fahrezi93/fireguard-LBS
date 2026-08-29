@@ -26,12 +26,12 @@ const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'SiagaBencana <noreply@siaga
 // Logo URL untuk template email
 const getLogoUrl = () => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-  // Jangan gunakan localhost untuk email karena Gmail tidak bisa meloadnya
+  // Jika NEXT_PUBLIC_BASE_URL diset dan bukan localhost, gunakan favicon domain tersebut
   if (baseUrl && !baseUrl.includes('localhost') && !baseUrl.includes('127.0.0.1') && !baseUrl.includes('192.168.')) {
-    return `${baseUrl}/favicon.png`;
+    return `${baseUrl.replace(/\/$/, '')}/favicon.png`;
   }
-  // Fallback ke public CDN icon jika sedang development lokal atau belum ada domain
-  return 'https://cdn-icons-png.flaticon.com/512/792/792113.png';
+  // URL logo resmi SiagaBencana dari domain publik terverifikasi
+  return 'https://siagabencana.cloud/favicon.png';
 };
 
 // ── Template HTML helpers ─────────────────────────────────────────────────────
@@ -42,34 +42,41 @@ function buildEmailWrapper(content: string): string {
 <html>
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Plus Jakarta Sans', Arial, sans-serif; }
+    body { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, Arial, sans-serif; }
   </style>
 </head>
-<body style="margin:0;padding:0;background-color:#F9FAFB;font-family:'Plus Jakarta Sans',Arial,sans-serif;color:#1E293B;line-height:1.6;">
-  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#F9FAFB;padding:40px 20px;">
+<body style="margin:0;padding:0;background-color:#F8FAFC;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,Arial,sans-serif;color:#1E293B;line-height:1.6;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#F8FAFC;padding:40px 16px;">
     <tr>
       <td align="center">
-        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background-color:#FFFFFF;border-radius:16px;border:1px solid #E2E8F0;box-shadow:0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);overflow:hidden;">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:540px;background-color:#FFFFFF;border-radius:20px;border:1px solid #E2E8F0;box-shadow:0 10px 25px -5px rgba(0, 0, 0, 0.05);overflow:hidden;">
           <!-- Header -->
           <tr>
-            <td style="padding:40px 40px 24px 40px;text-align:center;border-bottom:1px solid #F1F5F9;">
-              <img src="${logoUrl}" alt="SiagaBencana" width="48" height="48" style="display:inline-block;margin-bottom:16px;border-radius:12px;" />
-              <h1 style="margin:0;font-family:'Plus Jakarta Sans',Arial,sans-serif;font-size:24px;font-weight:700;color:#0F172A;letter-spacing:-0.5px;">SiagaBencana</h1>
-              <p style="margin:4px 0 0;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#DC2626;">Sistem Pelaporan Darurat</p>
+            <td align="center" style="padding:36px 32px 24px 32px;text-align:center;border-bottom:1px solid #F1F5F9;">
+              <table cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto 14px auto;">
+                <tr>
+                  <td align="center" valign="middle" style="width:56px;height:56px;background-color:#DC2626;border-radius:14px;box-shadow:0 4px 14px rgba(220, 38, 38, 0.25);">
+                    <img src="${logoUrl}" alt="🚨 SiagaBencana" width="56" height="56" style="display:block;border-radius:14px;border:0;outline:none;" />
+                  </td>
+                </tr>
+              </table>
+              <h1 style="margin:0;font-family:'Plus Jakarta Sans',Arial,sans-serif;font-size:22px;font-weight:800;color:#0F172A;letter-spacing:-0.5px;">SiagaBencana</h1>
+              <p style="margin:4px 0 0;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#DC2626;">Sistem Pelaporan Darurat</p>
             </td>
           </tr>
           <!-- Body -->
           <tr>
-            <td style="padding:40px;">
+            <td style="padding:36px 32px;">
               ${content}
             </td>
           </tr>
           <!-- Footer -->
           <tr>
-            <td style="padding:32px 40px;background-color:#F8FAFC;border-top:1px solid #F1F5F9;text-align:center;">
-              <p style="margin:0;font-size:13px;color:#64748B;line-height:1.6;">
+            <td style="padding:28px 32px;background-color:#F8FAFC;border-top:1px solid #F1F5F9;text-align:center;">
+              <p style="margin:0;font-size:12px;color:#64748B;line-height:1.6;">
                 &copy; ${new Date().getFullYear()} SiagaBencana.<br>Mengabdi untuk publik. Hak Cipta Dilindungi.<br>Kec. Plaju, Palembang.
               </p>
             </td>

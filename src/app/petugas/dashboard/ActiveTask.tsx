@@ -1,11 +1,33 @@
+"use client";
+
 import { useState } from "react";
 import dynamic from "next/dynamic";
-import { FaMapMarkerAlt, FaPhoneAlt, FaCheck, FaTimes, FaCamera, FaSpinner, FaExclamationTriangle } from "react-icons/fa";
+import { 
+  FaMapMarkerAlt, 
+  FaPhoneAlt, 
+  FaCheck, 
+  FaTimes, 
+  FaCamera, 
+  FaSpinner, 
+  FaExclamationTriangle,
+  FaLocationArrow,
+  FaFire,
+  FaUser,
+  FaClock,
+  FaCheckCircle,
+  FaExternalLinkAlt
+} from "react-icons/fa";
 import { m, AnimatePresence } from "framer-motion";
 
 const SimpleMap = dynamic(() => import("@/components/SimpleMap"), { ssr: false });
 
-export default function ActiveTask({ task, onStatusUpdate }: { task: any, onStatusUpdate: (status: string, notes?: string, photoBase64?: string) => void }) {
+export default function ActiveTask({ 
+  task, 
+  onStatusUpdate 
+}: { 
+  task: any; 
+  onStatusUpdate: (status: string, notes?: string, photoBase64?: string) => void;
+}) {
   const [isCompleting, setIsCompleting] = useState(false);
   const [isFalseReport, setIsFalseReport] = useState(false);
   const [notes, setNotes] = useState("");
@@ -14,12 +36,14 @@ export default function ActiveTask({ task, onStatusUpdate }: { task: any, onStat
 
   if (!task) {
     return (
-      <div className="bg-white border border-neutral-100/90 p-8 sm:p-12 md:p-16 rounded-2xl text-center shadow-2xs">
-        <div className="inline-flex items-center justify-center w-14 h-14 sm:w-20 sm:h-20 bg-green-50 rounded-full border border-green-100 mb-4 sm:mb-5">
-          <FaCheck className="text-green-500 text-xl sm:text-2xl" />
+      <div className="bg-white border border-neutral-100 rounded-3xl p-8 sm:p-12 text-center shadow-xs">
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-50 text-emerald-500 rounded-full border border-emerald-100 mb-4 shadow-xs">
+          <FaCheck className="text-2xl" />
         </div>
-        <h3 className="text-base sm:text-lg font-bold text-neutral-900 tracking-tight mb-1.5 sm:mb-2">Tidak Ada Tugas Aktif</h3>
-        <p className="text-neutral-500 text-xs sm:text-sm max-w-sm mx-auto leading-relaxed">Anda saat ini sedang tidak menangani laporan apapun. Tetap siaga menunggu laporan masuk.</p>
+        <h3 className="text-base sm:text-lg font-bold text-neutral-900 mb-1.5">Tidak Ada Tugas Aktif</h3>
+        <p className="text-neutral-500 text-xs sm:text-sm max-w-sm mx-auto leading-relaxed">
+          Anda saat ini sedang tidak menangani laporan apapun. Tetap siaga menunggu laporan masuk.
+        </p>
       </div>
     );
   }
@@ -92,11 +116,9 @@ export default function ActiveTask({ task, onStatusUpdate }: { task: any, onStat
         
         if (ctx) {
           ctx.drawImage(img, 0, 0, width, height);
-          // Export dengan kualitas 70%
           const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.7);
           setPhotoPreview(compressedDataUrl);
         } else {
-          // Fallback jika canvas gagal
           setPhotoPreview(event.target?.result as string);
         }
       };
@@ -109,94 +131,197 @@ export default function ActiveTask({ task, onStatusUpdate }: { task: any, onStat
     window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, "_blank");
   };
 
+  const isAccepted = task.status_petugas === "accepted";
+  const isArrived = task.status_petugas === "arrived";
+  const isPending = !task.status_petugas || task.status_petugas === "pending";
+
+  const reporterContact = task.contact || task.registered_phone;
+
   return (
-    <div className="bg-white border border-neutral-200 shadow-sm rounded-2xl overflow-hidden">
-      <div className="p-4 sm:p-6 border-b border-neutral-100 flex flex-col sm:flex-row justify-between sm:items-center gap-4 bg-slate-50">
-        <div>
-          <span className="inline-block px-2.5 py-1 bg-red-100 text-red-700 text-xs font-bold uppercase tracking-wider rounded-md mb-2">Tugas Saat Ini</span>
-          <h2 className="text-lg sm:text-xl font-bold text-neutral-900">{task.category_name}</h2>
-          <p className="text-sm text-neutral-600 mt-1 flex items-start gap-1.5"><FaMapMarkerAlt className="mt-1 text-red-500" /> {task.address}</p>
+    <div className="bg-white border border-red-100 rounded-3xl shadow-sm overflow-hidden mb-6">
+      
+      {/* Top Banner Alert / Status Header */}
+      <div className={`p-4 sm:p-5 border-b flex flex-col sm:flex-row justify-between sm:items-center gap-3 ${
+        isPending 
+          ? "bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-amber-500/15 border-amber-200"
+          : isAccepted
+          ? "bg-gradient-to-r from-blue-500/15 via-sky-500/10 to-blue-500/15 border-blue-200"
+          : "bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-emerald-500/15 border-emerald-200"
+      }`}>
+        <div className="flex items-start gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-red-600 flex items-center justify-center text-white shrink-0 shadow-xs mt-0.5">
+            <FaFire className="text-lg" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2 flex-wrap mb-1">
+              <span className="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-red-100 text-red-700">
+                PANGGILAN DARURAT
+              </span>
+              <span className="text-xs text-neutral-500 font-medium">
+                #{task.id}
+              </span>
+            </div>
+            <h2 className="text-base sm:text-xl font-extrabold text-neutral-900 leading-tight">
+              {task.category_name || "Laporan Darurat"}
+            </h2>
+          </div>
         </div>
-        <div className="text-right sm:text-right text-left">
-          <p className="text-xs text-neutral-500 font-semibold uppercase tracking-wider">Status</p>
-          <p className={`font-bold text-lg ${task.status_petugas === "accepted" ? "text-blue-600" : task.status_petugas === "arrived" ? "text-indigo-600" : "text-orange-500"}`}>
-            {task.status_petugas === "accepted" ? "MENUJU LOKASI" : task.status_petugas === "arrived" ? "TIBA DI LOKASI" : "MENUNGGU DITERIMA"}
-          </p>
+
+        {/* Dynamic Status Badge */}
+        <div className="flex sm:flex-col items-center sm:items-end justify-between pt-2 sm:pt-0 border-t sm:border-0 border-neutral-200/50">
+          <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider hidden sm:block">Status Penanganan</span>
+          <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider inline-flex items-center gap-1.5 shadow-2xs ${
+            isPending
+              ? "bg-amber-500 text-white animate-pulse"
+              : isAccepted
+              ? "bg-blue-600 text-white"
+              : "bg-emerald-600 text-white"
+          }`}>
+            <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
+            {isPending ? "Menunggu Diterima" : isAccepted ? "Menuju Lokasi" : "Tiba di Lokasi"}
+          </span>
         </div>
       </div>
 
-      <div className="p-4 sm:p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <div className="bg-neutral-50 rounded-xl p-4 mb-4 border border-neutral-100">
-              <h3 className="text-sm font-bold text-neutral-800 mb-3 border-b pb-2">Informasi Pelapor</h3>
-              <p className="text-sm text-neutral-700"><span className="font-semibold w-24 inline-block">Nama:</span> {task.guest_name || task.registered_name || "Tanpa Nama"}</p>
-              <p className="text-sm text-neutral-700 mt-1"><span className="font-semibold w-24 inline-block">Kontak:</span> {task.contact || task.registered_phone || "-"}</p>
-              <p className="text-sm text-neutral-700 mt-1"><span className="font-semibold w-24 inline-block">Dilaporkan:</span> {new Date(task.dispatched_at || task.created_at).toLocaleString('id-ID')}</p>
+      {/* Main Task Body */}
+      <div className="p-4 sm:p-6 space-y-4">
+        
+        {/* Address Card with Map Link */}
+        <div className="bg-neutral-50 rounded-2xl p-4 border border-neutral-200/70">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-start gap-2.5 min-w-0">
+              <FaMapMarkerAlt className="text-red-500 text-base shrink-0 mt-0.5" />
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">Lokasi Kejadian</p>
+                <p className="text-sm font-semibold text-neutral-800 mt-0.5 leading-snug">
+                  {task.address || "Lokasi spesifik belum tersedia"}
+                </p>
+              </div>
             </div>
-            
-            <div className="bg-neutral-50 rounded-xl p-4 border border-neutral-100">
-              <h3 className="text-sm font-bold text-neutral-800 mb-3 border-b pb-2">Deskripsi Kejadian</h3>
-              <p className="text-sm text-neutral-700 whitespace-pre-wrap">{task.description || "Tidak ada deskripsi."}</p>
-            </div>
-          </div>
-          
-          <div className="h-64 sm:h-full min-h-[250px] rounded-xl overflow-hidden border border-neutral-200">
-             {(task.fire_latitude && task.fire_longitude) ? (
-                <SimpleMap latitude={Number(task.fire_latitude)} longitude={Number(task.fire_longitude)} zoom={16} />
-             ) : (
-                <div className="w-full h-full bg-neutral-100 flex items-center justify-center text-neutral-400">
-                  Koordinat tidak tersedia
-                </div>
-             )}
+            {task.fire_latitude && task.fire_longitude && (
+              <button 
+                onClick={() => openGoogleMaps(task.fire_latitude, task.fire_longitude)}
+                className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200/80 rounded-xl text-xs font-bold transition-colors active:scale-95 shadow-2xs"
+              >
+                <FaLocationArrow className="text-[10px]" />
+                <span className="hidden xs:inline">Navigasi</span>
+              </button>
+            )}
           </div>
         </div>
 
-        <div className="mt-8 border-t border-neutral-100 pt-6">
-          {task.status_petugas === "pending" || !task.status_petugas ? (
+        {/* Reporter Info & Description Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+          
+          {/* Pelapor Info */}
+          <div className="bg-neutral-50 rounded-2xl p-4 border border-neutral-200/70">
+            <h3 className="text-xs font-bold text-neutral-800 uppercase tracking-wider mb-2.5 flex items-center gap-2">
+              <FaUser className="text-neutral-400" /> Informasi Pelapor
+            </h3>
+            <div className="space-y-2 text-xs text-neutral-700">
+              <div className="flex justify-between items-center py-1 border-b border-neutral-200/50">
+                <span className="text-neutral-500">Nama Pelapor</span>
+                <span className="font-semibold">{task.guest_name || task.registered_name || "Masyarakat / Anonim"}</span>
+              </div>
+              <div className="flex justify-between items-center py-1 border-b border-neutral-200/50">
+                <span className="text-neutral-500">Waktu Lapor</span>
+                <span className="font-medium">{new Date(task.dispatched_at || task.created_at).toLocaleString('id-ID', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' })}</span>
+              </div>
+              <div className="flex justify-between items-center pt-1">
+                <span className="text-neutral-500">Nomor Kontak</span>
+                {reporterContact ? (
+                  <a 
+                    href={`tel:${reporterContact}`}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold text-[11px] transition-colors shadow-2xs"
+                  >
+                    <FaPhoneAlt className="text-[10px]" /> {reporterContact}
+                  </a>
+                ) : (
+                  <span className="text-neutral-400">-</span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Incident Description */}
+          <div className="bg-neutral-50 rounded-2xl p-4 border border-neutral-200/70 flex flex-col justify-between">
+            <div>
+              <h3 className="text-xs font-bold text-neutral-800 uppercase tracking-wider mb-2">
+                Keterangan Kejadian
+              </h3>
+              <p className="text-xs sm:text-sm text-neutral-700 leading-relaxed italic">
+                {task.description ? `"${task.description}"` : "Tidak ada catatan tambahan dari pelapor."}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Map Preview */}
+        <div className="rounded-2xl overflow-hidden border border-neutral-200/80 h-52 sm:h-64 relative shadow-2xs">
+          {(task.fire_latitude && task.fire_longitude) ? (
+            <SimpleMap latitude={Number(task.fire_latitude)} longitude={Number(task.fire_longitude)} zoom={16} />
+          ) : (
+            <div className="w-full h-full bg-neutral-100 flex items-center justify-center text-xs text-neutral-400 font-medium">
+              Peta koordinat tidak tersedia
+            </div>
+          )}
+        </div>
+
+        {/* Emergency Action Buttons (Mobile-First Big Buttons) */}
+        <div className="pt-2">
+          {isPending ? (
             <button 
               onClick={() => handleAction("accept")} 
               disabled={loadingAction === "accept"}
-              className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-lg shadow-md transition-colors flex items-center justify-center gap-2"
+              className="w-full py-3.5 sm:py-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-2xl font-extrabold text-sm sm:text-base shadow-md hover:shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-2.5"
             >
-              {loadingAction === "accept" ? <FaSpinner className="animate-spin" /> : <FaCheck />}
-              TERIMA TUGAS INI
+              {loadingAction === "accept" ? (
+                <FaSpinner className="animate-spin text-lg" />
+              ) : (
+                <FaCheckCircle className="text-lg" />
+              )}
+              <span>TERIMA TUGAS SEKARANG</span>
             </button>
-          ) : task.status_petugas === "accepted" ? (
-             <div className="flex flex-col gap-3">
+          ) : isAccepted ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <button 
                 onClick={() => handleAction("arrived")} 
                 disabled={loadingAction === "arrived"}
-                className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-lg shadow-md transition-colors flex items-center justify-center gap-2"
+                className="w-full py-3.5 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white rounded-2xl font-bold text-sm shadow-md transition-all active:scale-[0.98] flex items-center justify-center gap-2"
               >
-                {loadingAction === "arrived" ? <FaSpinner className="animate-spin" /> : <FaMapMarkerAlt />}
-                TIBA DI LOKASI
+                {loadingAction === "arrived" ? <FaSpinner className="animate-spin text-base" /> : <FaMapMarkerAlt className="text-base" />}
+                <span>SUDAH TIBA DI LOKASI</span>
               </button>
               <button 
                 onClick={() => openGoogleMaps(task.fire_latitude, task.fire_longitude)}
-                className="w-full py-3 bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 rounded-xl font-bold text-sm shadow-sm transition-colors flex items-center justify-center gap-2"
+                className="w-full py-3.5 bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 rounded-2xl font-bold text-sm shadow-xs transition-all active:scale-[0.98] flex items-center justify-center gap-2"
               >
-                <FaMapMarkerAlt /> BUKA GOOGLE MAPS
+                <FaExternalLinkAlt className="text-xs" />
+                <span>BUKA RUTE DI GOOGLE MAPS</span>
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
               <button 
                 onClick={() => setIsCompleting(true)}
-                className="py-3 sm:py-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-bold text-sm sm:text-base shadow-sm transition-colors flex items-center justify-center gap-2"
+                className="py-3 sm:py-3.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-2xl font-bold text-xs sm:text-sm shadow-sm transition-all active:scale-[0.98] flex items-center justify-center gap-2"
               >
                 <FaCheck /> TUGAS SELESAI
               </button>
               <button 
                 onClick={() => setIsFalseReport(true)}
-                className="py-3 sm:py-4 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-bold text-sm sm:text-base shadow-sm transition-colors flex items-center justify-center gap-2"
+                className="py-3 sm:py-3.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-2xl font-bold text-xs sm:text-sm shadow-sm transition-all active:scale-[0.98] flex items-center justify-center gap-2"
               >
                 <FaTimes /> LAPORAN PALSU
               </button>
               <button 
                 onClick={() => handleAction("request-backup")}
                 disabled={loadingAction === "request-backup" || task.needs_backup}
-                className={`py-3 sm:py-4 ${task.needs_backup ? 'bg-neutral-400 cursor-not-allowed' : 'bg-red-500 hover:bg-red-600'} text-white rounded-xl font-bold text-sm sm:text-base shadow-sm transition-colors flex items-center justify-center gap-2`}
+                className={`py-3 sm:py-3.5 ${
+                  task.needs_backup 
+                    ? 'bg-neutral-300 text-neutral-600 cursor-not-allowed' 
+                    : 'bg-red-600 hover:bg-red-700 text-white'
+                } rounded-2xl font-bold text-xs sm:text-sm shadow-sm transition-all active:scale-[0.98] flex items-center justify-center gap-2`}
               >
                 {loadingAction === "request-backup" ? <FaSpinner className="animate-spin" /> : <FaExclamationTriangle />}
                 {task.needs_backup ? 'BANTUAN DIKIRIM' : 'MINTA BANTUAN'}
@@ -206,53 +331,79 @@ export default function ActiveTask({ task, onStatusUpdate }: { task: any, onStat
         </div>
       </div>
 
+      {/* Completion & False Report Dialog */}
       <AnimatePresence>
         {(isCompleting || isFalseReport) && (
           <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-            <m.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl">
-              <h3 className="text-lg font-bold mb-2">{isCompleting ? "Selesaikan Laporan" : "Tandai Laporan Palsu"}</h3>
-              <p className="text-sm text-neutral-500 mb-4">
-                {isCompleting ? "Silakan unggah foto bukti penyelesaian dan tambahkan catatan." : "Tambahkan alasan mengapa ini ditandai sebagai laporan palsu."}
+            <m.div 
+              initial={{ opacity: 0, scale: 0.95, y: 10 }} 
+              animate={{ opacity: 1, scale: 1, y: 0 }} 
+              exit={{ opacity: 0, scale: 0.95, y: 10 }} 
+              className="bg-white rounded-3xl p-5 sm:p-6 max-w-md w-full shadow-2xl border border-neutral-100"
+            >
+              <h3 className="text-base sm:text-lg font-extrabold text-neutral-900 mb-1">
+                {isCompleting ? "Konfirmasi Tugas Selesai" : "Tandai Laporan Palsu"}
+              </h3>
+              <p className="text-xs text-neutral-500 mb-4 leading-relaxed">
+                {isCompleting 
+                  ? "Unggah foto bukti penanganan di lokasi dan tambahkan catatan akhir bila ada." 
+                  : "Tambahkan alasan mengapa laporan ini ditandai sebagai laporan palsu/tidak valid."}
               </p>
               
               <textarea 
-                className="w-full p-3 border border-neutral-200 rounded-xl mb-4 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 min-h-[100px]"
-                placeholder="Catatan petugas (opsional)..."
+                className="w-full p-3 border border-neutral-200 rounded-2xl mb-4 text-xs sm:text-sm focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 min-h-[90px] resize-none"
+                placeholder={isCompleting ? "Catatan penanganan di lapangan (opsional)..." : "Tuliskan alasan..."}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
               />
 
               {isCompleting && (
                 <div className="mb-4">
-                  <label className="block text-sm font-semibold mb-2">Foto Bukti (Opsional namun disarankan)</label>
+                  <label className="block text-xs font-bold text-neutral-700 mb-2">Foto Dokumentasi Lapangan</label>
                   {photoPreview ? (
-                    <div className="relative rounded-xl overflow-hidden border border-neutral-200 bg-neutral-100 aspect-video">
-                      <img src={photoPreview} alt="Preview" className="w-full h-full object-contain" />
-                      <button onClick={() => setPhotoPreview(null)} className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 shadow-md">
-                        <FaTimes />
+                    <div className="relative rounded-2xl overflow-hidden border border-neutral-200 bg-neutral-100 aspect-video shadow-2xs">
+                      <img src={photoPreview} alt="Preview" className="w-full h-full object-cover" />
+                      <button 
+                        onClick={() => setPhotoPreview(null)} 
+                        className="absolute top-2 right-2 w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center hover:bg-red-700 shadow-md transition-transform active:scale-95"
+                      >
+                        <FaTimes className="text-xs" />
                       </button>
                     </div>
                   ) : (
-                    <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-neutral-300 rounded-xl cursor-pointer hover:bg-neutral-50 transition-colors">
-                      <FaCamera className="text-2xl text-neutral-400 mb-2" />
-                      <span className="text-sm text-neutral-500 font-medium">Ketuk untuk Ambil Foto</span>
+                    <label className="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-neutral-300 rounded-2xl cursor-pointer hover:bg-neutral-50 hover:border-neutral-400 transition-colors">
+                      <FaCamera className="text-xl text-neutral-400 mb-1.5" />
+                      <span className="text-xs text-neutral-600 font-semibold">Ambil / Pilih Foto Dokumentasi</span>
+                      <span className="text-[10px] text-neutral-400 mt-0.5">Kamera otomatis terkompresi</span>
                       <input type="file" accept="image/*" capture="environment" className="hidden" onChange={handlePhotoCapture} />
                     </label>
                   )}
                 </div>
               )}
 
-              <div className="flex justify-end gap-3 mt-6">
-                <button onClick={() => { setIsCompleting(false); setIsFalseReport(false); setPhotoPreview(null); setNotes(""); }} className="px-4 py-2 font-medium text-neutral-600 bg-neutral-100 hover:bg-neutral-200 rounded-lg transition-colors">
+              <div className="flex items-center justify-end gap-2.5 mt-5 pt-3 border-t border-neutral-100">
+                <button 
+                  onClick={() => { 
+                    setIsCompleting(false); 
+                    setIsFalseReport(false); 
+                    setPhotoPreview(null); 
+                    setNotes(""); 
+                  }} 
+                  className="px-4 py-2.5 font-semibold text-neutral-600 bg-neutral-100 hover:bg-neutral-200 rounded-xl text-xs transition-colors"
+                >
                   Batal
                 </button>
                 <button 
                   onClick={() => handleAction(isCompleting ? "complete" : "false_report")}
                   disabled={loadingAction === "complete" || loadingAction === "false_report"}
-                  className={`px-6 py-2 font-bold text-white rounded-lg transition-colors flex items-center gap-2 ${isCompleting ? 'bg-emerald-500 hover:bg-emerald-600' : 'bg-orange-500 hover:bg-orange-600'}`}
+                  className={`px-5 py-2.5 font-bold text-white rounded-xl text-xs transition-all active:scale-95 flex items-center gap-2 shadow-xs ${
+                    isCompleting 
+                      ? 'bg-emerald-600 hover:bg-emerald-700' 
+                      : 'bg-orange-600 hover:bg-orange-700'
+                  }`}
                 >
-                  {(loadingAction === "complete" || loadingAction === "false_report") ? <FaSpinner className="animate-spin" /> : null}
-                  Simpan
+                  {(loadingAction === "complete" || loadingAction === "false_report") ? <FaSpinner className="animate-spin text-xs" /> : null}
+                  <span>{isCompleting ? "Selesaikan Laporan" : "Kirim Status"}</span>
                 </button>
               </div>
             </m.div>
