@@ -432,7 +432,10 @@ export default function DashboardGlobal() {
   const fetchReports = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/operator/reports");
+      // limit eksplisit disamakan dengan MAX_REPORTS di client, meski
+      // backend sudah punya default LIMIT sendiri — supaya kontrak
+      // keduanya tidak bergantung diam-diam pada default masing-masing.
+      const response = await fetch(`/api/operator/reports?limit=${MAX_REPORTS}`);
       if (!response.ok) throw new Error("Gagal memuat laporan");
       const data = await response.json();
       

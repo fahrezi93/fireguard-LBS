@@ -827,6 +827,8 @@ export default function ReportDetailModal({
                       src={safeMediaUrl}
                       alt="Bukti laporan"
                       fill
+                      sizes="(max-width: 768px) 100vw, 768px"
+                      loading="lazy"
                       className="object-cover"
                     />
                   </div>
@@ -857,6 +859,8 @@ export default function ReportDetailModal({
                       src={toSafeExternalUrl(report.completion_photo_url) || ''}
                       alt="Bukti penyelesaian laporan"
                       fill
+                      sizes="(max-width: 768px) 100vw, 768px"
+                      loading="lazy"
                       className="object-cover"
                     />
                   </div>

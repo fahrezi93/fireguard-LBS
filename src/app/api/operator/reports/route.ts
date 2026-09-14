@@ -2,6 +2,25 @@ import { NextRequest, NextResponse } from 'next/server';
 import { queryRows, execute } from '@/lib/db';
 import { requireAuth, requireOperator } from '@/lib/api-security';
 
+// Hard cap untuk initial load dashboard operator/kelurahan. Tanpa ini, query
+// lama (ORDER BY created_at DESC tanpa LIMIT) menarik SELURUH histori
+// laporan setiap kali dashboard dibuka — di HP RAM rendah ini memicu OOM
+// begitu jumlah laporan bertambah seiring waktu.
+const DEFAULT_REPORTS_LIMIT = 100;
+const MAX_REPORTS_LIMIT = 200;
+
+// LIMIT/OFFSET divalidasi & di-clamp sebagai integer murni sebelum
+// diselipkan ke SQL (bukan lewat placeholder `?` pool.execute) — beberapa
+// versi driver mysql2 kurang konsisten meng-handle LIMIT/OFFSET sebagai
+// prepared-statement parameter. Ini aman karena nilainya sudah dipastikan
+// integer valid, bukan input string mentah dari user.
+function parseBoundedInt(raw: string | null, fallback: number, max?: number): number {
+  if (raw === null) return fallback;
+  const parsed = Number.parseInt(raw, 10);
+  if (!Number.isFinite(parsed) || parsed < 0) return fallback;
+  return max !== undefined ? Math.min(parsed, max) : parsed;
+}
+
 export async function GET(request: NextRequest) {
   try {
     const auth = await requireAuth(request);
@@ -10,10 +29,14 @@ export async function GET(request: NextRequest) {
     const payload = auth.payload;
     const isOperator = payload.isOperator === true;
     const role = payload.role;
-    
+
     if (!isOperator && role !== 'SUPER_ADMIN' && role !== 'KELURAHAN') {
       return NextResponse.json({ message: 'Akses ditolak.' }, { status: 403 });
     }
+
+    const { searchParams } = new URL(request.url);
+    const limit = parseBoundedInt(searchParams.get('limit'), DEFAULT_REPORTS_LIMIT, MAX_REPORTS_LIMIT) || DEFAULT_REPORTS_LIMIT;
+    const offset = parseBoundedInt(searchParams.get('offset'), 0);
 
     let query = `
        SELECT r.id, r.user_id, r.fire_latitude, r.fire_longitude, r.reporter_latitude, r.reporter_longitude, 
@@ -38,7 +61,7 @@ export async function GET(request: NextRequest) {
       args.push(payload.kelurahan_id);
     }
 
-    query += ` ORDER BY r.created_at DESC`;
+    query += ` ORDER BY r.created_at DESC LIMIT ${limit} OFFSET ${offset}`;
 
     const reports = await queryRows(query, args);
     return NextResponse.json(reports);
