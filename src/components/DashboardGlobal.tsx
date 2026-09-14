@@ -237,31 +237,79 @@ const ReportListItem = ({
   </div>
 );
 
-// Fungsi suara notifikasi
+// ── Suara alarm notifikasi ───────────────────────────────────────────────
+// REFACTOR (optimasi CPU untuk HP RAM rendah): versi lama membuat
+// OscillatorNode + GainNode BARU setiap kali dipanggil (tiap 500ms selama
+// alarm aktif) lalu membuangnya 0.5 detik kemudian — itu berarti ribuan
+// alokasi/pembuangan objek Web Audio per jam yang terus membebani GC dan
+// menjaga CPU tetap "bangun". Oscillator Web Audio memang tidak bisa
+// di-restart setelah stop(), tapi bagian yang mahal (alokasi node,
+// menyambungkan graph) tidak perlu diulang tiap detak — cukup dibuat SEKALI
+// per sesi alarm, lalu tiap "pulsa" hanya memodulasi gain & frequency node
+// yang sudah ada.
+//
+// requestAnimationFrame() SENGAJA TIDAK dipakai untuk penjadwalan ini:
+// rAF terikat ke refresh rate layar (~60x/detik) dan akan tetap memanggil
+// callback-nya sesering itu selama tab di foreground (baru berhenti saat
+// tab di-background) — untuk tugas non-visual seperti ini rAF justru lebih
+// boros dibanding setInterval yang di-throttle browser saat idle/background.
 let audioContext: AudioContext | null = null;
-function playWarningSound() {
-  if (typeof window === "undefined") return;
-  if (!audioContext)
+let alarmOscillator: OscillatorNode | null = null;
+let alarmGain: GainNode | null = null;
+
+function getAudioContext(): AudioContext | null {
+  if (typeof window === "undefined") return null;
+  if (!audioContext) {
     audioContext = new (window.AudioContext ||
       (window as any).webkitAudioContext)();
+  }
   if (audioContext.state === "suspended") audioContext.resume();
-  const oscillator = audioContext.createOscillator();
-  const gainNode = audioContext.createGain();
-  oscillator.connect(gainNode);
-  gainNode.connect(audioContext.destination);
-  oscillator.type = "sawtooth";
-  gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
-  oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
-  oscillator.frequency.linearRampToValueAtTime(
-    1000,
-    audioContext.currentTime + 0.25
-  );
-  oscillator.frequency.linearRampToValueAtTime(
-    400,
-    audioContext.currentTime + 0.5
-  );
-  oscillator.start(audioContext.currentTime);
-  oscillator.stop(audioContext.currentTime + 0.5);
+  return audioContext;
+}
+
+// Satu pulsa sirine — hanya menjadwalkan ulang gain & frequency pada node
+// yang sudah ada (dibuat sekali, lazy, saat pulsa pertama tiap sesi alarm).
+function pulseWarningSound() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+
+  if (!alarmOscillator || !alarmGain) {
+    alarmOscillator = ctx.createOscillator();
+    alarmGain = ctx.createGain();
+    alarmOscillator.type = "sawtooth";
+    alarmOscillator.connect(alarmGain);
+    alarmGain.connect(ctx.destination);
+    alarmGain.gain.setValueAtTime(0, ctx.currentTime);
+    alarmOscillator.start();
+  }
+
+  const now = ctx.currentTime;
+  alarmGain.gain.cancelScheduledValues(now);
+  alarmGain.gain.setValueAtTime(0.5, now);
+  alarmGain.gain.setValueAtTime(0, now + 0.5);
+
+  alarmOscillator.frequency.cancelScheduledValues(now);
+  alarmOscillator.frequency.setValueAtTime(400, now);
+  alarmOscillator.frequency.linearRampToValueAtTime(1000, now + 0.25);
+  alarmOscillator.frequency.linearRampToValueAtTime(400, now + 0.5);
+}
+
+// Benar-benar hentikan & lepas oscillator/gain (bukan cuma diam) supaya
+// graph audio tidak menggantung nyala terus saat alarm dimatikan.
+function stopWarningSound() {
+  if (alarmOscillator) {
+    try {
+      alarmOscillator.stop();
+    } catch {
+      // sudah berhenti / context sudah closed — aman diabaikan
+    }
+    alarmOscillator.disconnect();
+    alarmOscillator = null;
+  }
+  if (alarmGain) {
+    alarmGain.disconnect();
+    alarmGain = null;
+  }
 }
 
 const BROADCAST_TEMPLATES = [
@@ -283,6 +331,13 @@ const BROADCAST_TEMPLATES = [
 // WebSocket terus di-prepend — tanpa batas ini, memori tab browser naik
 // terus selama dashboard dibuka (fatal di HP RAM rendah).
 const MAX_REPORTS = 100;
+
+// Interval detak alarm. Sebelumnya 500ms — hampir tanpa jeda (durasi tiap
+// pulsa sudah 0.5 detik), jadi tiap detak berarti pekerjaan Web Audio API
+// baru langsung menyusul yang sebelumnya. Diperlambat ke 1000ms: masih
+// jelas terdengar sebagai alarm berdenyut, tapi nyaris separuh beban kerja
+// penjadwalan audio per satuan waktu dibanding sebelumnya.
+const ALARM_INTERVAL_MS = 1000;
 
 export default function DashboardGlobal() {
   const router = useRouter();
@@ -322,13 +377,20 @@ export default function DashboardGlobal() {
       clearInterval(alarmIntervalRef.current);
       alarmIntervalRef.current = null;
     }
+    stopWarningSound();
   }, []);
 
   const startAlarm = useCallback(() => {
-    stopAlarm();
-    playWarningSound();
-    alarmIntervalRef.current = setInterval(playWarningSound, 500);
-  }, [stopAlarm]);
+    // Guard: jika interval sudah berjalan, JANGAN restart. Efek di bawah
+    // (dependensi `reports`) memanggil startAlarm() ulang setiap kali
+    // daftar laporan berubah sedikit pun (laporan baru, status update,
+    // dst) selama masih ada yang belum di-ack — tanpa guard ini, tiap
+    // perubahan itu akan membongkar-pasang oscillator & menembak beep
+    // ekstra di luar irama, padahal alarm memang sudah menyala.
+    if (alarmIntervalRef.current) return;
+    pulseWarningSound();
+    alarmIntervalRef.current = setInterval(pulseWarningSound, ALARM_INTERVAL_MS);
+  }, []);
 
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
   const { toast, success, error, hideToast } = useToast();
