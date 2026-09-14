@@ -277,6 +277,13 @@ const BROADCAST_TEMPLATES = [
   { title: "ℹ️ Update Nomor Darurat", message: "Simpan nomor darurat Posko Utama SiagaBencana: 113. Segera laporkan jika melihat potensi bahaya." },
 ];
 
+// Batas maksimal jumlah laporan yang disimpan di state client.
+// Mencegah unbounded array growth: endpoint /api/operator/reports tidak
+// pakai LIMIT (ORDER BY created_at DESC), dan setiap laporan baru dari
+// WebSocket terus di-prepend — tanpa batas ini, memori tab browser naik
+// terus selama dashboard dibuka (fatal di HP RAM rendah).
+const MAX_REPORTS = 100;
+
 export default function DashboardGlobal() {
   const router = useRouter();
   const [reports, setReports] = useState<Report[]>([]);
@@ -442,7 +449,9 @@ export default function DashboardGlobal() {
           name: r.kelurahan_name || 'Tidak tersedia',
         } : undefined,
       }));
-      setReports(transformedReports);
+      // API mengurutkan created_at DESC tanpa LIMIT — potong di client
+      // agar hanya laporan terbaru yang disimpan di memori.
+      setReports(transformedReports.slice(0, MAX_REPORTS));
     } catch (error) {
       console.error(error);
     } finally {
@@ -500,7 +509,9 @@ export default function DashboardGlobal() {
             if (prev.some((item) => item.id === transformed.id)) {
               return prev;
             }
-            return [transformed, ...prev];
+            // Prepend laporan baru lalu potong ke MAX_REPORTS agar array
+            // tidak tumbuh tanpa batas selama koneksi WebSocket aktif.
+            return [transformed, ...prev].slice(0, MAX_REPORTS);
           });
         } else if (message.type === "STATUS_UPDATE") {
           // Fetch full report details to get new fields like petugas name, timestamps, etc.
@@ -593,10 +604,14 @@ export default function DashboardGlobal() {
     connect();
 
     return () => {
+      // Urutan penting: lepas dulu SEMUA handler (termasuk onclose) sebelum
+      // close(), supaya close() tidak memicu reconnectionTimer baru setelah
+      // komponen unmount — itulah yang menyebabkan reconnect loop menumpuk.
       clearTimeout(reconnectionTimer);
       if (ws.current) {
         ws.current.onclose = null;
         ws.current.onerror = null;
+        ws.current.onmessage = null;
         ws.current.close();
       }
     };
