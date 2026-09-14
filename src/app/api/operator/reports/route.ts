@@ -21,6 +21,14 @@ function parseBoundedInt(raw: string | null, fallback: number, max?: number): nu
   return max !== undefined ? Math.min(parsed, max) : parsed;
 }
 
+// Allowlist status yang valid — dipakai sebagai filter WHERE opsional untuk
+// mendukung pagination klasik (Sebelumnya/Selanjutnya) di dashboard: tanpa
+// filter status ikut di-apply di server, halaman ke-2+ pada status filter
+// tertentu bisa tampak kosong padahal masih ada data di halaman lain.
+const ALLOWED_STATUSES = new Set([
+  'submitted', 'verified', 'dispatched', 'arrived', 'completed', 'false', 'false_report',
+]);
+
 export async function GET(request: NextRequest) {
   try {
     const auth = await requireAuth(request);
@@ -37,6 +45,8 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const limit = parseBoundedInt(searchParams.get('limit'), DEFAULT_REPORTS_LIMIT, MAX_REPORTS_LIMIT) || DEFAULT_REPORTS_LIMIT;
     const offset = parseBoundedInt(searchParams.get('offset'), 0);
+    const statusParamRaw = searchParams.get('status');
+    const statusFilter = statusParamRaw && ALLOWED_STATUSES.has(statusParamRaw) ? statusParamRaw : null;
 
     let query = `
        SELECT r.id, r.user_id, r.fire_latitude, r.fire_longitude, r.reporter_latitude, r.reporter_longitude, 
@@ -55,16 +65,29 @@ export async function GET(request: NextRequest) {
        LEFT JOIN users p ON r.assigned_petugas_id = p.id
     `;
 
+    const whereClauses: string[] = [];
     const args: any[] = [];
     if (role === 'KELURAHAN' && payload.kelurahan_id) {
-      query += ` WHERE r.kelurahan_id = ? `;
+      whereClauses.push('r.kelurahan_id = ?');
       args.push(payload.kelurahan_id);
     }
+    if (statusFilter) {
+      whereClauses.push('r.status = ?');
+      args.push(statusFilter);
+    }
+    if (whereClauses.length > 0) {
+      query += ` WHERE ${whereClauses.join(' AND ')} `;
+    }
 
-    query += ` ORDER BY r.created_at DESC LIMIT ${limit} OFFSET ${offset}`;
+    // Ambil satu baris ekstra (limit + 1) untuk mendeteksi apakah masih ada
+    // halaman berikutnya, tanpa perlu query COUNT(*) terpisah.
+    query += ` ORDER BY r.created_at DESC LIMIT ${limit + 1} OFFSET ${offset}`;
 
-    const reports = await queryRows(query, args);
-    return NextResponse.json(reports);
+    const rows = await queryRows<any>(query, args);
+    const hasMore = rows.length > limit;
+    const data = hasMore ? rows.slice(0, limit) : rows;
+
+    return NextResponse.json({ data, hasMore, limit, offset });
   } catch (error) {
     console.error('[GET /api/operator/reports]', error);
     return NextResponse.json({ message: 'Terjadi kesalahan pada server.' }, { status: 500 });

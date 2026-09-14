@@ -289,6 +289,26 @@ export default function DashboardGlobal() {
   const [reports, setReports] = useState<Report[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // ── Pagination klasik (bukan infinite scroll) ────────────────────────────
+  // Sengaja dipilih atas infinite scroll/"load more": elemen DOM tetap
+  // konstan (maksimal MAX_REPORTS per halaman) alih-alih terus menumpuk
+  // seiring user scroll — itu sendiri sumber OOM lain di HP RAM rendah.
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  // Jumlah laporan baru yang masuk lewat WebSocket SAAT user sedang berada
+  // di halaman > 1. Sengaja tidak langsung di-prepend ke `reports` karena
+  // itu akan merusak urutan/isi snapshot offset halaman yang sedang dilihat
+  // user — cukup dihitung, lalu ditawarkan lewat banner untuk kembali ke
+  // Halaman 1.
+  const [pendingNewReports, setPendingNewReports] = useState(0);
+  // WebSocket effect di bawah hanya jalan sekali (deps []), jadi butuh ref
+  // agar closure-nya selalu baca nilai `page` TERKINI, bukan nilai basi
+  // dari saat effect pertama kali dipasang.
+  const pageRef = useRef(page);
+  useEffect(() => {
+    pageRef.current = page;
+  }, [page]);
+
   const [statusFilter, setStatusFilter] = useState("all");
   const [isMonitorMode, setIsMonitorMode] = useState(true);
   const [wsStatus, setWsStatus] = useState("Connecting");
@@ -429,17 +449,26 @@ export default function DashboardGlobal() {
     }
   };
 
-  const fetchReports = useCallback(async () => {
+  const fetchReports = useCallback(async (targetPage: number, status: string) => {
     setIsLoading(true);
     try {
-      // limit eksplisit disamakan dengan MAX_REPORTS di client, meski
-      // backend sudah punya default LIMIT sendiri — supaya kontrak
-      // keduanya tidak bergantung diam-diam pada default masing-masing.
-      const response = await fetch(`/api/operator/reports?limit=${MAX_REPORTS}`);
+      const offset = (targetPage - 1) * MAX_REPORTS;
+      const params = new URLSearchParams({
+        limit: String(MAX_REPORTS),
+        offset: String(offset),
+      });
+      if (status !== "all") {
+        params.set("status", status);
+      }
+
+      const response = await fetch(`/api/operator/reports?${params.toString()}`);
       if (!response.ok) throw new Error("Gagal memuat laporan");
-      const data = await response.json();
-      
-      const transformedReports = data.map((r: any) => ({
+      const payload = await response.json();
+      // Backward-compat: jika suatu saat endpoint balik ke bentuk array
+      // polos, tetap bisa dibaca.
+      const rows: any[] = Array.isArray(payload) ? payload : (payload.data ?? []);
+
+      const transformedReports = rows.map((r: any) => ({
         ...r,
         acknowledged: true,
         category: r.category_id ? {
@@ -452,9 +481,11 @@ export default function DashboardGlobal() {
           name: r.kelurahan_name || 'Tidak tersedia',
         } : undefined,
       }));
-      // API mengurutkan created_at DESC tanpa LIMIT — potong di client
-      // agar hanya laporan terbaru yang disimpan di memori.
       setReports(transformedReports.slice(0, MAX_REPORTS));
+      setHasMore(Array.isArray(payload) ? false : !!payload.hasMore);
+      // Ganti halaman = snapshot baru sepenuhnya; notifikasi "laporan baru"
+      // dari halaman sebelumnya sudah tidak relevan.
+      setPendingNewReports(0);
     } catch (error) {
       console.error(error);
     } finally {
@@ -463,8 +494,8 @@ export default function DashboardGlobal() {
   }, []);
 
   useEffect(() => {
-    fetchReports();
-  }, [fetchReports]);
+    fetchReports(page, statusFilter);
+  }, [fetchReports, page, statusFilter]);
 
   useEffect(() => {
     const hasUnacknowledged = reports.some((r) => !r.acknowledged);
@@ -508,14 +539,23 @@ export default function DashboardGlobal() {
               name: r.kelurahan_name || 'Tidak tersedia',
             } : undefined,
           };
-          setReports((prev) => {
-            if (prev.some((item) => item.id === transformed.id)) {
-              return prev;
-            }
-            // Prepend laporan baru lalu potong ke MAX_REPORTS agar array
-            // tidak tumbuh tanpa batas selama koneksi WebSocket aktif.
-            return [transformed, ...prev].slice(0, MAX_REPORTS);
-          });
+          if (pageRef.current === 1) {
+            setReports((prev) => {
+              if (prev.some((item) => item.id === transformed.id)) {
+                return prev;
+              }
+              // Prepend laporan baru lalu potong ke MAX_REPORTS agar array
+              // tidak tumbuh tanpa batas selama koneksi WebSocket aktif.
+              return [transformed, ...prev].slice(0, MAX_REPORTS);
+            });
+          } else {
+            // User sedang di halaman > 1 — JANGAN suntik data baru ke sini,
+            // itu akan menggeser/merusak urutan snapshot offset yang sedang
+            // ditampilkan. Cukup catat jumlahnya lewat banner; data yang
+            // sesungguhnya akan ter-fetch ulang saat user kembali ke
+            // Halaman 1 (lihat tombol banner & fetchReports).
+            setPendingNewReports((n) => n + 1);
+          }
         } else if (message.type === "STATUS_UPDATE") {
           // Fetch full report details to get new fields like petugas name, timestamps, etc.
           fetch(`/api/operator/reports/${message.payload.reportId}`)
@@ -643,6 +683,9 @@ export default function DashboardGlobal() {
         });
         if (!response.ok) throw new Error("Gagal menghapus laporan.");
         setReports([]);
+        setPage(1);
+        setHasMore(false);
+        setPendingNewReports(0);
         success("Semua laporan berhasil dihapus.");
       } catch (err) {
         error("Gagal menghapus semua laporan.");
@@ -907,7 +950,7 @@ export default function DashboardGlobal() {
                   <p className="text-[11px] sm:text-xs text-gray-500 mt-0.5">Laporan masuk real-time</p>
                 </div>
                 <div className="flex items-center gap-1">
-                  <button onClick={fetchReports} className="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all" title="Segarkan">
+                  <button onClick={() => fetchReports(page, statusFilter)} className="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all" title="Segarkan">
                     <FaSyncAlt className="text-xs sm:text-sm" />
                   </button>
                   <button onClick={handleDeleteAllReports} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all" title="Kosongkan Semua">
@@ -918,7 +961,14 @@ export default function DashboardGlobal() {
               
               <div className="px-4 py-2.5 sm:px-6 sm:py-3 border-b border-gray-100 bg-gray-50/50 shrink-0">
                 <select
-                  onChange={(e) => setStatusFilter(e.target.value)}
+                  onChange={(e) => {
+                    // Filter status diterapkan di server (lihat fetchReports)
+                    // agar konsisten dengan pagination — kembali ke Halaman 1
+                    // supaya offset lama tidak "nyasar" ke data yang sudah
+                    // tak lagi cocok dengan filter baru.
+                    setStatusFilter(e.target.value);
+                    setPage(1);
+                  }}
                   value={statusFilter}
                   className="w-full bg-white border border-gray-200 rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none cursor-pointer"
                 >
@@ -931,6 +981,16 @@ export default function DashboardGlobal() {
                   <option value="false">Laporan Palsu</option>
                 </select>
               </div>
+
+              {pendingNewReports > 0 && (
+                <button
+                  onClick={() => setPage(1)}
+                  className="mx-3 mt-2.5 sm:mx-4 sm:mt-3 flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold text-white bg-red-500 hover:bg-red-600 rounded-xl px-3 py-2 transition-all shrink-0"
+                >
+                  <FaBell className="text-xs" />
+                  {pendingNewReports} laporan baru masuk — Kembali ke Halaman 1
+                </button>
+              )}
 
               <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-2.5 sm:space-y-3 bg-gray-50/30 custom-scrollbar relative">
                 {isLoading ? (
@@ -954,6 +1014,26 @@ export default function DashboardGlobal() {
                     />
                   ))
                 )}
+              </div>
+
+              {/* Pagination klasik — bukan infinite scroll, supaya jumlah
+                  elemen DOM di daftar tetap konstan (maks MAX_REPORTS). */}
+              <div className="px-4 py-2.5 sm:px-6 sm:py-3 border-t border-gray-100 bg-white flex items-center justify-between gap-2 shrink-0">
+                <button
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page === 1 || isLoading}
+                  className="px-3 py-1.5 text-xs sm:text-sm font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-all"
+                >
+                  ← Sebelumnya
+                </button>
+                <span className="text-[11px] sm:text-xs font-medium text-gray-500">Halaman {page}</span>
+                <button
+                  onClick={() => setPage((p) => p + 1)}
+                  disabled={!hasMore || isLoading}
+                  className="px-3 py-1.5 text-xs sm:text-sm font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-all"
+                >
+                  Selanjutnya →
+                </button>
               </div>
             </section>
 
