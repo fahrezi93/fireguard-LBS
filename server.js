@@ -63,18 +63,23 @@ app.prepare().then(() => {
     if (pathname.startsWith('/uploads/') || pathname.startsWith('/downloads/')) {
       const filePath = path.join(__dirname, 'public', pathname);
       
-      // Cek apakah file ada sebelum menyajikannya
-      fs.access(filePath, fs.constants.F_OK, (err) => {
-        if (err) {
+      // Cek apakah file ada dan ambil ukurannya
+      fs.stat(filePath, (err, stats) => {
+        if (err || !stats.isFile()) {
           // Jika file tidak ada, biarkan Next.js yang menangani (akan 404)
           return handle(req, res, parsedUrl);
         }
+        
+        // Kirim total ukuran file agar browser menampilkan total size (bukan "Unknown file size") & progress bar
+        res.setHeader('Content-Length', stats.size);
+
         // Set header khusus jika file APK agar langsung terunduh dengan benar
         if (pathname.endsWith('.apk')) {
           res.setHeader('Content-Type', 'application/vnd.android.package-archive');
           const filename = path.basename(pathname);
           res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
         }
+        
         // Sajikan file secara manual
         const readStream = fs.createReadStream(filePath);
         readStream.pipe(res);
