@@ -31,6 +31,10 @@ Thumbs.db
 public/uploads/*
 !public/uploads/.gitkeep
 
+# Ignore downloads / APKs
+public/downloads/*.apk
+!public/downloads/.gitkeep
+
 # Ignore database
 *.db
 *.sqlite

@@ -59,8 +59,8 @@ app.prepare().then(() => {
       });
     }
 
-    // Penanganan khusus untuk file yang diunggah
-    if (pathname.startsWith('/uploads/')) {
+    // Penanganan khusus untuk file yang diunggah dan file unduhan (APK, dll)
+    if (pathname.startsWith('/uploads/') || pathname.startsWith('/downloads/')) {
       const filePath = path.join(__dirname, 'public', pathname);
       
       // Cek apakah file ada sebelum menyajikannya
@@ -68,6 +68,12 @@ app.prepare().then(() => {
         if (err) {
           // Jika file tidak ada, biarkan Next.js yang menangani (akan 404)
           return handle(req, res, parsedUrl);
+        }
+        // Set header khusus jika file APK agar langsung terunduh dengan benar
+        if (pathname.endsWith('.apk')) {
+          res.setHeader('Content-Type', 'application/vnd.android.package-archive');
+          const filename = path.basename(pathname);
+          res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
         }
         // Sajikan file secara manual
         const readStream = fs.createReadStream(filePath);
