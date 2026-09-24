@@ -2,6 +2,33 @@ import { NextRequest, NextResponse } from 'next/server';
 import { queryRows, execute } from '@/lib/db';
 import { requireAuth, requireOperator } from '@/lib/api-security';
 
+// Hard cap untuk initial load dashboard operator/kelurahan. Tanpa ini, query
+// lama (ORDER BY created_at DESC tanpa LIMIT) menarik SELURUH histori
+// laporan setiap kali dashboard dibuka — di HP RAM rendah ini memicu OOM
+// begitu jumlah laporan bertambah seiring waktu.
+const DEFAULT_REPORTS_LIMIT = 100;
+const MAX_REPORTS_LIMIT = 200;
+
+// LIMIT/OFFSET divalidasi & di-clamp sebagai integer murni sebelum
+// diselipkan ke SQL (bukan lewat placeholder `?` pool.execute) — beberapa
+// versi driver mysql2 kurang konsisten meng-handle LIMIT/OFFSET sebagai
+// prepared-statement parameter. Ini aman karena nilainya sudah dipastikan
+// integer valid, bukan input string mentah dari user.
+function parseBoundedInt(raw: string | null, fallback: number, max?: number): number {
+  if (raw === null) return fallback;
+  const parsed = Number.parseInt(raw, 10);
+  if (!Number.isFinite(parsed) || parsed < 0) return fallback;
+  return max !== undefined ? Math.min(parsed, max) : parsed;
+}
+
+// Allowlist status yang valid — dipakai sebagai filter WHERE opsional untuk
+// mendukung pagination klasik (Sebelumnya/Selanjutnya) di dashboard: tanpa
+// filter status ikut di-apply di server, halaman ke-2+ pada status filter
+// tertentu bisa tampak kosong padahal masih ada data di halaman lain.
+const ALLOWED_STATUSES = new Set([
+  'submitted', 'verified', 'dispatched', 'arrived', 'completed', 'false', 'false_report',
+]);
+
 export async function GET(request: NextRequest) {
   try {
     const auth = await requireAuth(request);
@@ -10,10 +37,16 @@ export async function GET(request: NextRequest) {
     const payload = auth.payload;
     const isOperator = payload.isOperator === true;
     const role = payload.role;
-    
+
     if (!isOperator && role !== 'SUPER_ADMIN' && role !== 'KELURAHAN') {
       return NextResponse.json({ message: 'Akses ditolak.' }, { status: 403 });
     }
+
+    const { searchParams } = new URL(request.url);
+    const limit = parseBoundedInt(searchParams.get('limit'), DEFAULT_REPORTS_LIMIT, MAX_REPORTS_LIMIT) || DEFAULT_REPORTS_LIMIT;
+    const offset = parseBoundedInt(searchParams.get('offset'), 0);
+    const statusParamRaw = searchParams.get('status');
+    const statusFilter = statusParamRaw && ALLOWED_STATUSES.has(statusParamRaw) ? statusParamRaw : null;
 
     let query = `
        SELECT r.id, r.user_id, r.fire_latitude, r.fire_longitude, r.reporter_latitude, r.reporter_longitude, 
@@ -32,16 +65,29 @@ export async function GET(request: NextRequest) {
        LEFT JOIN users p ON r.assigned_petugas_id = p.id
     `;
 
+    const whereClauses: string[] = [];
     const args: any[] = [];
     if (role === 'KELURAHAN' && payload.kelurahan_id) {
-      query += ` WHERE r.kelurahan_id = ? `;
+      whereClauses.push('r.kelurahan_id = ?');
       args.push(payload.kelurahan_id);
     }
+    if (statusFilter) {
+      whereClauses.push('r.status = ?');
+      args.push(statusFilter);
+    }
+    if (whereClauses.length > 0) {
+      query += ` WHERE ${whereClauses.join(' AND ')} `;
+    }
 
-    query += ` ORDER BY r.created_at DESC`;
+    // Ambil satu baris ekstra (limit + 1) untuk mendeteksi apakah masih ada
+    // halaman berikutnya, tanpa perlu query COUNT(*) terpisah.
+    query += ` ORDER BY r.created_at DESC LIMIT ${limit + 1} OFFSET ${offset}`;
 
-    const reports = await queryRows(query, args);
-    return NextResponse.json(reports);
+    const rows = await queryRows<any>(query, args);
+    const hasMore = rows.length > limit;
+    const data = hasMore ? rows.slice(0, limit) : rows;
+
+    return NextResponse.json({ data, hasMore, limit, offset });
   } catch (error) {
     console.error('[GET /api/operator/reports]', error);
     return NextResponse.json({ message: 'Terjadi kesalahan pada server.' }, { status: 500 });
