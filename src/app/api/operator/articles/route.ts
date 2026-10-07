@@ -45,18 +45,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: 'Title, slug, and content are required' }, { status: 400 });
     }
 
+    const authorId = auth.payload.isOperator ? auth.payload.id : null;
+
     const insertId = await executeAndGetLastInsertId(
       `INSERT INTO articles (title, slug, content, category_id, author_id, cover_image, status) 
        VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [title, slug, content, category_id || null, auth.payload.id, cover_image || null, status || 'draft']
+      [title, slug, content, category_id || null, authorId, cover_image || null, status || 'draft']
     );
 
     return NextResponse.json({ message: 'Article created successfully', id: insertId }, { status: 201 });
   } catch (error: any) {
-    console.error('[POST /api/operator/articles]', error);
+    console.error('[POST /api/operator/articles] Error Details:', error);
     if (error.code === 'ER_DUP_ENTRY') {
-      return NextResponse.json({ message: 'Slug already exists.' }, { status: 409 });
+      return NextResponse.json({ message: 'Slug article sudah ada, silakan gunakan judul lain.' }, { status: 409 });
     }
-    return NextResponse.json({ message: 'Terjadi kesalahan pada server.' }, { status: 500 });
+    if (error.code === 'ER_DATA_TOO_LONG') {
+      return NextResponse.json({ message: 'URL Cover image terlalu panjang.' }, { status: 400 });
+    }
+    return NextResponse.json({ message: 'Terjadi kesalahan pada database server.' }, { status: 500 });
   }
 }
