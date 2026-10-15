@@ -258,11 +258,10 @@ export default function LoginPage() {
                   setLoginMethod("email");
                   setError("");
                 }}
-                className={`flex-1 py-2 px-3 rounded-lg text-xs sm:text-sm font-bold transition-all duration-200 ${
-                  loginMethod === "email"
+                className={`flex-1 py-2 px-3 rounded-lg text-xs sm:text-sm font-bold transition-all duration-200 ${loginMethod === "email"
                     ? "text-slate-900 bg-white shadow-2xs"
                     : "text-slate-500 hover:text-slate-900"
-                }`}
+                  }`}
               >
                 Email
               </button>
@@ -273,11 +272,10 @@ export default function LoginPage() {
                   setWaError("");
                   setWaSuccess("");
                 }}
-                className={`flex-1 py-2 px-3 rounded-lg text-xs sm:text-sm font-bold transition-all duration-200 ${
-                  loginMethod === "whatsapp"
+                className={`flex-1 py-2 px-3 rounded-lg text-xs sm:text-sm font-bold transition-all duration-200 ${loginMethod === "whatsapp"
                     ? "text-slate-900 bg-white shadow-2xs"
                     : "text-slate-500 hover:text-slate-900"
-                }`}
+                  }`}
               >
                 WhatsApp
               </button>
@@ -323,7 +321,7 @@ export default function LoginPage() {
                         <button
                           type="button"
                           onClick={() => push("/reset-password")}
-                          className="text-[11px] font-bold text-red-600 hover:text-red-700 transition-colors uppercase tracking-wider cursor-pointer z-10 relative"
+                          className="text-[11px] font-bold text-red-600 hover:text-red-700 transition-colors tracking-wider cursor-pointer z-10 relative"
                         >
                           Lupa Password?
                         </button>
@@ -540,46 +538,13 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Right: Illustration/Content Area */}
-        <div className="hidden md:flex md:w-[45%] lg:w-[52%] bg-slate-50 border-l border-slate-100 relative items-center justify-center p-8 lg:p-12 overflow-hidden">
-          <m.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            className="relative z-10 w-full max-w-md"
-          >
-            <div className="bg-white border border-slate-200/80 p-8 rounded-2xl shadow-xs relative">
-              <div className="w-10 h-10 rounded-xl bg-red-50 text-red-600 border border-red-100/60 flex items-center justify-center mb-5">
-                <FaBell className="text-lg" />
-              </div>
-              <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900 mb-3 leading-snug">
-                Satu Laporan, <br />
-                <span className="text-red-600">Menyelamatkan Semua.</span>
-              </h2>
-              <p className="text-slate-600 text-xs sm:text-sm leading-relaxed mb-6 font-normal">
-                Terintegrasi langsung dengan unit pemadam kebakaran di lapangan, memastikan lokasi terdeteksi tanpa delay respon.
-              </p>
-
-              <div className="grid grid-cols-2 gap-4 pt-5 border-t border-slate-100">
-                <div>
-                  <div className="text-2xl font-extrabold text-slate-900 mb-0.5">
-                    4m
-                  </div>
-                  <div className="text-[10px] uppercase tracking-wider font-bold text-slate-400">
-                    Estimasi Respon
-                  </div>
-                </div>
-                <div>
-                  <div className="text-2xl font-extrabold text-slate-900 mb-0.5">
-                    24/7
-                  </div>
-                  <div className="text-[10px] uppercase tracking-wider font-bold text-slate-400">
-                    Siaga Total
-                  </div>
-                </div>
-              </div>
-            </div>
-          </m.div>
+        {/* Right: Full Cover Illustration */}
+        <div className="hidden md:block md:w-[45%] lg:w-[52%] h-full relative overflow-hidden bg-slate-100 border-l border-slate-200/80">
+          <img
+            src="/ampera-vector.jpg"
+            alt="Ilustrasi Jembatan Ampera Kota Palembang"
+            className="w-full h-full object-cover object-center select-none"
+          />
         </div>
       </main>
     </LazyMotion>

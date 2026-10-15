@@ -299,46 +299,13 @@ export default function RegisterPage() {
         </div>
       </div>
 
-      {/* Right: Premium Minimalist Area */}
-      <div className="hidden md:flex md:w-[45%] lg:w-[52%] bg-slate-50 border-l border-slate-100 relative items-center justify-center p-8 lg:p-12 overflow-hidden">
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="relative z-10 w-full max-w-md"
-        >
-          <div className="bg-white border border-slate-200/80 p-8 rounded-2xl shadow-xs relative">
-            <div className="w-10 h-10 rounded-xl bg-red-50 text-red-600 border border-red-100/60 flex items-center justify-center mb-5">
-              <FaBell className="text-lg" />
-            </div>
-            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 mb-3 leading-snug tracking-tight">
-              Kesiapsiagaan <br />
-              <span className="text-red-600">Mulai dari Anda.</span>
-            </h2>
-            <p className="text-slate-600 text-xs sm:text-sm leading-relaxed mb-6 font-normal">
-              Bergabung dengan jaringan tanggap darurat Palembang untuk pelaporan cepat dan penanganan akurat.
-            </p>
-
-            <div className="space-y-4 pt-5 border-t border-slate-100">
-              <div className="flex gap-3.5 items-start">
-                <div className="w-8 h-8 rounded-xl bg-red-50 border border-red-100 text-red-600 font-bold shrink-0 shadow-2xs flex items-center justify-center text-xs">
-                  1
-                </div>
-                <p className="text-slate-600 text-xs sm:text-sm leading-relaxed font-normal pt-0.5">
-                  Buat akun untuk terdaftar sebagai pelapor tervalidasi dalam radius Palembang.
-                </p>
-              </div>
-              <div className="flex gap-3.5 items-start">
-                <div className="w-8 h-8 rounded-xl bg-red-50 border border-red-100 text-red-600 font-bold shrink-0 shadow-2xs flex items-center justify-center text-xs">
-                  2
-                </div>
-                <p className="text-slate-600 text-xs sm:text-sm leading-relaxed font-normal pt-0.5">
-                  Laporkan insiden dengan satu ketukan dan lacak armada darurat secara real-time.
-                </p>
-              </div>
-            </div>
-          </div>
-        </motion.div>
+      {/* Right: Full Cover Illustration */}
+      <div className="hidden md:block md:w-[45%] lg:w-[52%] h-full relative overflow-hidden bg-slate-900 border-l border-slate-200/80">
+        <img
+          src="/ampera-login-cover.jpg"
+          alt="Ilustrasi Jembatan Ampera Kota Palembang"
+          className="w-full h-full object-cover object-center select-none"
+        />
       </div>
     </main>
   );
