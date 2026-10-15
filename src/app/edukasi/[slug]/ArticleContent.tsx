@@ -73,12 +73,10 @@ export default function ArticleContent({ article }: ArticleContentProps) {
                 year: "numeric",
               })}
             </span>
-            {article.author_name && (
-              <span className="flex items-center gap-1.5 text-xs sm:text-sm text-white/80">
-                <FaUser className="text-white/60 text-xs" />
-                {article.author_name}
-              </span>
-            )}
+            <span className="flex items-center gap-1.5 text-xs sm:text-sm text-white/80">
+              <FaUser className="text-white/60 text-xs" />
+              {article.author_name || "Admin"}
+            </span>
           </div>
 
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white leading-snug tracking-tight max-w-3xl">

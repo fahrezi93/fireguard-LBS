@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     
     let query = `
       SELECT a.id, a.title, a.slug, a.cover_image, a.created_at, a.category_id,
-             c.name as category_name, o.username as author_name 
+             c.name as category_name, COALESCE(o.username, 'Admin') as author_name 
       FROM articles a
       LEFT JOIN disaster_categories c ON a.category_id = c.id
       LEFT JOIN operators o ON a.author_id = o.id

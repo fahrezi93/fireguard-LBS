@@ -47,12 +47,9 @@ export default function EdukasiPage() {
           <div className="absolute -top-[20%] -right-[10%] w-[40%] h-[120%] bg-gradient-to-b from-red-50 to-orange-50/20 blur-3xl transform rotate-12 rounded-full opacity-60"></div>
           <div className="absolute -bottom-[20%] -left-[10%] w-[30%] h-[100%] bg-gradient-to-tr from-orange-50/40 to-transparent blur-3xl rounded-full opacity-50"></div>
         </div>
-        
+
         <div className="max-w-5xl mx-auto px-6 relative z-10">
           <div className="text-center max-w-2xl mx-auto">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-red-600 text-xs font-semibold tracking-wide uppercase mb-3 shadow-xs border border-red-100/50">
-              <FaBookOpen className="text-[10px]" /> Literasi Bencana
-            </span>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900 mb-3 tracking-tight leading-snug">
               Edukasi & <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-orange-500">Berita Terkini</span>
             </h1>
@@ -80,20 +77,20 @@ export default function EdukasiPage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {articles.map((article) => {
-              const imageUrl = article.cover_image?.startsWith('http') 
-                ? article.cover_image 
+              const imageUrl = article.cover_image?.startsWith('http')
+                ? article.cover_image
                 : (article.cover_image ? `/uploads/articles/${article.cover_image}` : null);
 
               return (
-                <Link 
-                  href={`/edukasi/${article.slug}`} 
-                  key={article.id} 
+                <Link
+                  href={`/edukasi/${article.slug}`}
+                  key={article.id}
                   className="group flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-xs hover:shadow-md hover:-translate-y-1 transition-all duration-200 ease-out"
                 >
                   <div className="relative h-44 sm:h-48 w-full bg-gray-100 overflow-hidden">
                     {imageUrl ? (
-                      <img 
-                        src={imageUrl} 
+                      <img
+                        src={imageUrl}
                         alt={article.title}
                         onError={(e) => {
                           (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1542382257-80dedb725088?auto=format&fit=crop&w=1200&q=80";
@@ -114,17 +111,17 @@ export default function EdukasiPage() {
                       </div>
                     )}
                   </div>
-                  
+
                   <div className="p-5 flex flex-col flex-1 bg-white">
                     <div className="flex items-center gap-3 text-[11px] font-semibold text-gray-400 mb-2.5 tracking-wide uppercase">
                       <span className="flex items-center gap-1"><FaCalendarAlt className="text-gray-300" /> {new Date(article.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-                      <span className="flex items-center gap-1"><FaUser className="text-gray-300" /> {article.author_name}</span>
+                      <span className="flex items-center gap-1"><FaUser className="text-gray-300" /> {article.author_name || 'Admin'}</span>
                     </div>
-                    
+
                     <h3 className="text-base font-bold text-gray-900 leading-snug mb-3 group-hover:text-red-600 transition-colors line-clamp-2">
                       {article.title}
                     </h3>
-                    
+
                     <div className="mt-auto pt-3 flex items-center text-red-600 font-bold text-xs tracking-wide">
                       <span className="group-hover:mr-1.5 transition-all duration-200">Baca Selengkapnya</span>
                       <span className="text-sm leading-none opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 ease-out">&rarr;</span>

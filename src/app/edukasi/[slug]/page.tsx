@@ -31,7 +31,7 @@ export default async function ArticleDetailPage({ params }: { params: Promise<{ 
   const { slug } = await params;
 
   const article = await queryRow<any>(
-    `SELECT a.*, c.name as category_name, o.username as author_name 
+    `SELECT a.*, c.name as category_name, COALESCE(o.username, 'Admin') as author_name 
      FROM articles a
      LEFT JOIN disaster_categories c ON a.category_id = c.id
      LEFT JOIN operators o ON a.author_id = o.id

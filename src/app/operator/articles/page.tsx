@@ -159,7 +159,7 @@ export default function ArticlesManagementPage() {
                           <div className="text-xs text-gray-400 mt-1">/{article.slug}</div>
                         </td>
                         <td className="px-6 py-4 text-gray-600">{article.category_name || '-'}</td>
-                        <td className="px-6 py-4 text-gray-600">{article.author_name}</td>
+                        <td className="px-6 py-4 text-gray-600">{article.author_name || 'Admin'}</td>
                         <td className="px-6 py-4">
                           <span className={`px-2.5 py-1 rounded-md text-xs font-medium border ${
                             article.status === 'published' 

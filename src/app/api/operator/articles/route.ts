@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     const categoryId = url.searchParams.get('category_id');
     
     let query = `
-      SELECT a.*, c.name as category_name, o.username as author_name 
+      SELECT a.*, c.name as category_name, COALESCE(o.username, 'Admin') as author_name 
       FROM articles a
       LEFT JOIN disaster_categories c ON a.category_id = c.id
       LEFT JOIN operators o ON a.author_id = o.id

@@ -3,14 +3,24 @@ import type { NextRequest } from "next/server";
 import { COOKIE_NAME } from "@/lib/session";
 import { verifyAuthToken } from "@/lib/api-security";
 
+// Rute autentikasi (jika sudah login, user dialihkan ke dashboard masing-masing)
+const authPaths = ["/login", "/register", "/operator/login", "/onboarding", "/reset-password"];
+
+// Prefix rute terproteksi (hanya rute-rute ini yang WAJIB login)
+const protectedPrefixes = [
+  "/admin",
+  "/operator",
+  "/kelurahan",
+  "/petugas",
+  "/dashboard",
+  "/report",
+];
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get(COOKIE_NAME)?.value;
 
-  const publicPaths = ["/", "/onboarding", "/terms", "/privacy", "/lapor-cepat", "/api/reports/guest", "/download"];
-  const authPaths = ["/login", "/register", "/operator/login", "/onboarding", "/reset-password"];
-
-  // Izinkan akses ke API, file Next.js, dan static files
+  // 1. Izinkan akses ke API, file Next.js internals, static files, dan file berekstensi
   if (
     pathname.startsWith("/api") ||
     pathname.startsWith("/_next") ||
@@ -20,8 +30,12 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Jika user sudah login, jangan izinkan kembali ke halaman auth.
-  if (authPaths.includes(pathname) && token) {
+  const isAuthPath = authPaths.includes(pathname);
+  const isProtectedPath =
+    protectedPrefixes.some((prefix) => pathname.startsWith(prefix)) && !isAuthPath;
+
+  // 2. Jika user sudah login, jangan izinkan kembali ke halaman auth
+  if (isAuthPath && token) {
     try {
       const payload = await verifyAuthToken(token);
       const isOperator = payload.isOperator === true;
@@ -46,12 +60,13 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Halaman publik yang tidak memerlukan login
-  if (publicPaths.includes(pathname) || authPaths.includes(pathname) || pathname.startsWith("/edukasi")) {
+  // 3. Jika rute BUKAN rute terproteksi (misal halaman publik atau halaman yang tidak ada / 404),
+  // biarkan Next.js memprosesnya secara normal sehingga not-found.tsx dapat muncul.
+  if (!isProtectedPath) {
     return NextResponse.next();
   }
 
-  // Jika tidak ada token, redirect ke halaman login yang sesuai
+  // 4. Jika rute TERPROTEKSI dan tidak ada token, redirect ke login yang sesuai
   if (!token) {
     const url = request.nextUrl.clone();
     url.pathname = pathname.startsWith("/operator")
@@ -60,7 +75,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Jika ada token, verifikasi
+  // 5. Jika rute TERPROTEKSI dan ada token, verifikasi dan periksa otorisasi role
   try {
     const payload = await verifyAuthToken(token);
     const isOperator = payload.isOperator === true;
@@ -104,23 +119,22 @@ export async function middleware(request: NextRequest) {
       }
     }
 
-    // Jika mencoba mengakses rute pengguna biasa
+    // Jika role khusus mencoba mengakses rute dashboard pengguna biasa (/dashboard)
     if (isOperator) {
       return NextResponse.redirect(new URL("/operator/dashboard", request.url));
-    } else if (role === "SUPER_ADMIN") {
-      if (pathname === "/") return NextResponse.redirect(new URL("/admin/dashboard", request.url));
-      return NextResponse.next();
-    } else if (role === "KELURAHAN") {
-      if (pathname === "/") return NextResponse.redirect(new URL("/kelurahan/dashboard", request.url));
-      return NextResponse.next();
-    } else if (role === "PETUGAS") {
-      if (pathname === "/" || pathname === "/dashboard") return NextResponse.redirect(new URL("/petugas/dashboard", request.url));
-      return NextResponse.next();
-    } else {
-      return NextResponse.next();
+    } else if (pathname.startsWith("/dashboard")) {
+      if (role === "SUPER_ADMIN") {
+        return NextResponse.redirect(new URL("/admin/dashboard", request.url));
+      } else if (role === "KELURAHAN") {
+        return NextResponse.redirect(new URL("/kelurahan/dashboard", request.url));
+      } else if (role === "PETUGAS") {
+        return NextResponse.redirect(new URL("/petugas/dashboard", request.url));
+      }
     }
+
+    return NextResponse.next();
   } catch (err) {
-    // Jika token tidak valid, hapus dan redirect ke login
+    // Jika token tidak valid pada rute terproteksi, hapus cookie dan redirect ke login
     const url = request.nextUrl.clone();
     url.pathname = pathname.startsWith("/operator")
       ? "/operator/login"
