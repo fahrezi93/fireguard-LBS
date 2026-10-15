@@ -276,7 +276,14 @@ export default function UserReportDetailModal({ report, onClose }: UserReportDet
                             <div className="absolute top-[-20%] right-[-10%] w-32 h-32 bg-red-500/20 blur-[40px] pointer-events-none mix-blend-screen" />
                             <p className="text-[10px] font-semibold uppercase tracking-wider text-white/50 mb-3 relative z-10 flex items-center gap-1.5"><FaImage/> Dokumentasi TKP</p>
                             <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-white/10 group bg-black/50">
-                                <Image src={safeMediaUrl} alt="Bukti laporan" fill className="object-contain transition-transform duration-700" />
+                                <Image
+                                    src={safeMediaUrl}
+                                    alt="Bukti laporan"
+                                    fill
+                                    sizes="(max-width: 640px) 100vw, 672px"
+                                    loading="lazy"
+                                    className="object-contain transition-transform duration-700"
+                                />
                             </div>
                             <div className="mt-3 text-center">
                                 <a href={safeMediaUrl} target="_blank" rel="noopener noreferrer" className="text-[11px] text-gray-400 font-medium hover:text-white transition-colors underline underline-offset-2 decoration-gray-600 hover:decoration-white">

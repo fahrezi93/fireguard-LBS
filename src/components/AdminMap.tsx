@@ -66,43 +66,63 @@ interface Report {
   needs_backup?: number | boolean;
 }
 
-// Ikon untuk Pos Damkar
-const createFireStationIcon = () => new L.DivIcon({
+// Ikon untuk Pos Damkar — dibuat SEKALI sebagai singleton module-level,
+// bukan fungsi yang dipanggil ulang di setiap render. Sebelumnya
+// createFireStationIcon() dipanggil di JSX untuk tiap marker pos damkar
+// pada SETIAP render (mis. tiap kali `reports` berubah dari WebSocket),
+// sehingga terus membuat instance L.DivIcon baru yang perlu di-GC —
+// menambah beban memori/GC di HP RAM rendah tanpa manfaat apa pun karena
+// isinya statis. Pola ini sudah benar di ReportMap.tsx, diselaraskan di sini.
+const fireStationIcon = new L.DivIcon({
   html: `<div style="font-size: 24px;">🚒</div>`,
   className: 'leaflet-emoji-icon',
   iconSize: [24, 24],
   iconAnchor: [12, 24],
 });
 
-// Fungsi untuk membuat icon berdasarkan kategori
+const completedIcon = new L.DivIcon({
+  html: `<div style="font-size: 28px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">✅</div>`,
+  className: 'leaflet-emoji-icon',
+  iconSize: [28, 28],
+  iconAnchor: [14, 28],
+});
+
+const categoryEmojis: Record<number, string> = {
+  1: '🔥',  // Kebakaran
+  2: '🏗️', // Kerusakan Infrastruktur
+  3: '🌊',  // Banjir
+  4: '🌪️',  // Angin Puting Beliung
+  5: '⛰️',   // Tanah Longsor
+  6: '⚠️',   // Kecelakaan
+  7: '🚨',   // Lainnya
+};
+
+// Cache instance L.DivIcon per kombinasi (categoryId, categoryIcon, needsBackup).
+// Jumlah kombinasi nyata sangat kecil (~belasan), tapi tanpa cache ini fungsi
+// dipanggil ulang untuk SETIAP marker pada SETIAP render — termasuk tiap kali
+// `reports` berubah lewat WebSocket. Di HP RAM rendah dengan ratusan laporan
+// aktif, ini berarti ratusan objek DivIcon baru dialokasikan berulang-ulang
+// tanpa perlu, memicu GC pressure yang bikin UI macet/crash.
+const categoryIconCache = new Map<string, L.DivIcon>();
+
+// Fungsi untuk membuat icon berdasarkan kategori (memoized)
 const createCategoryIcon = (categoryId?: number, categoryIcon?: string, isCompleted?: boolean, needsBackup?: boolean | number) => {
   if (isCompleted) {
-    return new L.DivIcon({
-      html: `<div style="font-size: 28px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">✅</div>`,
-      className: 'leaflet-emoji-icon',
-      iconSize: [28, 28],
-      iconAnchor: [14, 28],
-    });
+    return completedIcon;
   }
 
-  // Default emoji berdasarkan categoryId
-  const categoryEmojis: Record<number, string> = {
-    1: '🔥',  // Kebakaran
-    2: '🏗️', // Kerusakan Infrastruktur
-    3: '🌊',  // Banjir
-    4: '🌪️',  // Angin Puting Beliung
-    5: '⛰️',   // Tanah Longsor
-    6: '⚠️',   // Kecelakaan
-    7: '🚨',   // Lainnya
-  };
-
   const emoji = categoryIcon || categoryEmojis[categoryId || 1] || '🔥';
+  const hasBackup = !!needsBackup;
+  const cacheKey = `${emoji}-${hasBackup}`;
 
-  const backupIndicator = needsBackup 
-    ? `<div style="position: absolute; top: -5px; right: -5px; width: 14px; height: 14px; background-color: #ef4444; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px #ef4444; z-index: 10;" class="animate-pulse"></div>` 
+  const cached = categoryIconCache.get(cacheKey);
+  if (cached) return cached;
+
+  const backupIndicator = hasBackup
+    ? `<div style="position: absolute; top: -5px; right: -5px; width: 14px; height: 14px; background-color: #ef4444; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px #ef4444; z-index: 10;" class="animate-pulse"></div>`
     : '';
 
-  return new L.DivIcon({
+  const icon = new L.DivIcon({
     html: `<div style="font-size: 28px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); position: relative; display: inline-block;">
              ${backupIndicator}
              ${emoji}
@@ -111,18 +131,21 @@ const createCategoryIcon = (categoryId?: number, categoryIcon?: string, isComple
     iconSize: [28, 28],
     iconAnchor: [14, 28],
   });
+
+  categoryIconCache.set(cacheKey, icon);
+  return icon;
 };
 
-// Ikon untuk lokasi pelapor
-const createReporterLocationIcon = () => new L.DivIcon({
+// Ikon untuk lokasi pelapor — singleton, isi statis (lihat alasan di fireStationIcon)
+const reporterLocationIcon = new L.DivIcon({
   html: `<div style="font-size: 24px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">📍</div>`,
   className: 'leaflet-emoji-icon',
   iconSize: [24, 24],
   iconAnchor: [12, 24],
 });
 
-// Ikon untuk petugas pemadam
-const createPetugasIcon = () => new L.DivIcon({
+// Ikon untuk petugas pemadam — singleton, isi statis (lihat alasan di fireStationIcon)
+const petugasIcon = new L.DivIcon({
   html: `<div style="font-size: 28px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">🚒</div>`,
   className: 'leaflet-emoji-icon petugas-marker',
   iconSize: [28, 28],
@@ -227,9 +250,12 @@ export default function AdminMap({ reports, onReportClick, selectedReport }: Adm
     connect();
 
     return () => {
+      // Sama seperti di DashboardGlobal.tsx: lepas onclose SEBELUM close()
+      // agar close() tidak memicu reconnectTimeout baru setelah unmount.
       clearTimeout(reconnectTimeout);
       if (ws) {
           ws.onclose = null;
+          ws.onmessage = null;
           ws.close();
       }
     };
@@ -282,7 +308,7 @@ export default function AdminMap({ reports, onReportClick, selectedReport }: Adm
         <Marker
           key={`station-${station.name}`}
           position={[station.latitude, station.longitude]}
-          icon={createFireStationIcon()}
+          icon={fireStationIcon}
         >
           <Popup>{station.name}</Popup>
         </Marker>
@@ -327,7 +353,7 @@ export default function AdminMap({ reports, onReportClick, selectedReport }: Adm
           <Marker
             key={`reporter-${report.id}`}
             position={[repLat, repLng]}
-            icon={createReporterLocationIcon()}
+            icon={reporterLocationIcon}
             eventHandlers={{ click: () => onReportClick(report) }}
           >
             <Popup>
@@ -353,7 +379,7 @@ export default function AdminMap({ reports, onReportClick, selectedReport }: Adm
           <Marker
             key={`petugas-${petugas.id}`}
             position={[Number(petugas.last_latitude), Number(petugas.last_longitude)]}
-            icon={createPetugasIcon()}
+            icon={petugasIcon}
           >
             <Popup>
               <strong>{petugas.name}</strong><br />
